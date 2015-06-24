@@ -5,12 +5,21 @@
 # - Copy from readonly mount for n replicas > 1
 # - Single r/w master?
 
-PASSWORD=""
-OPTS="--verbosity 3 --datadir /home/ethd/eth-data  --rpc --rpccorsdomain \"*\" --rpcaddr 0.0.0.0"
-mkfifo js
-catpid=$!
-tail -f js | geth $OPTS console &
-gethpid=$!
-printf "if(eth.accounts.length == 0) {console.log(\"Creating new account\"); admin.newAccount(\"$PASSWORD\");}\nadmin.unlock(eth.accounts[0], \"$PASSWORD\");\neth.accounts;\n" > js
-wait $gethpid
-kill $gethpid
+OPTS="--verbosity 3 --datadir data  --rpc --rpccorsdomain \"*\" --rpcaddr 0.0.0.0 --unlock primary --password secrets/password"
+
+ADDRESS=$(cat secrets/address)
+ACCOUNT_FILE="secrets/$ADDRESS"
+if [ -z "$ADDRESS" ]; then
+  echo "Failed to read address secret"
+  exit 1
+fi
+if [ ! -f $ACCOUNT_FILE ]; then
+  echo "Account file secret does not exist: $ACCOUNT_FILE"
+  exit 1
+fi
+
+echo "Importing address $ADDRESS"
+mkdir -p data/keystore/$ADDRESS
+cp -f $ACCOUNT_FILE data/keystore/$ADDRESS/$ADDRESS
+
+geth $OPTS

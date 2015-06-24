@@ -23,15 +23,16 @@ spec:
             - containerPort: 30303
             - containerPort: 8545
           volumeMounts:
-            - mountPath: /home/ethd/eth-data
-              name: eth-data
-            - mountPath: /home/ethd/eth-keys
-              name: eth-keys
+            - name: eth-data-1
+              mountPath: /home/ethd/data
+            - name: eth-secrets
+              mountPath: /home/ethd/secrets
+              readOnly: true
       volumes:
         - name: eth-data
           gcePersistentDisk:
             pdName: eth-data-1
             fsType: ext4
-        - name: eth-keys
+        - name: eth-secrets
           secret:
-            secretName: eth-keys-0
+            secretName: eth-account-0
