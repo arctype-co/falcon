@@ -1,0 +1,37 @@
+kind: ReplicationController
+apiVersion: v1
+metadata:
+  name: geth-node-1.2015-06-23-d
+  labels:
+    name: geth-node-1
+    role: geth-node
+spec:
+  replicas: 1
+  selector:
+    name: geth-node-1.2015-06-23-d
+    role: geth-node
+  template:
+    metadata:
+      labels:
+        name: geth-node-1.2015-06-23-d
+        role: geth-node
+    spec:
+      containers:
+        - name: geth-node-1
+          image: sundbry/etheride-geth:2015-06-23-d
+          ports:
+            - containerPort: 30303
+            - containerPort: 8545
+          volumeMounts:
+            - mountPath: /home/ethd/eth-data
+              name: eth-data
+            - mountPath: /home/ethd/eth-keys
+              name: eth-keys
+      volumes:
+        - name: eth-data
+          gcePersistentDisk:
+            pdName: eth-data-1
+            fsType: ext4
+        - name: eth-keys
+          secret:
+            secretName: eth-keys-0

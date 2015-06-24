@@ -1,0 +1,8 @@
+FROM etheride/base
+
+#  Authorship
+MAINTAINER ryan.sundberg@gmail.com
+
+# Install java
+RUN apt-get install -y openjdk-7-jre
+

@@ -1,0 +1,22 @@
+{
+   "kind":"Service",
+   "apiVersion":"v1",
+   "metadata":{
+      "name":"marketing-web",
+      "labels":{
+         "name":"marketing-web"
+      }
+   },
+   "spec":{
+      "ports": [
+        {
+          "port":3744,
+          "targetPort":3744
+        }
+      ],
+      "selector":{
+         "name":"marketing-web"
+      },
+      "type":"LoadBalancer"
+   }
+}

@@ -1,0 +1,83 @@
+# http://www.debian-administration.org/article/698/Automating_the_creation_of_docker_images
+# Simple dockerfile for an ssh + server.
+#
+# Build it like so:
+#
+#   root@host~# docker build -t=steve/runit - < Dockerfile.runit
+#
+# Launch the generated image like so:
+#
+#   root@host~# docker run -d -p 2222:22 steve/runit
+#
+# Connect like so, with the root password being "mypasswd".
+#
+#   $ ssh -p 2222 root@localhost
+#
+# Steve
+# --
+#
+
+
+
+#
+#  From this base-image / starting-point
+#
+FROM debootstrap/wheezy
+
+#
+#  Authorship
+#
+MAINTAINER steve@steve.org.uk
+
+#
+# Update apt
+#
+RUN apt-get update -q -q
+RUN apt-get upgrade --yes --force-yes
+
+#
+# Install utitiles
+#
+RUN apt-get install less sudo screen --yes --force-yes
+
+#
+# Install runit
+#
+RUN apt-get install runit --yes --force-yes
+
+#
+# Install SSH
+#
+RUN apt-get install openssh-server openssh-client --yes --force-yes
+
+#
+# Setup a root password; simple enough to remember, but hard enough that
+# it won't be cracked immediately.  (ha!)
+#
+RUN echo "root:mypasswd" | chpasswd
+
+#
+# Expose the SSH port
+#
+EXPOSE 22
+
+#
+#  Now make sure that runit will launch SSHD, via runit.
+#
+#  NOTE: Remember runit will launch /etc/service/sshd/run
+#
+RUN mkdir /etc/service/sshd
+RUN /bin/echo -e '#!/bin/sh' > /etc/service/sshd/run
+RUN /bin/echo -e 'exec /usr/sbin/sshd -D' >> /etc/service/sshd/run
+
+#
+#  Make sure our run-script is executable.
+#
+RUN chown root.root /etc/service/sshd/run
+RUN chmod 755 /etc/service/sshd/run
+
+
+#
+# Finally launch runit.
+#
+ENTRYPOINT ["/usr/sbin/runsvdir-start"]
