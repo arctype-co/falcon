@@ -22,7 +22,7 @@ RUN apt-get update -q -q
 RUN apt-get upgrade --yes
 
 # Install utitiles
-RUN apt-get install -y wget less
+RUN apt-get install -y wget less screen
 
 # Install runit
 # RUN apt-get install runit --yes --force-yes
