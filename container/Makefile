@@ -1,5 +1,9 @@
 .PHONY: base-image jre-image lein-image app-image images push tag
 
+REPO=gcr.io/etheride-984
+TAG=latest # Override this with make TAG=foo
+CLOUD=gcloud
+
 all: images push
 
 images: app-image-tag marketing-image-tag
@@ -11,12 +15,15 @@ marketing-image-tag: marketing-image
 	docker tag -f etheride/marketing sundbry/etheride-marketing
 
 geth-image-tag: geth-image
-	docker tag -f etheride/geth sundbry/etheride-geth
+	docker tag -f etheride/geth $(REPO)/geth:$(TAG)
 
-push: marketing-image-tag
+geth-image-push: geth-image-tag
+	$(CLOUD) docker push $(REPO)/geth:$(TAG)
+
+push: marketing-image-tag geth-image-push
 	docker push sundbry/etheride
 	docker push sundbry/etheride-marketing
-	docker push sundbry/etheride-geth
+
 
 base-image: base/Dockerfile
 	docker build -t=etheride/base base

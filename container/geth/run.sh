@@ -1,14 +1,12 @@
 #!/bin/bash
 
-# TODO
-# - Respawn on exit
-# - Copy from readonly mount for n replicas > 1
-# - Single r/w master?
+# Docker env
+# ETHD_DATA, ETHD_SECRETS
+OPTS="--verbosity 3 --datadir $ETHD_DATA  --rpc --rpccorsdomain \"*\" --rpcaddr 0.0.0.0 --unlock primary --password $ETHD_SECRETS/password"
 
-OPTS="--verbosity 3 --datadir data  --rpc --rpccorsdomain \"*\" --rpcaddr 0.0.0.0 --unlock primary --password secrets/password"
-
-ADDRESS=$(cat secrets/address)
-ACCOUNT_FILE="secrets/$ADDRESS"
+ADDRESS=$(cat $ETHD_SECRETS/address)
+ACCOUNT_FILE="$ETHD_SECRETS/$ADDRESS"
+KEY_PATH=$ETHD_DATA/keystore/$ADDRESS/$ADDRESS
 if [ -z "$ADDRESS" ]; then
   echo "Failed to read address secret"
   exit 1
@@ -19,7 +17,8 @@ if [ ! -f $ACCOUNT_FILE ]; then
 fi
 
 echo "Importing address $ADDRESS"
-mkdir -p data/keystore/$ADDRESS
-cp -f $ACCOUNT_FILE data/keystore/$ADDRESS/$ADDRESS
+mkdir -p $ETHD_DATA/keystore/$ADDRESS
+rm -f $KEY_PATH
+ln -s $ACCOUNT_FILE $KEY_PATH
 
 geth $OPTS

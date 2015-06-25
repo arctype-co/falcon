@@ -32,3 +32,7 @@ gcloud compute firewall-rules create --allow=tcp:$PORT --target-tags=k8s-cluster
 ```
 gcloud compute disks create --size=500GB --zone=us-central1-f my-data-disk
 ```
+
+## Pushing a Docker image
+docker tag etheride/image-name gcr.io/etheride-984/image-name:tag
+gcloud docker push gcr.io/etheride-984/image-name:tag 

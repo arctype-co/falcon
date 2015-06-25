@@ -16,12 +16,17 @@
 
 FROM ethereum/client-go
 
+ENV ETHD_DATA /home/ethd/volume/data
+ENV ETHD_SECRETS /home/ethd/secrets
+
 RUN useradd -m ethd
 WORKDIR /home/ethd
 ADD run.sh /home/ethd/run.sh
+
 RUN chmod 0755 /home/ethd/run.sh
-RUN mkdir /home/ethd/data
-RUN mkdir /home/ethd/secrets
+RUN mkdir -p $ETHD_DATA
+RUN mkdir -p $ETHD_SECRETS 
 RUN chown -R ethd:ethd /home/ethd
+
 USER ethd
 ENTRYPOINT "/home/ethd/run.sh"
