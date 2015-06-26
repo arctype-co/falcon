@@ -1,0 +1,22 @@
+kind: ReplicationController
+apiVersion: v1
+metadata:
+  name: openvpn
+  labels:
+    name: openvpn
+spec:
+  replicas: 1
+  selector:
+    name: openvpn
+  template:
+    metadata:
+      labels:
+        name: openvpn
+    spec:
+      containers:
+        - name: openvpn
+          image: gcr.io/etheride-984/openvpn
+          ports:
+            - containerPort: 1194
+              hostPort: 1194
+          privilegedz: true

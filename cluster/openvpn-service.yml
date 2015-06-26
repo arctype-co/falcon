@@ -1,0 +1,14 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: openvpn
+  labels:
+     name: openvpn
+spec:
+  ports:
+    - port: 1194
+      targetPort: 1194
+      protocol: UDP
+  selector:
+    name: openvpn
+  type: NodePort # LoadBalancer not supported for UDP

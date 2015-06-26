@@ -1,0 +1,83 @@
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 2 (0x2)
+    Signature Algorithm: sha256WithRSAEncryption
+        Issuer: CN=vpn.etheride.com
+        Validity
+            Not Before: Jun 26 07:31:55 2015 GMT
+            Not After : Jun 23 07:31:55 2025 GMT
+        Subject: CN=Ryans-MacBook-Pro
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                Public-Key: (2048 bit)
+                Modulus:
+                    00:cd:5e:38:31:83:2a:86:70:63:c8:25:77:92:c8:
+                    d4:7f:0d:2e:3e:7d:6c:4b:ff:40:fb:57:9d:8c:0c:
+                    5e:ef:ef:22:3f:2e:96:27:48:c8:de:69:c5:9b:a5:
+                    40:a4:01:b3:65:c5:ba:44:db:4b:d3:07:98:e1:55:
+                    e5:11:1a:5a:92:e0:39:91:1b:4a:6b:26:f8:ab:2e:
+                    e0:1b:d5:85:e8:ff:66:d0:22:4a:d1:39:a9:16:4f:
+                    f7:10:b7:e5:f0:e2:c7:fd:b8:45:61:f4:b5:9f:e9:
+                    86:89:4b:eb:42:7f:05:d7:94:dc:5d:a0:48:6e:c5:
+                    f5:98:54:db:97:c1:c1:ff:6a:fb:ae:34:5d:4f:ed:
+                    89:93:aa:f2:d1:79:d0:96:f9:a7:e8:b3:49:e7:5e:
+                    50:8c:b9:c0:6b:b7:2e:ab:1a:8c:33:3f:c0:43:c9:
+                    04:15:bf:e4:e0:27:79:e8:be:60:a2:fd:42:76:09:
+                    a4:d8:2e:cd:73:61:89:f0:80:c8:6b:59:3c:40:72:
+                    2a:bd:53:6e:72:fc:7c:64:46:92:3c:15:75:e9:39:
+                    b5:5b:80:ab:0b:e8:b4:87:4b:2c:61:bc:b1:99:11:
+                    b4:c6:bb:53:3f:48:c2:e1:75:c7:18:bd:8b:d4:5e:
+                    2e:75:33:33:d2:ca:9f:8d:4b:87:0b:2f:1f:dc:1f:
+                    26:2d
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Basic Constraints: 
+                CA:FALSE
+            X509v3 Subject Key Identifier: 
+                DB:2B:00:45:38:5B:E6:B7:CE:03:F6:D5:74:36:14:7B:C3:6B:EB:5B
+            X509v3 Authority Key Identifier: 
+                keyid:1B:08:16:48:81:8E:77:0F:E4:6E:67:F0:38:CB:2E:E9:57:83:73:7E
+                DirName:/CN=vpn.etheride.com
+                serial:A6:77:51:53:DF:F8:02:FD
+
+            X509v3 Extended Key Usage: 
+                TLS Web Client Authentication
+            X509v3 Key Usage: 
+                Digital Signature
+    Signature Algorithm: sha256WithRSAEncryption
+         13:6a:2b:36:c5:8e:07:95:86:2c:65:39:b6:9c:cd:97:25:4e:
+         85:83:b6:ea:da:a5:e8:c7:b4:b0:0b:3e:ae:9d:7a:f4:a6:05:
+         ed:4c:47:d9:d6:39:ee:5b:5d:4a:06:fc:bc:fa:cb:58:66:11:
+         90:38:7b:fa:df:25:70:73:e7:ce:11:6b:74:f7:14:ee:b9:26:
+         f6:0e:a5:d7:8e:ad:ce:d2:9e:5f:43:a7:41:c9:1f:bc:39:78:
+         4c:98:d6:c2:41:9c:b5:7d:19:0b:6b:23:6a:6b:b2:ec:86:07:
+         cc:1b:54:a1:4d:3e:c1:a9:53:90:59:a6:16:d1:66:cd:5f:18:
+         5b:15:7e:67:f3:aa:18:ae:fe:6e:53:8d:59:74:e3:7f:bb:fc:
+         ac:e5:98:c2:98:f3:e4:7f:f0:84:61:8c:9f:2f:35:a9:1a:c0:
+         97:3a:a5:75:40:f0:a9:31:cf:78:ef:6a:71:ac:4b:13:37:03:
+         d0:54:b6:47:36:eb:0b:68:6f:80:06:bf:a6:d1:da:6d:ee:0d:
+         4e:7b:29:9b:f8:6b:af:c0:a2:02:50:3f:31:4a:45:95:e9:87:
+         dc:5f:65:68:99:f8:7d:9b:c7:73:65:27:b4:e1:d1:8e:98:19:
+         be:60:13:a9:14:4b:b7:49:29:3b:ef:26:6e:17:6e:8a:27:4b:
+         0d:0f:67:d2
+-----BEGIN CERTIFICATE-----
+MIIDTzCCAjegAwIBAgIBAjANBgkqhkiG9w0BAQsFADAbMRkwFwYDVQQDDBB2cG4u
+ZXRoZXJpZGUuY29tMB4XDTE1MDYyNjA3MzE1NVoXDTI1MDYyMzA3MzE1NVowHDEa
+MBgGA1UEAwwRUnlhbnMtTWFjQm9vay1Qcm8wggEiMA0GCSqGSIb3DQEBAQUAA4IB
+DwAwggEKAoIBAQDNXjgxgyqGcGPIJXeSyNR/DS4+fWxL/0D7V52MDF7v7yI/LpYn
+SMjeacWbpUCkAbNlxbpE20vTB5jhVeURGlqS4DmRG0prJvirLuAb1YXo/2bQIkrR
+OakWT/cQt+Xw4sf9uEVh9LWf6YaJS+tCfwXXlNxdoEhuxfWYVNuXwcH/avuuNF1P
+7YmTqvLRedCW+afos0nnXlCMucBrty6rGowzP8BDyQQVv+TgJ3novmCi/UJ2CaTY
+Ls1zYYnwgMhrWTxAciq9U25y/HxkRpI8FXXpObVbgKsL6LSHSyxhvLGZEbTGu1M/
+SMLhdccYvYvUXi51MzPSyp+NS4cLLx/cHyYtAgMBAAGjgZwwgZkwCQYDVR0TBAIw
+ADAdBgNVHQ4EFgQU2ysARThb5rfOA/bVdDYUe8Nr61swSwYDVR0jBEQwQoAUGwgW
+SIGOdw/kbmfwOMsu6VeDc36hH6QdMBsxGTAXBgNVBAMMEHZwbi5ldGhlcmlkZS5j
+b22CCQCmd1FT3/gC/TATBgNVHSUEDDAKBggrBgEFBQcDAjALBgNVHQ8EBAMCB4Aw
+DQYJKoZIhvcNAQELBQADggEBABNqKzbFjgeVhixlObaczZclToWDturapejHtLAL
+Pq6devSmBe1MR9nWOe5bXUoG/Lz6y1hmEZA4e/rfJXBz584Ra3T3FO65JvYOpdeO
+rc7Snl9Dp0HJH7w5eEyY1sJBnLV9GQtrI2prsuyGB8wbVKFNPsGpU5BZphbRZs1f
+GFsVfmfzqhiu/m5TjVl043+7/KzlmMKY8+R/8IRhjJ8vNakawJc6pXVA8Kkxz3jv
+anGsSxM3A9BUtkc26wtob4AGv6bR2m3uDU57KZv4a6/AogJQPzFKRZXph9xfZWiZ
++H2bx3NlJ7Th0Y6YGb5gE6kUS7dJKTvvJm4XboonSw0PZ9I=
+-----END CERTIFICATE-----

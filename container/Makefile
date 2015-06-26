@@ -8,25 +8,27 @@ all: images push
 
 images: app-image-tag marketing-image-tag
 
+push: marketing-image-tag geth-image-push
+	docker push sundbry/etheride
+	docker push sundbry/etheride-marketing
+
+app-image: lein-image app/Dockerfile app/app.tar.xz
+	docker build -t=etheride/app app
+
 app-image-tag: app-image
 	docker tag -f etheride/app sundbry/etheride
 
-marketing-image-tag: marketing-image
-	docker tag -f etheride/marketing sundbry/etheride-marketing
+base-image: base/Dockerfile
+	docker build -t=etheride/base base
+
+geth-image: geth/Dockerfile
+	docker build -t=etheride/geth geth
 
 geth-image-tag: geth-image
 	docker tag -f etheride/geth $(REPO)/geth:$(TAG)
 
 geth-image-push: geth-image-tag
 	$(CLOUD) docker push $(REPO)/geth:$(TAG)
-
-push: marketing-image-tag geth-image-push
-	docker push sundbry/etheride
-	docker push sundbry/etheride-marketing
-
-
-base-image: base/Dockerfile
-	docker build -t=etheride/base base
 
 jre-image: base-image jre/Dockerfile
 	docker build -t=etheride/jre jre
@@ -37,8 +39,17 @@ lein-image: jre-image lein/Dockerfile
 marketing-image: lein-image marketing/Dockerfile marketing/marketing.tar.xz
 	docker build -t=etheride/marketing marketing
 
-app-image: lein-image app/Dockerfile app/app.tar.xz
-	docker build -t=etheride/app app
+marketing-image-tag: marketing-image
+	docker tag -f etheride/marketing sundbry/etheride-marketing
 
-geth-image: geth/Dockerfile
-	docker build -t=etheride/geth geth
+openvpn/openvpn.tar.gz: openvpn/openvpn
+	tar -czf openvpn/openvpn.tar.gz -C openvpn/openvpn .
+
+openvpn-image: openvpn/Dockerfile openvpn/openvpn.tar.gz
+	docker build -t etheride/openvpn openvpn
+
+openvpn-image-tag: openvpn-image
+	docker tag -f etheride/openvpn $(REPO)/openvpn:$(TAG)
+
+openvpn-image-push: openvpn-image-tag
+	$(CLOUD) docker push $(REPO)/openvpn:$(TAG)

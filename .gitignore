@@ -4,3 +4,4 @@
 tmp
 secrets/*.yml
 secrets/*.json
+secrets/*.ovpn
