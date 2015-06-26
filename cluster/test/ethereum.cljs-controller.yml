@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: ethereum-cljs
-          image: sundbry/ethereum.cljs:2015-06-25-b
+          image: sundbry/ethereum.cljs:2015-06-25-e
           ports:
             - containerPort: 8081
               hostPort: 8081

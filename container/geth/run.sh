@@ -2,7 +2,7 @@
 
 # Docker env
 # ETHD_DATA, ETHD_SECRETS
-OPTS="--verbosity 3 --datadir $ETHD_DATA  --rpc --rpccorsdomain \"*\" --rpcaddr 0.0.0.0 --unlock primary --password $ETHD_SECRETS/password"
+OPTS="--verbosity 3 --datadir $ETHD_DATA  --rpc --rpccorsdomain '*' --rpcaddr 0.0.0.0 --unlock primary --password $ETHD_SECRETS/password"
 
 ADDRESS=$(cat $ETHD_SECRETS/address)
 ACCOUNT_FILE="$ETHD_SECRETS/$ADDRESS"
