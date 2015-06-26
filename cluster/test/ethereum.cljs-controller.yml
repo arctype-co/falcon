@@ -1,0 +1,21 @@
+kind: ReplicationController
+apiVersion: v1
+metadata:
+  name: ethereum-cljs
+  labels:
+    name: ethereum-cljs
+spec:
+  replicas: 1
+  selector:
+    name: ethereum-cljs
+  template:
+    metadata:
+      labels:
+        name: ethereum-cljs
+    spec:
+      containers:
+        - name: ethereum-cljs
+          image: sundbry/ethereum.cljs:2015-06-25-b
+          ports:
+            - containerPort: 8081
+              hostPort: 8081

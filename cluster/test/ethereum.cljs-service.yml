@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: ethereum-cljs
+  labels:
+     name: ethereum-cljs
+spec:
+  ports:
+    - port: 8081
+      targetPort: 8081
+  selector:
+    name: ethereum-cljs
+  type: NodePort 
