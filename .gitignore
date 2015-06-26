@@ -5,3 +5,5 @@ tmp
 secrets/*.yml
 secrets/*.json
 secrets/*.ovpn
+*.tar.gz
+.DS_Store

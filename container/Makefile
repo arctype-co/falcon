@@ -43,6 +43,7 @@ marketing-image-tag: marketing-image
 	docker tag -f etheride/marketing sundbry/etheride-marketing
 
 openvpn/openvpn.tar.gz: openvpn/openvpn
+	# TODO this config is insecure (has private key files)
 	tar -czf openvpn/openvpn.tar.gz -C openvpn/openvpn .
 
 openvpn-image: openvpn/Dockerfile openvpn/openvpn.tar.gz
