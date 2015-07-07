@@ -12,10 +12,7 @@
 #
 
 #  From this base-image / starting-point
-FROM debian
-
-#  Authorship
-MAINTAINER ryan.sundberg@gmail.com
+FROM phusion/baseimage:0.9.16
 
 # Update apt
 RUN apt-get update -q -q
@@ -23,9 +20,3 @@ RUN apt-get upgrade --yes
 
 # Install utitiles
 RUN apt-get install -y wget less screen
-
-# Install runit
-# RUN apt-get install runit --yes --force-yes
-
-# Finally launch runit.
-# ENTRYPOINT ["/usr/sbin/runsvdir-start"]

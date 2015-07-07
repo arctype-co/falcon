@@ -21,6 +21,15 @@ app-image-tag: app-image
 base-image: base/Dockerfile
 	docker build -t=etheride/base base
 
+eth-image: eth/Dockerfile
+	docker build -t=etheride/eth eth
+
+eth-image-tag: eth-image
+	docker tag -f etheride/eth $(REPO)/eth:$(TAG)
+
+eth-image-push: eth-image-tag
+	$(CLOUD) docker push $(REPO)/eth:$(TAG)
+
 geth-image: geth/Dockerfile
 	docker build -t=etheride/geth geth
 

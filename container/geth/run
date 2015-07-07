@@ -2,8 +2,10 @@
 
 # Docker env
 # ETHD_DATA, ETHD_SECRETS
-OPTS="--verbosity 3 --datadir $ETHD_DATA  --rpc --rpccorsdomain '*' --rpcaddr 0.0.0.0 --unlock primary --password $ETHD_SECRETS/password"
 
+# Do not expand the * in OPTS
+set -o noglob
+OPTS="--verbosity 3 --datadir $ETHD_DATA  --rpc --rpccorsdomain * --rpcaddr 0.0.0.0 --unlock primary --password $ETHD_SECRETS/password"
 ADDRESS=$(cat $ETHD_SECRETS/address)
 ACCOUNT_FILE="$ETHD_SECRETS/$ADDRESS"
 KEY_PATH=$ETHD_DATA/keystore/$ADDRESS/$ADDRESS
@@ -17,8 +19,7 @@ if [ ! -f $ACCOUNT_FILE ]; then
 fi
 
 echo "Importing address $ADDRESS"
-mkdir -p $ETHD_DATA/keystore/$ADDRESS
-rm -f $KEY_PATH
-ln -s $ACCOUNT_FILE $KEY_PATH
-
-geth $OPTS
+setuser ethd mkdir -p $ETHD_DATA/keystore/$ADDRESS
+setuser ethd rm -f $KEY_PATH
+setuser ethd ln -s $ACCOUNT_FILE $KEY_PATH
+setuser ethd geth $OPTS

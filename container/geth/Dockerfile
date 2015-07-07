@@ -1,32 +1,32 @@
-# Use docker run -it --entrypoint="/usr/bin/geth" ethereum/client-go console
-# docker run -p 8545:8545 -p 30303:30303 ethereum/client-go
+FROM etheride/eth
 
-# This Dockerfile is not used
+# Install go
+WORKDIR /usr/local/src/
+RUN wget -q https://storage.googleapis.com/golang/go1.4.2.linux-amd64.tar.gz
+RUN tar -C /usr/local -xzf go1.4.2.linux-amd64.tar.gz
+ENV PATH "$PATH:/usr/local/go/bin"
+RUN go version
 
-# http://www.debian-administration.org/article/698/Automating_the_creation_of_docker_images
-#   root@host~# docker build -t=etheride/runit - < Dockerfile.runit
-#
-#
-# Launch the generated image like so,
-# forwarding port 2222 on our machine to 22 in the container:
-#
-#   root@host~# docker run -d -p 2222:22 etheride/runit
-#   
-#FROM etheride/go
+# Install geth
+RUN apt-get install -y build-essential libgmp3-dev
+RUN git clone https://github.com/ethereum/go-ethereum -b v0.9.34-1
+WORKDIR go-ethereum
+RUN make geth
+RUN cp build/bin/geth /usr/local/bin/
+RUN geth version
 
-FROM ethereum/client-go
-
-ENV ETHD_DATA /home/ethd/volume/data
-ENV ETHD_SECRETS /home/ethd/secrets
-
+# Runtime env
+RUN mkdir -p /etc/service/geth
+ADD run /etc/service/geth/run
+RUN chmod 0755 /etc/service/geth/run
 RUN useradd -m ethd
-WORKDIR /home/ethd
-ADD run.sh /home/ethd/run.sh
-
-RUN chmod 0755 /home/ethd/run.sh
+ENV ETHD_DATA "/home/ethd/volume/data"
+ENV ETHD_SECRETS "/home/ethd/secrets"
 RUN mkdir -p $ETHD_DATA
 RUN mkdir -p $ETHD_SECRETS 
 RUN chown -R ethd:ethd /home/ethd
 
-USER ethd
-ENTRYPOINT "/home/ethd/run.sh"
+# Clean src
+RUN rm -rf /usr/local/src/*
+
+WORKDIR /
