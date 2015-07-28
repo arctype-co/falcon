@@ -9,7 +9,7 @@ RUN go version
 
 # Install geth
 RUN apt-get install -y build-essential libgmp3-dev
-RUN git clone https://github.com/ethereum/go-ethereum -b v0.9.34-1
+RUN git clone https://github.com/ethereum/go-ethereum -b v0.9.38
 WORKDIR go-ethereum
 RUN make geth
 RUN cp build/bin/geth /usr/local/bin/

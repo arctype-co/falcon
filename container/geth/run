@@ -18,8 +18,14 @@ if [ ! -f $ACCOUNT_FILE ]; then
   exit 1
 fi
 
+if [ ! -d $ETH_DATA ]; then
+  echo "Initializing $ETH_DATA"
+  mkdir -p $ETH_DATA
+  chmod 0777 $ETH_DATA
+fi
+
 echo "Importing address $ADDRESS"
-setuser ethd mkdir -p $ETHD_DATA/keystore/$ADDRESS
+setuser ethd mkdir -p `dirname $KEY_PATH`
 setuser ethd rm -f $KEY_PATH
 setuser ethd ln -s $ACCOUNT_FILE $KEY_PATH
 setuser ethd geth $OPTS

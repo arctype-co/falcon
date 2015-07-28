@@ -1,24 +1,24 @@
 kind: ReplicationController
 apiVersion: v1
 metadata:
-  name: geth-node-1.2015-07-06-c
+  name: geth-node-1.2015-07-09-c
   labels:
     name: geth-node-1
     role: geth-node
 spec:
   replicas: 1
   selector:
-    name: geth-node-1.2015-07-06-c
+    name: geth-node-1.2015-07-09-c
     role: geth-node
   template:
     metadata:
       labels:
-        name: geth-node-1.2015-07-06-c
+        name: geth-node-1.2015-07-09-c
         role: geth-node
     spec:
       containers:
         - name: geth-node-1
-          image: gcr.io/etheride-984/geth:2015-07-06-c
+          image: gcr.io/etheride-984/geth:2015-07-09-c
           ports:
             - containerPort: 30303
               hostPort: 30303
