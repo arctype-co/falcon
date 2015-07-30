@@ -1,31 +1,17 @@
-# http://www.debian-administration.org/article/698/Automating_the_creation_of_docker_images
-# Simple dockerfile for an ssh + server.
-#
-# Build it like so:
-#
-#   root@host~# docker build -t=etheride/runit - < Dockerfile.runit
-#
-# Launch the generated image like so,
-# forwarding port 2222 on our machine to 22 in the container:
-#
-#   root@host~# docker run -d -p 2222:22 etheride/runit
-#
-
-#  From this base-image / starting-point
 FROM etheride/lein
-
-#  Authorship
 MAINTAINER ryan.sundberg@gmail.com
 
 EXPOSE 3743
 
+RUN apt-get install make
 RUN useradd -m app
+ADD etheride.tar.xz /home/app
 WORKDIR /home/app/etheride
-ADD app.tar.xz /home/app/etheride
-ENV ARCHIVA_USERNAME=read
-ENV ARCHIVA_PASSWORD="gh49qKL*8zgsrOSohe"
-RUN lein deps
 RUN chown -R app:app /home/app
-
 USER app
-CMD ["lein", "run"]
+RUN make clean release
+
+USER root
+RUN mkdir -p /etc/service/app
+ADD run /etc/service/app/run
+RUN chmod 0755 /etc/service/app/run

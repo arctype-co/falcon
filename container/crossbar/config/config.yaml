@@ -1,0 +1,15 @@
+controller: {}
+workers:
+- realms:
+  - name: default
+    roles:
+    - name: anonymous
+      permissions:
+      - {call: true, publish: true, register: true, subscribe: true, uri: '*'}
+  transports:
+  - endpoint: {port: 3745, type: tcp}
+    paths:
+      /: {directory: ./public, type: static}
+      ws: {type: websocket}
+    type: web
+  type: router

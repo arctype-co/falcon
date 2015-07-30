@@ -1,0 +1,8 @@
+#!/bin/bash
+
+setuser crossbar bash <<EOF
+cd /home/crossbar
+virtualenv --python=pypy .
+. ./bin/activate
+crossbar start
+EOF

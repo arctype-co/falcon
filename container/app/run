@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cd /home/app/etheride
+setuser app lein run
