@@ -1,9 +1,11 @@
-.PHONY: crossbar-controller.yml
 REPO=gcr.io/etheride-984
 M4=m4 -D__REPOSITORY__=$(REPO)
 TAG=latest
+CONTROLLERS=app-controller.yml crossbar-controller.yml
 
-all: app-controller.yml crossbar-controller.yml
+.PHONY: $(CONTROLLERS)
+
+all: $(CONTROLLERS)
 
 app-controller.yml: app-controller.yml.m4
 	$(M4) -D__TAG__=$(TAG) $^ > $@

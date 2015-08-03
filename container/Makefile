@@ -1,4 +1,4 @@
-.PHONY: base-image jre-image lein-image app-image images push app/Dockerfile
+.PHONY: base-image jre-image lein-image app-image images push app/Dockerfile app/etheride.edn
 
 REPO=gcr.io/etheride-984
 TAG=latest # Override this with make TAG=foo
@@ -17,7 +17,10 @@ images: app-image marketing-image
 
 push: app-image-push marketing-image-push geth-image-push
 
-app/Dockerfile: app/Dockerfile.m4
+app/etheride.edn: app/etheride.edn.m4
+	$(M4) -D__CROSSBAR_HOST__=10.111.246.49 $^ > $@
+
+app/Dockerfile: app/Dockerfile.m4 | app/etheride.edn
 	$(M4) -D__APP_TAG__=$(APP_TAG) $^ > $@
 
 app-image: lein-image app/Dockerfile
