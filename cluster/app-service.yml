@@ -1,14 +1,14 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: app
+  name: app-service
   labels:
-     name: app
+    name: app-service
 spec:
   ports:
     - port: 3743
       targetPort: 3743
       protocol: TCP
   selector:
-    name: app
+    role: app
   type: LoadBalancer

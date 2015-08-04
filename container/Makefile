@@ -1,4 +1,4 @@
-.PHONY: base-image jre-image lein-image app-image images push app/Dockerfile app/etheride.edn
+.PHONY: base-image jre-image lein-image app-image images push app/Dockerfile app/etheride.edn www/Dockerfile
 
 REPO=gcr.io/etheride-984
 TAG=latest # Override this with make TAG=foo
@@ -7,18 +7,15 @@ DOCKERBUILD=docker build
 #DOCKERBUILD=docker build --no-cache=true
 M4=m4 -D__REPOSITORY__=$(REPO)
 APP_TAG=master
+WWW_TAG=master
 
 all: images push
 
 clean:
 	find . -name Dockerfile -execdir rm -f {} \;
 
-images: app-image marketing-image
-
-push: app-image-push marketing-image-push geth-image-push
-
 app/etheride.edn: app/etheride.edn.m4
-	$(M4) -D__CROSSBAR_HOST__=10.111.246.49 $^ > $@
+	$(M4) $^ > $@
 
 app/Dockerfile: app/Dockerfile.m4 | app/etheride.edn
 	$(M4) -D__APP_TAG__=$(APP_TAG) $^ > $@
@@ -83,11 +80,14 @@ lein-image: jre-image lein/Dockerfile
 lein-image-push: lein-image
 	$(GCLOUD) docker push $(REPO)/lein:$(TAG)
 
-marketing/Dockerfile: marketing/Dockerfile.m4
-	$(M4) $^ > $@
+www/Dockerfile: www/Dockerfile.m4
+	$(M4) -D__WWW_TAG__=$(WWW_TAG) $^ > $@
 
-marketing-image: lein-image marketing/Dockerfile marketing/marketing.tar.xz
-	$(DOCKERBUILD) -t=$(REPO)/marketing:$(TAG) marketing
+www-image: lein-image www/Dockerfile
+	$(DOCKERBUILD) -t=$(REPO)/www:$(TAG) www
+
+www-image-push: www-image
+	$(GCLOUD) docker push $(REPO)/www:$(TAG)
 
 openvpn/openvpn.tar.gz: openvpn/openvpn
 	# TODO this config is insecure (has private key files)

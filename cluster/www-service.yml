@@ -1,14 +1,14 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: crossbar-service
+  name: www-service
   labels:
-    name: crossbar-service
+    name: www-service
 spec:
   ports:
-    - port: 3745
-      targetPort: 3745
+    - port: 80
+      targetPort: 3744
       protocol: TCP
   selector:
-    role: crossbar
+    role: www
   type: LoadBalancer

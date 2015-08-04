@@ -18,7 +18,7 @@ Kubernetes is the cluster manager which orchestrates running docker images.
 
 ## Connect to the master
 ```
-ssh -L 8080:localhost:8080 -i ~/.ssh/google_compute_engine paul.etheride.com 
+ssh -fN -L 8080:localhost:8080 -i ~/.ssh/google_compute_engine paul.etheride.com 
 # Show cluster info
 kubectl cluster-info
 ```

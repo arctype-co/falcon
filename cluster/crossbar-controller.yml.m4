@@ -3,7 +3,7 @@ apiVersion: v1
 metadata:
   name: crossbar.__TAG__
   labels:
-    name: crossbar
+    name: crossbar.__TAG__
     role: crossbar
 spec:
   replicas: 1
@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: crossbar
-          image: __REPOSITORY__/crossbar:__TAG__
+          image: __REPOSITORY__/crossbar:__DOCKER_TAG__
           ports:
             - containerPort: 3745
               hostPort: 3745
