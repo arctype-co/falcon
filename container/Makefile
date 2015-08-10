@@ -12,7 +12,7 @@ WWW_TAG=master
 all: images push
 
 clean:
-	find . -name Dockerfile -execdir rm -f {} \;
+	find . -name Dockerfile -maxdepth 2 -execdir rm -f {} \;
 
 app/etheride.edn: app/etheride.edn.m4
 	$(M4) $^ > $@
