@@ -1,19 +1,17 @@
 kind: ReplicationController
 apiVersion: v1
 metadata:
-  name: app-__TAG__-__ENVIRONMENT__
+  name: app-__TAG__
 spec:
   replicas: 1
   selector:
-    name: app-__TAG__-__ENVIRONMENT__
+    name: app-__TAG__
     role: app
-    environment: __ENVIRONMENT__
   template:
     metadata:
       labels:
-        name: app-__TAG__-__ENVIRONMENT__
+        name: app-__TAG__
         role: app
-        environment: __ENVIRONMENT__
     spec:
       containers:
         - name: app
@@ -21,3 +19,11 @@ spec:
           ports:
             - containerPort: 3743
               hostPort: 3743
+          volumeMounts:
+            - name: app-config
+              mountPath: /home/app/secrets
+              readOnly: true
+      volumes:
+        - name: app-config
+          secret:
+            secretName: app-config

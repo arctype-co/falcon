@@ -1,0 +1,11 @@
+{:server
+ {:port 3743
+  :wamp
+  {:realm "default"
+   :router-uri "ws://crossbar.production:3745/ws"
+   :debug? true}
+  :client
+  {:wamp
+   {:router-uri "ws://api.etheride.com:3745/ws"}}}
+ :api
+ {}}

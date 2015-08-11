@@ -14,10 +14,7 @@ all: images push
 clean:
 	find . -name Dockerfile -maxdepth 2 -execdir rm -f {} \;
 
-app/etheride.edn: app/etheride.edn.m4
-	$(M4) $^ > $@
-
-app/Dockerfile: app/Dockerfile.m4 | app/etheride.edn
+app/Dockerfile: app/Dockerfile.m4
 	$(M4) -D__APP_TAG__=$(APP_TAG) $^ > $@
 
 app-image: lein-image app/Dockerfile

@@ -1,12 +1,12 @@
 define(`__SERVICE_TYPE__',
-    ifelse(__ENVIRONMENT__, `prod', `LoadBalancer',
+    ifelse(__ENVIRONMENT__, `production', `LoadBalancer',
            `ClusterIP'))
 kind: Service
 apiVersion: v1
 metadata:
-  name: app-service-__ENVIRONMENT__
+  name: app
   labels:
-    name: app-service-__ENVIRONMENT__
+    name: app
 spec:
   ports:
     - port: 3743
@@ -14,5 +14,4 @@ spec:
       protocol: TCP
   selector:
     role: app
-    environment: __ENVIRONMENT__
   type: __SERVICE_TYPE__

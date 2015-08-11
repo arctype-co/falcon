@@ -19,6 +19,3 @@ USER root
 RUN mkdir -p /etc/service/app
 ADD run /etc/service/app/run
 RUN chmod 0755 /etc/service/app/run
-
-ADD etheride.edn /home/app/etheride/resources/etheride.edn
-RUN chown app:app /home/app/etheride/resources/etheride.edn

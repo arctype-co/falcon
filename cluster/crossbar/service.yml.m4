@@ -4,9 +4,9 @@ define(`__SERVICE_TYPE__',
 kind: Service
 apiVersion: v1
 metadata:
-  name: crossbar-service-__ENVIRONMENT__
+  name: crossbar
   labels:
-    name: crossbar-service-__ENVIRONMENT__
+    name: crossbar
 spec:
   ports:
     - port: 3745
@@ -14,5 +14,4 @@ spec:
       protocol: TCP
   selector:
     role: crossbar
-    environment: __ENVIRONMENT__
   type: __SERVICE_TYPE__

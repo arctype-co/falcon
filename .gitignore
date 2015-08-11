@@ -8,5 +8,5 @@ secrets/*.ovpn
 *.tar.gz
 .DS_Store
 container/*/Dockerfile
-cluster/*-controller.yml
+cluster/*.yml
 container/app/etheride.edn

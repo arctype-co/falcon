@@ -1,19 +1,17 @@
 kind: ReplicationController
 apiVersion: v1
 metadata:
-  name: crossbar-__TAG__-__ENVIRONMENT__
+  name: crossbar-__TAG__
 spec:
   replicas: 1
   selector:
-    name: crossbar-__TAG__-__ENVIRONMENT__
+    name: crossbar-__TAG__
     role: crossbar
-    environment: __ENVIRONMENT__
   template:
     metadata:
       labels:
-        name: crossbar-__TAG__-__ENVIRONMENT__
+        name: crossbar-__TAG__
         role: crossbar
-        environment: __ENVIRONMENT__
     spec:
       containers:
         - name: crossbar
