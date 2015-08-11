@@ -46,7 +46,7 @@ kubectl get services
 3. Open firewall port to cluster nodes (external services only)
 
 ```
-gcloud compute firewall-rules create --allow=tcp:$PORT --target-tags=k8s-cluster-1-node my-service-$PORT
+gcloud compute firewall-rules create --allow=tcp:$PORT --target-tags=k8s-cluster-1-node $SERVICE-$PORT
 ```
 
 ## Creating a disk

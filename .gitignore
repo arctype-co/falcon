@@ -9,4 +9,5 @@ secrets/*.ovpn
 .DS_Store
 container/*/Dockerfile
 cluster/*.yml
+cluster/*/*.yml
 container/app/etheride.edn

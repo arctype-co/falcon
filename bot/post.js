@@ -20,8 +20,8 @@ function apiPost(api_call, api_params) {
   };
   var req = https.request(params, function(res) {
     res.on("data", function(content) {
-      process.stdout.write(content);
-      process.stdout.write("\n");
+      //process.stdout.write(content);
+      //process.stdout.write("\n");
     });
   });
 

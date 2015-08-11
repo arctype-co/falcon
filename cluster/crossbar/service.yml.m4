@@ -1,5 +1,5 @@
 define(`__SERVICE_TYPE__',
-    ifelse(__ENVIRONMENT__, `prod', `LoadBalancer',
+    ifelse(__ENVIRONMENT__, `production', `LoadBalancer',
            `ClusterIP'))
 kind: Service
 apiVersion: v1
