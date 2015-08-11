@@ -1,0 +1,8 @@
+Copyright (c) 2015, Ryan R. Sundberg <ryan.sundberg@gmail.com>
+All rights reserved.
+
+Redistribution or use of this software project, in source or binary forms, are not permitted without the written consent of the copyright holder(s).
+
+No express warranty is given for this software, and any implied warrantee is hereby disclaimed.
+
+Contributions made to this project shall be construed to grant to the above copyright holder(s) permanent license to copy, use, sell, and redistribute as if it were their own work.
