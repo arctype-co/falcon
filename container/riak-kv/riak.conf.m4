@@ -135,6 +135,8 @@ erlang.async_threads = 64
 ## Acceptable values:
 ##   - an integer
 erlang.max_ports = 65536
+erlang.distribution.port_range.minimum = 6000
+erlang.distribution.port_range.maximum = 7999
 
 ## Set scheduler forced wakeup interval. All run queues will be
 ## scanned each Interval milliseconds. While there are sleeping
@@ -267,7 +269,8 @@ platform_lib_dir = /usr/lib/riak/lib
 ## 
 ## Acceptable values:
 ##   - the path to a directory
-platform_log_dir = /var/log/riak
+# platform_log_dir = /var/log/riak
+platform_log_dir = RIAK_LOG_DIR
 
 ## Enable consensus subsystem. Set to 'on' to enable the
 ## consensus subsystem used for strongly consistent Riak operations.

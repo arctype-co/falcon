@@ -1,3 +1,4 @@
+KUBE_MASTER=kube.etheride.com
 REPO=gcr.io/etheride-984
 TAG=latest
 # development, production
@@ -5,12 +6,15 @@ ENV=development
 DOCKER_TAG=$(TAG)
 M4=m4 -D__REPOSITORY__=$(REPO) -D__TAG__=$(TAG) -D__DOCKER_TAG__=$(DOCKER_TAG) -D__ENVIRONMENT__=$(ENV)
 KUBECTL=kubectl --namespace=$(ENV)
-CONFIGS=app/controller.yml app/secrets.yml app/service.yml crossbar/controller.yml crossbar/service.yml environment/namespace.yml www-controller.yml
-DEPLOYS=app/create app/delete app/update crossbar/create crossbar/delete environment/create
+CONFIGS=app/controller.yml app/secrets.yml app/service.yml crossbar/controller.yml crossbar/service.yml environment/namespace.yml riak-kv/controller.yml riak-kv/secrets.yml riak-kv/service.yml www-controller.yml
+DEPLOYS=app/create app/delete app/update crossbar/create crossbar/delete environment/create riak-kv/create-node
 
-.PHONY: $(CONFIGS)
+.PHONY: connect $(CONFIGS) logs pods rc secrets services
 
 ANNOUNCE=@../bot/post.js `whoami` "$(MAKECMDGOALS) $(MAKEFLAGS)"
+FIRST_POD_ROLE_IP=$(KUBECTL) get pods -o json | jq -r '.items | map(select(.metadata.labels.role == $(1))) | .[0].status.podIP | select(. != null)'
+CHECK_POD_ROLE_READY=$(KUBECTL) get pods -o json | jq '.items | map(select(.metadata.labels.role == $(1))) | map(.status.phase == "Running") | any'
+WAIT_FOR_POD_ROLE=@echo Waiting for role $(1); while [ `${call CHECK_POD_ROLE_READY, $(1)}` != "true" ]; do /bin/echo -n .; sleep 1; done
 
 announce: 
 	${call ANNOUNCE}
@@ -18,6 +22,24 @@ announce:
 all: 
 	@echo Please specify a configuration: $(CONFIGS)
 	@echo Or a deployment: $(DEPLOYS)
+
+connect:
+	ssh -fN -L 8080:localhost:8080 -i ~/.ssh/google_compute_engine $(KUBE_MASTER)
+
+logs:
+	$(KUBECTL) $(MAKECMDGOALS)
+
+pods:
+	$(KUBECTL) get pods
+
+rc:
+	$(KUBECTL) get rc
+
+secrets:
+	$(KUBECTL) get secrets
+
+services:
+	$(KUBECTL) get services
 
 app/secrets.yml: app/secrets.yml.m4
 	$(M4) -D__ETHERIDE_EDN_BASE64__=$$(base64 "app/etheride.edn.$(ENV)") $^ > $@
@@ -62,6 +84,30 @@ environment/namespace.yml: environment/namespace.yml.m4
 
 environment/create: environment/namespace.yml | announce
 	$(KUBECTL) create -f environment/namespace.yml
+
+riak-kv/controller.yml: riak-kv/controller.yml.m4
+	$(M4) $^ > $@
+
+riak-kv/secrets.yml: riak-kv/secrets.yml.m4
+	$(M4) -D__CLUSTER_HOST_BASE64__=$$(base64 <<< `${call FIRST_POD_ROLE_IP, "riak-kv"}`) $^ > $@
+
+riak-kv/service.yml: riak-kv/service.yml.m4
+	$(M4) $^ > $@
+
+riak-kv/create-cluster: riak-kv/controller.yml riak-kv/service.yml riak-kv/secrets.yml | announce
+	$(KUBECTL) create -f riak-kv/secrets.yml
+	$(KUBECTL) create -f riak-kv/service.yml
+	$(KUBECTL) create -f riak-kv/controller.yml
+	${call WAIT_FOR_POD_ROLE, "riak-kv"}
+	make riak-kv/secrets.yml $(MAKEFLAGS)
+	$(KUBECTL) update -f riak-kv/secrets.yml
+	$(KUBECTL) scale --replicas=5 rc riak-kv-$(TAG)
+	$(KUBECTL) get pods
+
+riak-kv/delete-cluster: | announce
+	$(KUBECTL) delete -f riak-kv/controller.yml
+	$(KUBECTL) delete -f riak-kv/service.yml
+	$(KUBECTL) delete -f riak-kv/secrets.yml
 
 www-controller.yml: www-controller.yml.m4
 	$(M4) $^ > $@
