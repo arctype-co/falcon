@@ -1,4 +1,5 @@
-.PHONY: base-image jre-image lein-image app-image images push app/Dockerfile app/etheride.edn www/Dockerfile
+# We want to keep regenerating Dockerfiles
+.PHONY: app/Dockerfile crossbar/Dockerfile eth/Dockerfile geth/Dockerfile jre/Dockerfile lein/Dockerfile openvpn/Dockerfile pypy/Dockerfile riak-kv/Dockerfile www/Dockerfile
 
 REPO=gcr.io/etheride-984
 TAG=latest # Override this with make TAG=foo
@@ -9,7 +10,7 @@ M4=m4 -D__REPOSITORY__=$(REPO)
 APP_TAG=master
 WWW_TAG=master
 
-all: images push
+all: 
 
 clean:
 	find . -name Dockerfile -maxdepth 2 -execdir rm -f {} \;
@@ -77,15 +78,6 @@ lein-image: jre-image lein/Dockerfile
 lein-image-push: lein-image
 	$(GCLOUD) docker push $(REPO)/lein:$(TAG)
 
-www/Dockerfile: www/Dockerfile.m4
-	$(M4) -D__WWW_TAG__=$(WWW_TAG) $^ > $@
-
-www-image: lein-image www/Dockerfile
-	$(DOCKERBUILD) -t=$(REPO)/www:$(TAG) www
-
-www-image-push: www-image
-	$(GCLOUD) docker push $(REPO)/www:$(TAG)
-
 openvpn/openvpn.tar.gz: openvpn/openvpn
 	# TODO this config is insecure (has private key files)
 	tar -czf openvpn/openvpn.tar.gz -C openvpn/openvpn .
@@ -107,3 +99,21 @@ pypy-image: base-image pypy/Dockerfile
 
 pypy-image-push: pypy-image
 	$(GCLOUD) docker push $(REPO)/pypy:$(TAG)
+
+riak-kv/Dockerfile: riak-kv/Dockerfile.m4
+	$(M4) -D__RIAK_VERSION__=2.1.1-1 $^ > $@
+
+riak-kv-image: base-image riak-kv/Dockerfile
+	$(DOCKERBUILD) -t $(REPO)/riak-kv:$(TAG) riak-kv
+
+riak-kv-image-push: riak-kv-image
+	$(GCLOUD) docker push $(REPO)/riak-kv:$(TAG)
+
+www/Dockerfile: www/Dockerfile.m4
+	$(M4) -D__WWW_TAG__=$(WWW_TAG) $^ > $@
+
+www-image: lein-image www/Dockerfile
+	$(DOCKERBUILD) -t=$(REPO)/www:$(TAG) www
+
+www-image-push: www-image
+	$(GCLOUD) docker push $(REPO)/www:$(TAG)

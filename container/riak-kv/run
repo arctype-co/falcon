@@ -1,0 +1,14 @@
+#!/bin/bash
+
+RIAK_NODE_HOST=`hostname -i`
+RIAK_DATA_DIR=/var/lib/riak
+
+m4 -DRIAK_NODE_HOST=$RIAK_NODE_HOST -DRIAK_DATA_DIR=$RIAK_DATA_DIR riak.conf.m4 > /etc/riak/riak.conf
+
+riak start
+riak-admin status
+if [ -z $RIAK_SERVICE_HOST ]; then
+  echo "Warning: RIAK_SERVICE_HOST undefined. Not joining any cluster."
+else
+  riak-admin cluster join $RIAK_SERVICE_HOST
+fi
