@@ -13,8 +13,10 @@ RUN apt-get install -y riak=__RIAK_VERSION__
 
 # Setup the Riak service
 RUN mkdir -p /etc/service/riak
-ADD run /etc/service/riak/run
-RUN chmod 0755 /etc/service/riak/run
+ADD run /etc/service/riak/
+ADD cluster-init.sh /etc/service/riak/
+ADD cluster-join.sh /etc/service/riak/
+RUN chmod 0755 /etc/service/riak/*
 
 # Add the config template
 ADD riak.conf.m4 /etc/service/riak/riak.conf.m4

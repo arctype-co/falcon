@@ -3,22 +3,25 @@
 RIAK_NODE_HOST=`hostname -i`
 RIAK_DATA_DIR=/var/lib/riak
 RIAK_LOG_DIR=/var/log/riak
-RIAK_CLUSTER_HOST=`cat /etc/riak/secrets/cluster-host`
+export RIAK_CLUSTER_HOST=`cat /etc/riak/secrets/cluster-host`
+export RIAK_CLUSTER_SIZE=`cat /etc/riak/secrets/cluster-size`
 
 m4 -DRIAK_NODE_HOST=$RIAK_NODE_HOST -DRIAK_DATA_DIR=$RIAK_DATA_DIR -DRIAK_LOG_DIR=$RIAK_LOG_DIR riak.conf.m4 > /etc/riak/riak.conf
 
 chown riak:riak $RIAK_DATA_DIR $RIAK_LOG_DIR
+chmod 0755 $RIAK_DATA_DIR $RIAK_LOG_DIR
 
 riak start
 riak ping
 if [ -z $RIAK_CLUSTER_HOST ]; then
-  echo "Warning: RIAK_CLUSTER_HOST undefined. Not joining any cluster."
+  echo "RIAK_CLUSTER_HOST undefined. Initializing new cluster."
+  /etc/service/riak/cluster-init.sh
 else
-  riak-admin cluster join $RIAK_CLUSTER_HOST
+  /etc/service/riak/cluster-join.sh
 fi
-riak-admin cluster status
+# Wait while riak is alive
 while [ true ]; do
-  sleep 10
+  sleep 60
   riak ping
   if [ ! $? ]; then
     exit 1

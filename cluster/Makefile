@@ -9,6 +9,9 @@ KUBECTL=kubectl --namespace=$(ENV)
 CONFIGS=app/controller.yml app/secrets.yml app/service.yml crossbar/controller.yml crossbar/service.yml environment/namespace.yml riak-kv/controller.yml riak-kv/secrets.yml riak-kv/service.yml www-controller.yml
 DEPLOYS=app/create app/delete app/update crossbar/create crossbar/delete environment/create riak-kv/create-node
 
+# App specific
+RIAK_CLUSTER_SIZE=5
+
 .PHONY: connect $(CONFIGS) logs pods rc secrets services
 
 ANNOUNCE=@../bot/post.js `whoami` "$(MAKECMDGOALS) $(MAKEFLAGS)"
@@ -27,10 +30,13 @@ connect:
 	ssh -fN -L 8080:localhost:8080 -i ~/.ssh/google_compute_engine $(KUBE_MASTER)
 
 logs:
-	$(KUBECTL) $(MAKECMDGOALS)
+	$(KUBECTL) logs $(NAME)
 
 pods:
 	$(KUBECTL) get pods
+
+pod-status:
+	$(KUBECTL) get pods -o json | jq '.items | map(select(.metadata.name == "$(NAME)")) | .[0].status'
 
 rc:
 	$(KUBECTL) get rc
@@ -89,7 +95,10 @@ riak-kv/controller.yml: riak-kv/controller.yml.m4
 	$(M4) $^ > $@
 
 riak-kv/secrets.yml: riak-kv/secrets.yml.m4
-	$(M4) -D__CLUSTER_HOST_BASE64__=$$(base64 <<< `${call FIRST_POD_ROLE_IP, "riak-kv"}`) $^ > $@
+	$(M4) \
+	 	-D__CLUSTER_HOST_BASE64__=$$(base64 <<< `${call FIRST_POD_ROLE_IP, "riak-kv"}`) \
+		-D__CLUSTER_SIZE_BASE64__=$$(base64 <<< $(RIAK_CLUSTER_SIZE)) \
+	 	$^ > $@
 
 riak-kv/service.yml: riak-kv/service.yml.m4
 	$(M4) $^ > $@
@@ -101,7 +110,7 @@ riak-kv/create-cluster: riak-kv/controller.yml riak-kv/service.yml riak-kv/secre
 	${call WAIT_FOR_POD_ROLE, "riak-kv"}
 	make riak-kv/secrets.yml $(MAKEFLAGS)
 	$(KUBECTL) update -f riak-kv/secrets.yml
-	$(KUBECTL) scale --replicas=5 rc riak-kv-$(TAG)
+	$(KUBECTL) scale --replicas=$(RIAK_CLUSTER_SIZE) rc riak-kv-$(TAG)
 	$(KUBECTL) get pods
 
 riak-kv/delete-cluster: | announce
