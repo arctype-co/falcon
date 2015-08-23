@@ -35,19 +35,33 @@ function apiPost(api_call, api_params) {
 function userAlias(user) {
   switch(user) {
     case "sunry001":
-      return "@sundbry";
+      return "sundbry";
   }
-  return "@" + user;
+  return user;
+}
+
+function userPrefix(user) {
+  switch(user) {
+    case "sunry001":
+    case "sundbry":
+      return String.fromCharCode(9728) + " ";
+  }
+
+  return "";
+}
+
+function noHighlight(str) {
+ return str.substring(0, 1) + String.fromCharCode(8203) + str.substring(1);
 }
 
 function postDeployMessage(user, params) {
-  var text = userAlias(user) + ": ./cluster $ `make " + params.trim() + "`";
+  var text = userPrefix(user) + noHighlight(userAlias(user)) + ": ./cluster $ `make " + params.trim() + "`";
   apiPost("chat.postMessage", {
     channel: "#deploys",
     username: "steve_jobs",
     text: text,
     icon_emoji: ":ghost:",
-    as_user: false
+    as_user: false,
   });
 }
 
