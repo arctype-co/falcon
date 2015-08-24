@@ -17,7 +17,7 @@ spec:
         - name: riak-kv
           image: __REPOSITORY__/riak-kv:__DOCKER_TAG__
           ports:
-            - containerPort: 8097
+            - containerPort: 8087
             - containerPort: 8098
             - containerPort: 8099
             - containerPort: 4369

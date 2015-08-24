@@ -6,8 +6,8 @@ metadata:
     name: riak-kv
 spec:
   ports:
-    - port: 8097
-      targetPort: 8097
+    - port: 8087
+      targetPort: 8087
       protocol: TCP
       name: protobuf-client
     - port: 8098

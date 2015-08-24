@@ -43,7 +43,7 @@ log.error.file = $(platform_log_dir)/error.log
 ## 
 ## Acceptable values:
 ##   - on or off
-log.syslog = off
+log.syslog = on
 
 ## Whether to enable the crash log.
 ## 
@@ -280,6 +280,7 @@ platform_log_dir = RIAK_LOG_DIR
 ## Acceptable values:
 ##   - on or off
 ## strong_consistency = on
+strong_consistency = on
 
 ## listener.http.<name> is an IP address and TCP port that the Riak
 ## HTTP interface will bind.

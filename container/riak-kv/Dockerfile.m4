@@ -1,7 +1,7 @@
 FROM __REPOSITORY__/base
 
 # Open ports for protobuf client, HTTP client, handoff, epmd
-EXPOSE 8097 8098 8099 4369
+EXPOSE 8087 8098 8099 4369
 
 # Data volumes
 VOLUME /var/lib/riak
