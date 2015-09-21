@@ -1,6 +1,6 @@
 # Falcon
 
-Falcon is a cloud launching program.
+Falcon is a cloud application launching and deployment tool.
 
 ## Usage
 
