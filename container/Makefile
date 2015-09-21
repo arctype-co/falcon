@@ -1,5 +1,5 @@
 # We want to keep regenerating Dockerfiles
-.PHONY: app/Dockerfile crossbar/Dockerfile eth/Dockerfile geth/Dockerfile jre/Dockerfile lein/Dockerfile openvpn/Dockerfile pypy/Dockerfile riak-kv/Dockerfile www/Dockerfile
+.PHONY: app/Dockerfile crossbar/Dockerfile eth/Dockerfile geth/Dockerfile jre/Dockerfile lein/Dockerfile mysql/Dockerfile openvpn/Dockerfile pypy/Dockerfile riak-kv/Dockerfile www/Dockerfile
 
 REPO=gcr.io/etheride-984
 TAG=latest # Override this with make TAG=foo
@@ -77,6 +77,15 @@ lein-image: jre-image lein/Dockerfile
 
 lein-image-push: lein-image
 	$(GCLOUD) docker push $(REPO)/lein:$(TAG)
+
+mysql/Dockerfile: mysql/Dockerfile.m4
+	$(M4) $^ > $@
+
+mysql-image: base-image mysql/Dockerfile
+	$(DOCKERBUILD) -t $(REPO)/mysql:$(TAG) mysql
+
+mysql-image-push: mysql-image
+	$(GCLOUD) docker push $(REPO)/mysql:$(TAG)
 
 openvpn/openvpn.tar.gz: openvpn/openvpn
 	# TODO this config is insecure (has private key files)
