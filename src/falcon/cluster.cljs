@@ -9,7 +9,11 @@
 
 (S/defn create
   "Create a new cluster"
-  [cmd :- schema/Command]
-  (go
+  [config :- schema/Config
+   cmd :- schema/Command]
+  #_(go
+    (shell/exec
+      {:env
+       ""})
     
     nil))

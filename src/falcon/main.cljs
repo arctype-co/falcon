@@ -4,6 +4,7 @@
     [cljs.tools.cli :as cli]
     [cljs.nodejs :as nodejs]
     [schema.core :as S]
+    [falcon.config :as config]
     [falcon.cluster :as cluster]
     [falcon.schema :as schema]))
 
@@ -33,12 +34,17 @@
   (doseq [[cmd {:keys [function]}] commands]
     (println "\t" cmd "\t" (doc-string function))))
 
+(S/defn ^:private run-command
+  [function {:keys [options] :as args} :- schema/Command]
+  (let [cfg (config/read-yml (:config options))]
+    (@function cfg args)))
+
 (defn -main [& cli-args]
   (let [{:keys [options arguments errors summary] :as args} (cli/parse-opts cli-args cli-options)
         {:keys [function]} (get commands (first arguments))]
     (cond 
       (some? errors) (println errors)
-      (some? function) (@function args)
+      (some? function) (run-command function args)
       :default (print-usage summary))))
 
 (set! *main-cli-fn* -main)
