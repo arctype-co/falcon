@@ -1,0 +1,11 @@
+local:
+  clusters:
+    main:
+      provider: vagrant
+      nodes: 2
+      coreos-channel: beta
+      master-mem-mb: 1024
+      master-cpus: 1
+      node-mem-mb: 2048
+      node-cpus: 1
+      kube-ui: true
