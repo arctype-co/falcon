@@ -29,3 +29,5 @@
 
 (def Config
   {S/Str EnvironmentConfig})
+
+(def Chan js/Object)

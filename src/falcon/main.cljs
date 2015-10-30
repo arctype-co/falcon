@@ -21,7 +21,8 @@
     :default nil]])
 
 (def ^:private commands
-  {"cluster-create" {:function #'cluster/create}})
+  {"cluster-create" {:function #'cluster/create}
+   "cluster-status" {:function #'cluster/status}})
 
 (defn- doc-string
   [fn-var]

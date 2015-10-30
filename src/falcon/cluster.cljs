@@ -9,16 +9,38 @@
   (:require-macros
     [cljs.core.async.macros :refer [go]]))
 
+(defn- vagrant-dir
+  []
+  (str (.cwd js/process) "/cloud/cluster/kubernetes-vagrant-coreos-cluster"))
+
+(S/defn ^:private vagrant-options
+  [ccfg :- schema/ClusterConfig]
+  {:cwd (vagrant-dir) 
+   :env
+   {"NODES" (str (get ccfg "nodes"))
+    "CHANNEL" (str (get ccfg "coreos-channel"))
+    "MASTER_MEM" (str (get ccfg "master-mem-mb"))
+    "MASTER_CPUS" (str (get ccfg "master-cpus"))
+    "NODE_MEM" (str (get ccfg "node-mem-mb"))
+    "NODE_CPUS" (str (get ccfg "node-cpus"))
+    "USE_KUBE_UI" (str (get ccfg "kube-ui"))}})
+
+(defn- vagrant-cmd
+  [ccfg cmd]
+  (go
+    (-> (shell/passthru ["vagrant" "up"] (vagrant-options ccfg)))))
+
 (S/defn create
   "Create a new cluster"
   [cfg :- schema/Config
    cmd :- schema/Command]
-  (let [cluster-config (config/cluster cfg (:options cmd))]
+  (let [ccfg (config/cluster cfg (:options cmd))]
     (println "Creating cluster with configuration:")
-    (pprint cluster-config))
-  #_(go
-    (shell/exec
-      {:env
-       ""})
-    
-    nil))
+    (pprint ccfg)
+    (vagrant-cmd ccfg ["up"])))
+
+(S/defn status
+  "Print cluster status"
+  [cfg :- schema/Config
+   cmd :- schema/Command]
+  (vagrant-cmd (config/cluster cfg (:options cmd)) status))
