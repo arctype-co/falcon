@@ -39,6 +39,18 @@
     (pprint ccfg)
     (vagrant-cmd ccfg ["up"])))
 
+(S/defn destroy
+  "Destroy a cluster"
+  [cfg :- schema/Config
+   cmd :- schema/Command]
+  (let [ccfg (config/cluster cfg (:options cmd))]
+    (println "About to DESTROY cluster with configuration:")
+    (pprint ccfg)
+    (println "Waiting 10 seconds...")
+    (go
+      (async/<! (async/timeout 10000))
+      (vagrant-cmd ccfg ["destroy"]))))
+
 (S/defn status
   "Print cluster status"
   [cfg :- schema/Config

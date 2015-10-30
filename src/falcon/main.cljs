@@ -22,6 +22,7 @@
 
 (def ^:private commands
   {"cluster-create" {:function #'cluster/create}
+   "cluster-destroy" {:function #'cluster/destroy}
    "cluster-status" {:function #'cluster/status}})
 
 (defn- doc-string
