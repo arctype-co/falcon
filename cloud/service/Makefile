@@ -14,7 +14,7 @@ RIAK_CLUSTER_SIZE=5
 
 .PHONY: connect $(CONFIGS) logs pods rc secrets services
 
-ANNOUNCE=@../bot/post.js `whoami` "$(MAKECMDGOALS) $(MAKEFLAGS)"
+ANNOUNCE=@../../bin/post.js `whoami` "$(MAKECMDGOALS) $(MAKEFLAGS)"
 FIRST_POD_ROLE_IP=$(KUBECTL) get pods -o json | jq -r '.items | map(select(.metadata.labels.role == $(1))) | .[0].status.podIP | select(. != null)'
 CHECK_POD_ROLE_READY=$(KUBECTL) get pods -o json | jq '.items | map(select(.metadata.labels.role == $(1))) | map(.status.phase == "Running") | any'
 WAIT_FOR_POD_ROLE=@echo Waiting for role $(1); while [ `${call CHECK_POD_ROLE_READY, $(1)}` != "true" ]; do /bin/echo -n .; sleep 1; done
