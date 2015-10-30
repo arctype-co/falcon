@@ -28,7 +28,7 @@
 (defn- vagrant-cmd
   [ccfg cmd]
   (go
-    (-> (shell/passthru ["vagrant" "up"] (vagrant-options ccfg)))))
+    (-> (shell/passthru (concat ["vagrant"] cmd) (vagrant-options ccfg)))))
 
 (S/defn create
   "Create a new cluster"
@@ -55,4 +55,4 @@
   "Print cluster status"
   [cfg :- schema/Config
    cmd :- schema/Command]
-  (vagrant-cmd (config/cluster cfg (:options cmd)) status))
+  (vagrant-cmd (config/cluster cfg (:options cmd)) ["status"]))

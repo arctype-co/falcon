@@ -40,8 +40,11 @@
 
 (S/defn ^:private run-command
   [function {:keys [options] :as args} :- schema/Command]
-  (let [cfg (config/read-yml (:config options))]
-    (@function cfg args)))
+  (try 
+    (let [cfg (config/read-yml (:config options))]
+      (@function cfg args))
+    (catch js/Error e
+      (println (.-message e)))))
 
 (defn -main [& cli-args]
   (S/set-fn-validation! true)
