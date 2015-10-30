@@ -10,6 +10,8 @@
    [org.clojure/tools.cli "0.3.3"]
    [prismatic/schema "1.0.1"]]
 
+  :clean-targets [:target-path "bin/falcon.js"]
+
   :cljsbuild
   {:builds
    [{:id "client"
