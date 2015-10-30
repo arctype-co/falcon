@@ -11,3 +11,6 @@ container/*/Dockerfile
 cluster/*.yml
 cluster/*/*.yml
 container/app/etheride.edn
+bin/falcon.js
+target
+.lein-repl-history
