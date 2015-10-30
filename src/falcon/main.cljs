@@ -15,8 +15,10 @@
     :default "cloud/config.yml"]
    ["-e" "--environment <env>" "Environment"
     :default "local"]
-   ["-h" "--help" "Show this help"]
-   #_["-x" "--cluster <name>" "Cluster name"]])
+   ["-h" "--help" "Show this help"
+    :default false]
+   ["-x" "--cluster <name>" "Cluster name"
+    :default nil]])
 
 (def ^:private commands
   {"cluster-create" {:function #'cluster/create}})
@@ -40,6 +42,7 @@
     (@function cfg args)))
 
 (defn -main [& cli-args]
+  (S/set-fn-validation! true)
   (let [{:keys [options arguments errors summary] :as args} (cli/parse-opts cli-args cli-options)
         {:keys [function]} (get commands (first arguments))]
     (cond 

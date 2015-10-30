@@ -14,3 +14,9 @@
   (let [buf (.readFileSync fs config-path)
         cfg (js->clj (.parse yamljs (str buf)))]
     cfg))
+
+(S/defn cluster :- schema/ClusterConfig
+  "Return the cluster configuration"
+  [config :- schema/Config
+   {:keys [environment cluster]} :- schema/Options]
+  (get-in config [environment "clusters" cluster]))

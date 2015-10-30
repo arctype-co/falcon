@@ -2,8 +2,14 @@
   (:require
     [schema.core :as S]))
 
+(def Options
+  {:config S/Str
+   :environment S/Str
+   :help S/Bool
+   :cluster S/Str})
+
 (def Command
-  {:options {S/Str S/Str}
+  {:options Options
    :arguments [S/Str]
    (S/optional-key :errors) S/Any
    (S/optional-key :summary) S/Any})
