@@ -1,4 +1,4 @@
-(ns falcon.core
+(ns falcon.main
   (:require
     [clojure.string :as string]
     [cljs.tools.cli :as cli]
@@ -18,7 +18,7 @@
    #_["-x" "--cluster <name>" "Cluster name"]])
 
 (def ^:private commands
-  {"create-cluster" {:fn #'cluster/create}})
+  {"cluster-create" {:function #'cluster/create}})
 
 (defn- doc-string
   [fn-var]
@@ -30,15 +30,15 @@
   (println "./falcon [options] command")
   (println options-summary)
   (println "Commands:")
-  (doseq [[cmd {:keys [fn]}] commands]
-    (println "\t" cmd "\t" (doc-string fn))))
+  (doseq [[cmd {:keys [function]}] commands]
+    (println "\t" cmd "\t" (doc-string function))))
 
-(defn -main [& args]
-  (let [{:keys [options arguments errors summary] :as args} (cli/parse-opts args cli-options)
-        cmd-fn (get commands (first arguments))]
+(defn -main [& cli-args]
+  (let [{:keys [options arguments errors summary] :as args} (cli/parse-opts cli-args cli-options)
+        {:keys [function]} (get commands (first arguments))]
     (cond 
       (some? errors) (println errors)
-      (some? cmd-fn) (@cmd-fn args)
+      (some? function) (@function args)
       :default (print-usage summary))))
 
-(set! cljs.core/*main-cli-fn* -main)
+(set! *main-cli-fn* -main)

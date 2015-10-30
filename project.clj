@@ -22,4 +22,4 @@
       :target :nodejs
       :optimizations :simple
       :pretty-print true
-      :main "falcon.core"}}]})
+      :main "falcon.main"}}]})
