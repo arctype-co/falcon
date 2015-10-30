@@ -14,3 +14,4 @@ container/app/etheride.edn
 bin/falcon.js
 target
 .lein-repl-history
+.nrepl-port
