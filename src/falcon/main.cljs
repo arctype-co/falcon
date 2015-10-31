@@ -7,6 +7,7 @@
     [falcon.cluster :as cluster]
     [falcon.config :as config]
     [falcon.container :as container]
+    [falcon.deploy :as deploy]
     [falcon.environment :as environment]
     [falcon.kube :as kube]
     [falcon.schema :as schema]
@@ -35,9 +36,12 @@
                      :function #'container/push}
 
    "controller-create" {:launch #'service/command
-                        :function #'service/deploy}
+                        :function #'service/create-rc}
    "controller-delete" {:launch #'service/command
-                        :function #'service/undeploy}
+                        :function #'service/delete-rc}
+
+   "deploy" {:launch #'deploy/command
+             :function #'deploy/deploy}
 
    "environment-create" {:launch #'environment/command
                          :function #'environment/create}
@@ -54,7 +58,7 @@
    "service-create" {:launch #'service/command
                      :function #'service/create}
    "service-delete" {:launch #'service/command
-                     :function #'service/delete}
+                     :function #'service/delete} 
    }))
 
 (defn- doc-string

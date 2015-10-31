@@ -44,7 +44,7 @@
     (<! (make/run {"ENV" environment} ["-C" (service-path) (str service "/service.yml")]))
     (<! (kubectl/run cfg "delete" "-f" (service-path service "service.yml")))))
 
-(S/defn deploy
+(S/defn create-rc
   "Deploy a replication controller"
   [{:keys [environment service] :as cfg} args]
   (require-arguments 
@@ -54,13 +54,15 @@
       (pprint cfg)
       (let [controller-tag (core/new-tag)]
         (go
-          (<! (make/run {"ENV" environment
-                         "CONTAINER_TAG" container-tag
-                         "CONTROLLER_TAG" controller-tag}
-                        ["-C" (service-path) (str service "/controller.yml")]))
-          (<! (kubectl/run cfg "create" "-f" (service-path service "controller.yml"))))))))
+          (<! (-> (make/run {"ENV" environment
+                             "CONTAINER_TAG" container-tag
+                             "CONTROLLER_TAG" controller-tag}
+                            ["-C" (service-path) (str service "/controller.yml")])
+                  (shell/check-status)))
+          (<! (-> (kubectl/run cfg "create" "-f" (service-path service "controller.yml"))
+                  (shell/check-status))))))))
 
-(S/defn undeploy
+(S/defn delete-rc
   "Remove a replication controller"
   [{:keys [environment service] :as cfg} args]
   (require-arguments 
@@ -85,7 +87,6 @@
       (println errors)
 
       (and (some? cluster) (some? service))
-      (function #_(get-in config [environment "clusters" cluster "services" service])
-               options (vec (rest arguments)))
+      (function options (vec (rest arguments)))
 
       :default (println summary))))
