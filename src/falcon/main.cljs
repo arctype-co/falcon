@@ -8,6 +8,7 @@
     [falcon.config :as config]
     [falcon.container :as container]
     [falcon.environment :as environment]
+    [falcon.kube :as kube]
     [falcon.schema :as schema]
     [falcon.service :as service]))
 
@@ -31,6 +32,9 @@
                       :function #'container/build}
    "container-push" {:launch #'container/command
                      :function #'container/push}
+
+   "pods" {:launch #'kube/command
+           :function #'kube/pods}
 
    "service-create" {:launch #'service/command
                      :function #'service/create}
