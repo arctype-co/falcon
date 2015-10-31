@@ -37,8 +37,30 @@
   (go
     (-> (shell/passthru (concat ["vagrant"] cmd) (vagrant-options ccfg)))))
 
-(S/defn ^:private cluster-cmd
-  "Return the cluster configuration"
+(S/defn create
+  "Create a new cluster"
+  [ccfg :- schema/ClusterConfig args]
+  (println "Creating cluster with configuration:")
+  (pprint ccfg)
+  (vagrant-cmd ccfg ["up"]))
+
+(S/defn destroy
+  "Destroy a cluster"
+  [ccfg :- schema/ClusterConfig args]
+  (println "About to DESTROY cluster with configuration:")
+  (pprint ccfg)
+  (println "Waiting 10 seconds...")
+  (go
+    (async/<! (async/timeout 10000))
+    (vagrant-cmd ccfg ["destroy"])))
+
+(S/defn status
+  "Print cluster status"
+  [ccfg :- schema/ClusterConfig args]
+  (vagrant-cmd ccfg ["status"]))
+
+(S/defn command
+  "Run a cluster command"
   [function
    config :- schema/Config
    {:keys [arguments]} :- schema/Command]
@@ -48,24 +70,3 @@
       (some? errors) (println errors)
       (some? cluster) (function (get-in config [environment "clusters" cluster]) arguments)
       :default (println summary))))
-
-(def ^{:doc "Create a new cluster"} create
-  (partial cluster-cmd
-           (fn [ccfg args]
-             (println "Creating cluster with configuration:")
-             (pprint ccfg)
-             (vagrant-cmd ccfg ["up"]))))
-
-(def ^{:doc "Destroy a cluster"} destroy
-  (partial cluster-cmd 
-           (fn [ccfg args]
-             (println "About to DESTROY cluster with configuration:")
-             (pprint ccfg)
-             (println "Waiting 10 seconds...")
-             (go
-               (async/<! (async/timeout 10000))
-               (vagrant-cmd ccfg ["destroy"])))))
-
-(def ^{:doc "Print cluster status"} status
-  (partial cluster-cmd 
-           (fn [ccfg args] (vagrant-cmd ccfg ["status"]))))

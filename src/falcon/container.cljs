@@ -16,7 +16,17 @@
   [make-args]
   (shell/passthru (concat ["make" "-C" (container-dir)] make-args) {}))
 
-(S/defn ^:private command
+(S/defn build
+  "Build a docker image"
+  [image :- S/Str args]
+  (make-cmd [(str image "-image")]))
+
+(S/defn push
+  "Push a docker image to the repository"
+  [image :- S/Str args]
+  (make-cmd [(str image "-image-push")]))
+
+(S/defn command
   "Return the cluster configuration"
   [function
    config :- schema/Config
@@ -27,13 +37,3 @@
       (some? errors) (println errors)
       (some? container) (function container arguments)
       :default (println summary))))
-
-(def ^{:doc "Build a docker image"} build
-  (partial command
-           (fn [image args]
-             (make-cmd [(str image "-image")]))))
-
-(def ^{:doc "Push a docker image to the repository"} push
-  (partial command
-           (fn [image args]
-             (make-cmd [(str image "-image-push")]))))

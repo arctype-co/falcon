@@ -18,12 +18,17 @@
     :default false]])
 
 (def ^:private commands
-  {"cluster-create" {:function #'cluster/create}
-   "cluster-destroy" {:function #'cluster/destroy}
-   "cluster-status" {:function #'cluster/status}
+  {"cluster-create" {:launch #'cluster/command
+                     :function #'cluster/create}
+   "cluster-destroy" {:launch #'cluster/command
+                      :function #'cluster/destroy}
+   "cluster-status" {:launch #'cluster/command
+                     :function #'cluster/status}
    
-   "container-build" {:function #'container/build}
-   "container-push" {:function #'container/push}})
+   "container-build" {:launch #'container/command
+                      :function #'container/build}
+   "container-push" {:launch #'container/command
+                     :function #'container/push}})
 
 (defn- doc-string
   [fn-var]
@@ -38,21 +43,27 @@
   (doseq [[cmd {:keys [function]}] commands]
     (println "\t" cmd "\t" (doc-string function))))
 
+(defn- default-launch
+  [function cfg args]
+  (function cfg args))
+
 (S/defn ^:private run-command
-  [function {:keys [options] :as args} :- schema/Command]
+  [{:keys [launch function]}
+   {:keys [options] :as args} :- schema/Command]
   (try 
-    (let [cfg (config/read-yml (:config options))]
-      (@function cfg args))
+    (let [launch (or launch #'default-launch)
+          cfg (config/read-yml (:config options))]
+      (@launch @function cfg args))
     (catch js/Error e
       (throw e))))
 
 (defn -main [& cli-args]
   (S/set-fn-validation! true)
   (let [{:keys [options arguments errors summary] :as args} (cli/parse-opts cli-args cli-options :in-order true)
-        {:keys [function]} (get commands (first arguments))]
+        command (get commands (first arguments))]
     (cond 
       (some? errors) (println errors)
-      (some? function) (run-command function args)
+      (some? command) (run-command command args)
       :default (print-usage summary))))
 
 (set! *main-cli-fn* -main)
