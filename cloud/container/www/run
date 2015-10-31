@@ -1,4 +1,3 @@
 #!/bin/bash
 
-cd /home/www/etheride.com
-setuser www lein run
+# setuser www-data lighttpd -f /etc/lighttpd/lighttpd.conf

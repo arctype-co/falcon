@@ -9,3 +9,6 @@ RUN apt-get upgrade --yes
 
 # Install utitiles
 RUN apt-get install -y wget less screen m4
+
+# Add ssh config
+ADD ssh /root/.ssh

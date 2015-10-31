@@ -6,6 +6,7 @@
     [schema.core :as S]
     [falcon.config :as config]
     [falcon.cluster :as cluster]
+    [falcon.container :as container]
     [falcon.schema :as schema]))
 
 (nodejs/enable-util-print!)
@@ -17,13 +18,15 @@
     :default "local"]
    ["-h" "--help" "Show this help"
     :default false]
-   ["-x" "--cluster <name>" "Cluster name"
-    :default nil]])
+   ["-x" "--cluster <name>" "Cluster name"]])
 
 (def ^:private commands
   {"cluster-create" {:function #'cluster/create}
    "cluster-destroy" {:function #'cluster/destroy}
-   "cluster-status" {:function #'cluster/status}})
+   "cluster-status" {:function #'cluster/status}
+   
+   "container-build" {:function #'container/build}
+   "container-push" {:function #'container/push}})
 
 (defn- doc-string
   [fn-var]

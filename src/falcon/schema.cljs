@@ -7,7 +7,7 @@
   {:config S/Str
    :environment S/Str
    :help S/Bool
-   :cluster S/Str})
+   (S/optional-key :cluster) S/Str})
 
 (def Command
   {:options Options
