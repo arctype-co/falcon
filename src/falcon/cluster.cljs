@@ -2,6 +2,7 @@
   (:require 
     [cljs.pprint :refer [pprint]]
     [cljs.core.async :as async]
+    [cljs.tools.cli :as cli]
     [schema.core :as S]
     [falcon.config :as config]
     [falcon.schema :as schema]
@@ -12,6 +13,11 @@
 (defn- vagrant-dir
   []
   (str (.cwd js/process) "/cloud/cluster/kubernetes-vagrant-coreos-cluster"))
+
+(def ^:private cluster-options
+  [["-e" "--environment <env>" "Environment"
+    :default "local"]
+   ["-x" "--cluster <name>" "Cluster name"]])
 
 (S/defn ^:private vagrant-options
   [ccfg :- schema/ClusterConfig]
@@ -31,29 +37,35 @@
   (go
     (-> (shell/passthru (concat ["vagrant"] cmd) (vagrant-options ccfg)))))
 
-(S/defn create
-  "Create a new cluster"
-  [cfg :- schema/Config
-   cmd :- schema/Command]
-  (let [ccfg (config/cluster cfg (:options cmd))]
-    (println "Creating cluster with configuration:")
-    (pprint ccfg)
-    (vagrant-cmd ccfg ["up"])))
+(S/defn ^:private cluster-cmd
+  "Return the cluster configuration"
+  [function
+   config :- schema/Config
+   {:keys [arguments]} :- schema/Command]
+  (let [{:keys [options errors summary]} (cli/parse-opts arguments cluster-options)
+        {:keys [environment cluster]} options]
+    (cond
+      (some? errors) (println errors)
+      (some? cluster) (function (get-in config [environment "clusters" cluster]) arguments)
+      :default (println summary))))
 
-(S/defn destroy
-  "Destroy a cluster"
-  [cfg :- schema/Config
-   cmd :- schema/Command]
-  (let [ccfg (config/cluster cfg (:options cmd))]
-    (println "About to DESTROY cluster with configuration:")
-    (pprint ccfg)
-    (println "Waiting 10 seconds...")
-    (go
-      (async/<! (async/timeout 10000))
-      (vagrant-cmd ccfg ["destroy"]))))
+(def ^{:doc "Create a new cluster"} create
+  (partial cluster-cmd
+           (fn [ccfg args]
+             (println "Creating cluster with configuration:")
+             (pprint ccfg)
+             (vagrant-cmd ccfg ["up"]))))
 
-(S/defn status
-  "Print cluster status"
-  [cfg :- schema/Config
-   cmd :- schema/Command]
-  (vagrant-cmd (config/cluster cfg (:options cmd)) ["status"]))
+(def ^{:doc "Destroy a cluster"} destroy
+  (partial cluster-cmd 
+           (fn [ccfg args]
+             (println "About to DESTROY cluster with configuration:")
+             (pprint ccfg)
+             (println "Waiting 10 seconds...")
+             (go
+               (async/<! (async/timeout 10000))
+               (vagrant-cmd ccfg ["destroy"])))))
+
+(def ^{:doc "Print cluster status"} status
+  (partial cluster-cmd 
+           (fn [ccfg args] (vagrant-cmd ccfg ["status"]))))

@@ -13,12 +13,9 @@
 
 (def cli-options
   [["-c" "--config <file>" "Config file"
-    :default "cloud/config.yml"]
-   ["-e" "--environment <env>" "Environment"
-    :default "local"]
+    :default "cloud/config.yml"] 
    ["-h" "--help" "Show this help"
-    :default false]
-   ["-x" "--cluster <name>" "Cluster name"]])
+    :default false]])
 
 (def ^:private commands
   {"cluster-create" {:function #'cluster/create}
@@ -47,11 +44,11 @@
     (let [cfg (config/read-yml (:config options))]
       (@function cfg args))
     (catch js/Error e
-      (println (.-message e)))))
+      (throw e))))
 
 (defn -main [& cli-args]
   (S/set-fn-validation! true)
-  (let [{:keys [options arguments errors summary] :as args} (cli/parse-opts cli-args cli-options)
+  (let [{:keys [options arguments errors summary] :as args} (cli/parse-opts cli-args cli-options :in-order true)
         {:keys [function]} (get commands (first arguments))]
     (cond 
       (some? errors) (println errors)

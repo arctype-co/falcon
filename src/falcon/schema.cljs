@@ -5,9 +5,7 @@
 
 (def Options
   {:config S/Str
-   :environment S/Str
-   :help S/Bool
-   (S/optional-key :cluster) S/Str})
+   :help S/Bool})
 
 (def Command
   {:options Options
