@@ -5,6 +5,7 @@
     [cljs.pprint :refer [pprint]]
     [cljs.tools.cli :as cli]
     [schema.core :as S]
+    [falcon.core :as core]
     [falcon.schema :as schema]
     [falcon.shell :as shell]
     [falcon.shell.make :as make]
@@ -38,26 +39,39 @@
   [{:keys [environment service] :as cfg} args]
   (println "Delete service from config:")
   (pprint cfg)
-  (println "Waiting 10 seconds...")
   (go 
-    (<! (async/timeout 10000))
+    (<! (core/safe-wait))
     (<! (make/run {"ENV" environment} ["-C" (service-path) (str service "/service.yml")]))
     (<! (kubectl/run cfg "delete" "-f" (service-path service "service.yml")))))
 
 (S/defn deploy
-  "Deloy a replication controller"
+  "Deploy a replication controller"
   [{:keys [environment service] :as cfg} args]
   (require-arguments 
     args
-    (fn [container-tag controller-tag]
+    (fn [container-tag]
       (println "Deploying service controller:")
       (pprint cfg)
+      (let [controller-tag (core/new-tag)]
+        (go
+          (<! (make/run {"ENV" environment
+                         "CONTAINER_TAG" container-tag
+                         "CONTROLLER_TAG" controller-tag}
+                        ["-C" (service-path) (str service "/controller.yml")]))
+          (<! (kubectl/run cfg "create" "-f" (service-path service "controller.yml"))))))))
+
+(S/defn undeploy
+  "Remove a replication controller"
+  [{:keys [environment service] :as cfg} args]
+  (require-arguments 
+    args
+    (fn [controller-tag]
+      (println "Removing service controller:")
+      (pprint cfg)
+      (println "Controller:" controller-tag)
       (go
-        (<! (make/run {"ENV" environment
-                       "CONTAINER_TAG" container-tag
-                       "CONTROLLER_TAG" controller-tag}
-                      ["-C" (service-path) (str service "/controller.yml")]))
-        (<! (kubectl/run cfg "create" "-f" (service-path service "controller.yml")))))))
+        (<! (core/safe-wait))
+        (<! (kubectl/run cfg "delete" "rc" (str service "." controller-tag)))))))
 
 (S/defn command
   "Run a service command"

@@ -34,6 +34,11 @@
    "container-push" {:launch #'container/command
                      :function #'container/push}
 
+   "controller-create" {:launch #'service/command
+                        :function #'service/deploy}
+   "controller-delete" {:launch #'service/command
+                        :function #'service/undeploy}
+
    "environment-create" {:launch #'environment/command
                          :function #'environment/create}
    "environment-delete" {:launch #'environment/command
@@ -43,13 +48,13 @@
                 :function #'kube/pods}
    "kube-rc" {:launch #'kube/command
               :function #'kube/rc}
+   "kube-services" {:launch #'kube/command
+                    :function #'kube/services}
 
    "service-create" {:launch #'service/command
                      :function #'service/create}
    "service-delete" {:launch #'service/command
                      :function #'service/delete}
-   "service-deploy" {:launch #'service/command
-                     :function #'service/deploy}
    }))
 
 (defn- doc-string

@@ -30,6 +30,12 @@
   (go
     (<! (kubectl/run cfg "get" "rc"))))
 
+(S/defn services
+  "Get services status"
+  [{:keys [environment] :as cfg} args]
+  (go
+    (<! (kubectl/run cfg "get" "services"))))
+
 (S/defn command
   "Run a kube command"
   [function

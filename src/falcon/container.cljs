@@ -3,9 +3,8 @@
     [clojure.string :as string]
     [cljs.core.async :as async :refer [<!]]
     [cljs.tools.cli :as cli]
-    [goog.string :as gstring]
-    [goog.string.format :as gformat]
     [schema.core :as S]
+    [falcon.core :as core]
     [falcon.schema :as schema]
     [falcon.shell :as shell]
     [falcon.shell.docker :as docker]
@@ -26,12 +25,6 @@
   [& path]
   (string/join "/" (concat ["cloud/container"] path)))
 
-(defn new-tag
-  []
-  (let [now (js/Date.)]
-    (str (.getFullYear now) "-" (+ 1 (.getMonth now)) "-" (.getDate now)
-         "." (gstring/format "%02d%02d%02d" (.getHours now) (.getMinutes now) (.getSeconds now)))))
-
 (defn- make-opts
   [tag]
   {"TAG" tag})
@@ -43,7 +36,7 @@
 (S/defn build
   "Build a docker image"
   [{:keys [container no-cache tag]} args]
-  (let [tag (or tag (new-tag))]
+  (let [tag (or tag (core/new-tag))]
     (go
       (<! (make/run (make-opts tag)
                     ["-C" (make-path) (str container "/Dockerfile")]))
@@ -54,7 +47,7 @@
 (S/defn push
   "Push a docker image to the repository"
   [{:keys [container no-cache tag]} args]
-  (let [tag (or tag (new-tag))]
+  (let [tag (or tag (core/new-tag))]
     (go 
       (<! (docker/push
             {:no-cache no-cache}
