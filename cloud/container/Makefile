@@ -2,13 +2,12 @@
 .PHONY: app/Dockerfile crossbar/Dockerfile eth/Dockerfile geth/Dockerfile jre/Dockerfile lein/Dockerfile mysql/Dockerfile openvpn/Dockerfile pypy/Dockerfile riak-kv/Dockerfile www/Dockerfile
 
 REPO=creeatist
-TAG=latest # Override this with make TAG=foo
+TAG=latest
 DOCKER=docker
 DOCKERBUILD=docker build
 #DOCKERBUILD=docker build --no-cache=true
 M4=m4 -D__REPOSITORY__=$(REPO)
 APP_TAG=master
-WWW_TAG=master
 
 all: 
 
@@ -119,7 +118,7 @@ riak-kv-image-push: riak-kv-image
 	$(DOCKER) push $(REPO)/riak-kv:$(TAG)
 
 www/Dockerfile: www/Dockerfile.m4
-	$(M4) -D__WWW_TAG__=$(WWW_TAG) $^ > $@
+	$(M4) $^ > $@
 
 www-image: lein-image www/Dockerfile
 	$(DOCKERBUILD) -t=$(REPO)/www:$(TAG) www
