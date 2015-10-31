@@ -24,7 +24,7 @@
     :default false]])
 
 (S/defn deploy
-  "Build and push container, then deploy replication controller"
+  "Build and push container, then deploy replication controller."
   [{:keys [environment service no-cache] :as cfg} args]
   (go
     (let [container-tag (<! (container-ns/build {:container service
@@ -37,6 +37,24 @@
             {:environment environment
              :service service}
             [container-tag])))))
+
+(S/defn rolling-deploy
+  "Build an push container, then rolling deploy the replication controller."
+  [{:keys [environment service no-cache] :as cfg} args]
+  (require-arguments
+    args
+    (fn [old-controller-tag]
+      (go
+        (let [container-tag (<! (container-ns/build {:container service
+                                                     :no-cache no-cache}
+                                                    []))]
+          (<! (container-ns/push {:container service
+                                  :tag container-tag}
+                                 []))
+          (<! (service-ns/rolling-update
+                {:environment environment
+                 :service service}
+                [old-controller-tag container-tag])))))))
 
 (S/defn command
   "Run a deployment command"

@@ -45,12 +45,12 @@
     (<! (kubectl/run cfg "delete" "-f" (service-path service "service.yml")))))
 
 (S/defn create-rc
-  "Deploy a replication controller"
+  "Launch a replication controller"
   [{:keys [environment service] :as cfg} args]
   (require-arguments 
     args
     (fn [container-tag]
-      (println "Deploying service controller:")
+      (println "Creating service controller:")
       (pprint cfg)
       (let [controller-tag (core/new-tag)]
         (go
@@ -74,6 +74,25 @@
       (go
         (<! (core/safe-wait))
         (<! (kubectl/run cfg "delete" "rc" (str service "." controller-tag)))))))
+
+(S/defn rolling-update
+  "Rolling update a replication controller"
+  [{:keys [environment service] :as cfg} args]
+  (require-arguments 
+    args
+    (fn [old-controller-tag container-tag]
+      (println "Rolling update service controller:")
+      (pprint cfg)
+      (let [controller-tag (core/new-tag)
+            full-old-controller-tag (str service "." old-controller-tag)]
+        (go
+          (<! (-> (make/run {"ENV" environment
+                             "CONTAINER_TAG" container-tag
+                             "CONTROLLER_TAG" controller-tag}
+                            ["-C" (service-path) (str service "/controller.yml")])
+                  (shell/check-status)))
+          (<! (-> (kubectl/run cfg "rolling-update" full-old-controller-tag "-f" (service-path service "controller.yml"))
+                  (shell/check-status))))))))
 
 (S/defn command
   "Run a service command"

@@ -39,9 +39,14 @@
                         :function #'service/create-rc}
    "controller-delete" {:launch #'service/command
                         :function #'service/delete-rc}
+   "controller-rolling-update" {:launch #'service/command
+                                :function #'service/rolling-update}
 
    "deploy" {:launch #'deploy/command
              :function #'deploy/deploy}
+
+   "rolling-deploy" {:launch #'deploy/command
+                     :function #'deploy/rolling-deploy}
 
    "environment-create" {:launch #'environment/command
                          :function #'environment/create}
