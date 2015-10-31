@@ -33,8 +33,10 @@
    "container-push" {:launch #'container/command
                      :function #'container/push}
 
-   "pods" {:launch #'kube/command
-           :function #'kube/pods}
+   "kube-pods" {:launch #'kube/command
+                :function #'kube/pods}
+   "kube-rc" {:launch #'kube/command
+              :function #'kube/rc}
 
    "service-create" {:launch #'service/command
                      :function #'service/create}

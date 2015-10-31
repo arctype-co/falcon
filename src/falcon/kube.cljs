@@ -24,6 +24,12 @@
   (go
     (<! (kubectl/run cfg "get" "pods"))))
 
+(S/defn rc
+  "Get replication controllers status"
+  [{:keys [environment] :as cfg} args]
+  (go
+    (<! (kubectl/run cfg "get" "rc"))))
+
 (S/defn command
   "Run a kube command"
   [function
