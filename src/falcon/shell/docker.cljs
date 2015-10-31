@@ -7,9 +7,13 @@
 (def Options
   {(S/optional-key :no-cache) S/Bool})
 
-(S/defn build :- schema/Chan
-  [{:keys [no-cache]} :- Options
+(S/defn run :- schema/Chan
+  [command :- S/Str
+   {:keys [no-cache]} :- Options
    args :- [S/Str]]
   (let [flags (cond-> []
                 no-cache (conj "--no-cache=true"))]
-    (core/passthru (concat ["docker" "build"] flags args))))
+    (core/passthru (concat ["docker" command] flags args))))
+
+(def build (partial run "build"))
+(def push (partial run "push"))

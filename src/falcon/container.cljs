@@ -36,6 +36,10 @@
   [tag]
   {"TAG" tag})
 
+(defn- container-tag
+  [container tag]
+  (str repository "/" container ":" tag))
+
 (S/defn build
   "Build a docker image"
   [{:keys [container no-cache tag]} args]
@@ -45,15 +49,16 @@
                     ["-C" (make-path) (str container "/Dockerfile")]))
       (<! (docker/build
             {:no-cache no-cache}
-            [(str "-t=" repository "/" container ":" tag) (make-path container)])))))
+            [(str "-t=" (container-tag container tag)) (make-path container)])))))
 
 (S/defn push
   "Push a docker image to the repository"
-  [{:keys [container no-cache tag]} :- S/Str args]
+  [{:keys [container no-cache tag]} args]
   (let [tag (or tag (new-tag))]
     (go 
-      (<! (make/run (make-opts tag)
-                    ["-C" (make-path) (str container "-image-push")])))))
+      (<! (docker/push
+            {:no-cache no-cache}
+            [(container-tag container tag)])))))
 
 (S/defn command
   "Return the cluster configuration"

@@ -119,9 +119,3 @@ riak-kv-image-push: riak-kv-image
 
 www/Dockerfile: www/Dockerfile.m4
 	$(M4) $^ > $@
-
-www-image: lein-image www/Dockerfile
-	$(DOCKERBUILD) -t=$(REPO)/www:$(TAG) www
-
-www-image-push: www-image
-	$(DOCKER) push $(REPO)/www:$(TAG)
