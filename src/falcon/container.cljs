@@ -38,11 +38,14 @@
   [{:keys [container no-cache tag]} args]
   (let [tag (or tag (core/new-tag))]
     (go
-      (<! (make/run (make-opts tag)
-                    ["-C" (make-path) (str container "/Dockerfile")]))
-      (<! (docker/build
-            {:no-cache no-cache}
-            [(str "-t=" (container-tag container tag)) (make-path container)])))))
+      (<! (-> (make/run (make-opts tag)
+                        ["-C" (make-path) (str container "/Dockerfile")])
+              (shell/check-status)))
+      (<! (-> (docker/build
+                {:no-cache no-cache}
+                [(str "-t=" (container-tag container tag)) (make-path container)])
+              (shell/check-status)))
+      (println "Container" container "built with tag:" tag))))
 
 (S/defn push
   "Push a docker image to the repository"

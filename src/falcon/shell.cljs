@@ -28,6 +28,14 @@
       (aset clone-env k v))
     clone-env))
 
+(defn check-status
+  [chan]
+  (go
+    (let [result (async/<! chan)]
+      (if (= 0 result)
+        result
+        (throw (js/Error. (str "Command failed with status:" result)))))))
+
 (S/defn spawn :- ProcessOutput
   "Launch a process. Return output channels."
   [cmd :- [S/Str]
