@@ -10,14 +10,14 @@
   (:require-macros
     [cljs.core.async.macros :refer [go]]))
 
-(defn- vagrant-dir
-  []
-  (str (.cwd js/process) "/cloud/cluster/kubernetes-vagrant-coreos-cluster"))
-
 (def ^:private cluster-options
   [["-e" "--environment <env>" "Environment"
     :default "local"]
    ["-x" "--cluster <name>" "Cluster name"]])
+
+(defn- vagrant-dir
+  []
+  (str (.cwd js/process) "/cloud/cluster/kubernetes-vagrant-coreos-cluster"))
 
 (S/defn ^:private vagrant-options
   [ccfg :- schema/ClusterConfig]
