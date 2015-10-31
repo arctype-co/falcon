@@ -34,6 +34,8 @@
 
    "service-create" {:launch #'service/command
                      :function #'service/create}
+   "service-delete" {:launch #'service/command
+                     :function #'service/delete}
    "environment-create" {:launch #'environment/command
                          :function #'environment/create}})
 

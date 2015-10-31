@@ -118,17 +118,8 @@ riak-kv/delete-cluster: | announce
 	$(KUBECTL) delete -f riak-kv/service.yml
 	$(KUBECTL) delete -f riak-kv/secrets.yml
 
-www-controller.yml: www-controller.yml.m4
+www/controller.yml: www/controller.yml.m4
 	$(M4) $^ > $@
 
 www/service.yml: www/service.yml.m4
-	$(M4) \
-		-D__SERVICE_NAME__=www \
-		-D__SERVICE_PORT__=4000 \
-		$^ > $@
-
-www/create: www/service.yml | announce
-	# $(KUBECTL) create -f crossbar/controller.yml
-	$(KUBECTL) create -f www/service.yml
-
-
+	$(M4) $^ > $@

@@ -61,7 +61,9 @@
   ([cmd :- [S/Str]] (passthru cmd {}))
   ([cmd :- [S/Str]
     {:keys [cwd env] :as params} :- SpawnParams]
-   (let [ret (async/chan 1)
+   (let [cmd (vec cmd)
+         _ (println cmd)
+         ret (async/chan 1)
          penv (merge-env env)
          options (doto (new js/Object.)
                    (aset "cwd" cwd)

@@ -20,5 +20,5 @@ spec:
         - name: www
           image: __REPOSITORY__/www:__DOCKER_TAG__
           ports:
-            - containerPort: 3744
-              hostPort: 3744
+            - containerPort: 4000
+              hostPort: 4000
