@@ -5,7 +5,7 @@
     [falcon.schema :as schema]
     [falcon.shell :as shell]))
 
-(def ^:private options
+(def ^:private cli-options
   [["-x" "--container <name>" "Container name"]])
 
 (defn- container-dir
@@ -31,7 +31,7 @@
   [function
    config :- schema/Config
    {:keys [arguments]} :- schema/Command]
-  (let [{:keys [options errors summary]} (cli/parse-opts arguments options)
+  (let [{:keys [options errors summary]} (cli/parse-opts arguments cli-options)
         {:keys [container]} options]
     (cond
       (some? errors) (println errors)

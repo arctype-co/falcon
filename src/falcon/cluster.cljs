@@ -10,10 +10,11 @@
   (:require-macros
     [cljs.core.async.macros :refer [go]]))
 
-(def ^:private cluster-options
+(def ^:private cli-options
   [["-e" "--environment <env>" "Environment"
     :default "local"]
-   ["-x" "--cluster <name>" "Cluster name"]])
+   ["-x" "--cluster <name>" "Cluster name"
+    :default "main"]])
 
 (defn- vagrant-dir
   []
@@ -64,7 +65,7 @@
   [function
    config :- schema/Config
    {:keys [arguments]} :- schema/Command]
-  (let [{:keys [options errors summary]} (cli/parse-opts arguments cluster-options)
+  (let [{:keys [options errors summary]} (cli/parse-opts arguments cli-options)
         {:keys [environment cluster]} options]
     (cond
       (some? errors) (println errors)

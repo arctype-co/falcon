@@ -4,10 +4,11 @@
     [cljs.tools.cli :as cli]
     [cljs.nodejs :as nodejs]
     [schema.core :as S]
-    [falcon.config :as config]
     [falcon.cluster :as cluster]
+    [falcon.config :as config]
     [falcon.container :as container]
-    [falcon.schema :as schema]))
+    [falcon.schema :as schema]
+    [falcon.service :as service]))
 
 (nodejs/enable-util-print!)
 
@@ -28,7 +29,10 @@
    "container-build" {:launch #'container/command
                       :function #'container/build}
    "container-push" {:launch #'container/command
-                     :function #'container/push}})
+                     :function #'container/push}
+   
+   "service-create" {:launch #'service/command
+                     :function #'service/create}})
 
 (defn- doc-string
   [fn-var]
