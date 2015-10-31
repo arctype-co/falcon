@@ -7,6 +7,7 @@
     [schema.core :as S]
     [falcon.schema :as schema]
     [falcon.shell :as shell]
+    [falcon.shell.make :as make]
     [falcon.shell.kubectl :as kubectl])
   (:require-macros
     [falcon.core :refer [require-arguments]]
@@ -23,19 +24,13 @@
   [& path]
   (string/join "/" (concat ["cloud/service"] path)))
 
-(defn- make-cmd
-  [make-opts make-args]
-  (let [make-params (map (fn [[k v]] (str k "=" v)) make-opts)]
-    (concat ["make" "-C" (service-path)] make-args
-            make-params)))
-
 (S/defn create
   "Load a service config"
   [{:keys [environment service] :as cfg} args]
   (println "Create service from config:")
   (pprint cfg)
   (go
-    (<! (shell/passthru (make-cmd {"ENV" environment} [(str service "/service.yml")])))
+    (<! (make/run {"ENV" environment} ["-C" (service-path) (str service "/service.yml")]))
     (<! (kubectl/run cfg "create" "-f" (service-path service "service.yml")))))
 
 (S/defn delete
@@ -46,7 +41,7 @@
   (println "Waiting 10 seconds...")
   (go 
     (<! (async/timeout 10000))
-    (<! (shell/passthru (make-cmd {"ENV" environment} [(str service "/service.yml")])))
+    (<! (make/run {"ENV" environment} ["-C" (service-path) (str service "/service.yml")]))
     (<! (kubectl/run cfg "delete" "-f" (service-path service "service.yml")))))
 
 (S/defn deploy
@@ -58,10 +53,10 @@
       (println "Deploying service controller:")
       (pprint cfg)
       (go
-        (<! (shell/passthru (make-cmd {"ENV" environment
-                                       "CONTAINER_TAG" container-tag
-                                       "CONTROLLER_TAG" controller-tag}
-                                      [(str service "/controller.yml")])))
+        (<! (make/run {"ENV" environment
+                       "CONTAINER_TAG" container-tag
+                       "CONTROLLER_TAG" controller-tag}
+                      ["-C" (service-path) (str service "/controller.yml")]))
         (<! (kubectl/run cfg "create" "-f" (service-path service "controller.yml")))))))
 
 (S/defn command

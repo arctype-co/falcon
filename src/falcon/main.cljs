@@ -21,6 +21,7 @@
     :default false]])
 
 (def ^:private commands
+  (into (sorted-map)
   {"cluster-create" {:launch #'cluster/command
                      :function #'cluster/create}
    "cluster-destroy" {:launch #'cluster/command
@@ -33,6 +34,11 @@
    "container-push" {:launch #'container/command
                      :function #'container/push}
 
+   "environment-create" {:launch #'environment/command
+                         :function #'environment/create}
+   "environment-delete" {:launch #'environment/command
+                         :function #'environment/delete}
+
    "kube-pods" {:launch #'kube/command
                 :function #'kube/pods}
    "kube-rc" {:launch #'kube/command
@@ -44,9 +50,7 @@
                      :function #'service/delete}
    "service-deploy" {:launch #'service/command
                      :function #'service/deploy}
-
-   "environment-create" {:launch #'environment/command
-                         :function #'environment/create}})
+   }))
 
 (defn- doc-string
   [fn-var]

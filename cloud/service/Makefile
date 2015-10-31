@@ -84,9 +84,6 @@ crossbar/delete: | announce
 environment/namespace.yml: environment/namespace.yml.m4
 	$(M4) $^ > $@
 
-environment/create: environment/namespace.yml | announce
-	$(KUBECTL) create -f environment/namespace.yml
-
 riak-kv/controller.yml: riak-kv/controller.yml.m4
 	$(M4) $^ > $@
 
