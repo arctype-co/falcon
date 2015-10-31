@@ -1,18 +1,17 @@
-KUBE_MASTER=kube.etheride.com
-REPO=gcr.io/etheride-984
+REPO=creeatist
 # development, production
 ENV=development
 CONTROLLER_TAG=latest
 CONTAINER_TAG=latest
 M4=m4 -D__REPOSITORY__=$(REPO) -D__TAG__=$(CONTROLLER_TAG) -D__DOCKER_TAG__=$(CONTAINER_TAG) -D__ENVIRONMENT__=$(ENV)
 KUBECTL=kubectl --namespace=$(ENV)
-CONFIGS=app/controller.yml app/secrets.yml app/service.yml crossbar/controller.yml crossbar/service.yml environment/namespace.yml riak-kv/controller.yml riak-kv/secrets.yml riak-kv/service.yml www-controller.yml
+CONFIGS=app/controller.yml app/secrets.yml app/service.yml crossbar/controller.yml crossbar/service.yml environment/namespace.yml riak-kv/controller.yml riak-kv/secrets.yml riak-kv/service.yml www/controller.yml www/service.yml
 DEPLOYS=app/create app/delete app/update crossbar/create crossbar/delete environment/create riak-kv/create-node
 
 # App specific
 RIAK_CLUSTER_SIZE=5
 
-.PHONY: connect $(CONFIGS) logs pods rc secrets services
+.PHONY: $(CONFIGS) logs pods rc secrets services
 
 ANNOUNCE=@../../bin/post.js `whoami` "$(MAKECMDGOALS) $(MAKEFLAGS)"
 FIRST_POD_ROLE_IP=$(KUBECTL) get pods -o json | jq -r '.items | map(select(.metadata.labels.role == $(1))) | .[0].status.podIP | select(. != null)'
@@ -25,9 +24,6 @@ announce:
 all: 
 	@echo Please specify a configuration: $(CONFIGS)
 	@echo Or a deployment: $(DEPLOYS)
-
-connect:
-	ssh -fN -L 8080:localhost:8080 -i ~/.ssh/google_compute_engine $(KUBE_MASTER)
 
 logs:
 	$(KUBECTL) logs $(NAME)
