@@ -58,20 +58,21 @@
 
 (S/defn passthru :- schema/Chan
   "Launch a process. Pass stdio through parent process. Return channel with return code."
-  [cmd :- [S/Str]
-   {:keys [cwd env] :as params} :- SpawnParams]
-  (let [ret (async/chan 1)
-        penv (merge-env env)
-        options (doto (new js/Object.)
-                  (aset "cwd" cwd)
-                  (aset "env" penv)
-                  (aset "stdio" "inherit"))
-        proc (.spawn child-process (first cmd) (to-array (rest cmd)) options)]
-    (-> proc (.on "close"
-                  (fn [code]
-                    (async/put! ret code)
-                    (async/close! ret))))
-    ret))
+  ([cmd :- [S/Str]] (passthru cmd {}))
+  ([cmd :- [S/Str]
+    {:keys [cwd env] :as params} :- SpawnParams]
+   (let [ret (async/chan 1)
+         penv (merge-env env)
+         options (doto (new js/Object.)
+                   (aset "cwd" cwd)
+                   (aset "env" penv)
+                   (aset "stdio" "inherit"))
+         proc (.spawn child-process (first cmd) (to-array (rest cmd)) options)]
+     (-> proc (.on "close"
+                   (fn [code]
+                     (async/put! ret code)
+                     (async/close! ret))))
+     ret)))
 
 #_(S/defn passthru
   "Wait for a process and print all output. Return channel with return code."

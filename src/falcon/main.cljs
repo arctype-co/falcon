@@ -7,6 +7,7 @@
     [falcon.cluster :as cluster]
     [falcon.config :as config]
     [falcon.container :as container]
+    [falcon.environment :as environment]
     [falcon.schema :as schema]
     [falcon.service :as service]))
 
@@ -25,14 +26,16 @@
                       :function #'cluster/destroy}
    "cluster-status" {:launch #'cluster/command
                      :function #'cluster/status}
-   
+
    "container-build" {:launch #'container/command
                       :function #'container/build}
    "container-push" {:launch #'container/command
                      :function #'container/push}
-   
+
    "service-create" {:launch #'service/command
-                     :function #'service/create}})
+                     :function #'service/create}
+   "environment-create" {:launch #'environment/command
+                         :function #'environment/create}})
 
 (defn- doc-string
   [fn-var]

@@ -1,4 +1,4 @@
-(ns falcon.service
+(ns falcon.environment
   (:require
     [cljs.pprint :refer [pprint]]
     [cljs.tools.cli :as cli]
@@ -10,8 +10,7 @@
   [["-e" "--environment <env>" "Environment"
     :default "local"]
    ["-x" "--cluster <name>" "Cluster name"
-    :default "main"]
-   ["-s" "--service <name>" "Service name"]])
+    :default "main"]])
 
 (defn- service-dir
   []
@@ -24,31 +23,23 @@
           make-params)))
 
 (S/defn create
-  "Load a service config"
-  [{:keys [cluster environment service] :as cfg} args]
-  (println "Create service from config:")
-  (pprint cfg)
-  (shell/passthru (make-cmd cfg [(str service "/create")])))
-
-(S/defn create-env
   "Create a new environment (namespace)"
-  [{:keys [cluster environment]} args]
-  (println "Creating namespace: " environment)
-  (shell/passthru (make-cmd cfg ["envoronment/create"])))
+  [cfg args]
+  (println "Creating namespace: " cfg)
+  (shell/passthru (make-cmd cfg ["environment/create"])))
 
 (S/defn command
-  "Run a service command"
+  "Run a command"
   [function
    config :- schema/Config
    {:keys [arguments]} :- schema/Command]
   (let [{:keys [options errors summary]} (cli/parse-opts arguments cli-options)
-        {:keys [environment cluster service]} options]
+        {:keys [environment cluster]} options]
     (cond
       (some? errors) 
       (println errors)
 
-      (and (some? cluster) (some? service))
-      (function #_(get-in config [environment "clusters" cluster "services" service])
-               options arguments)
+      (and (some? cluster) (some? environment))
+      (function options arguments)
 
       :default (println summary))))
