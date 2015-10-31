@@ -1,10 +1,10 @@
 KUBE_MASTER=kube.etheride.com
 REPO=gcr.io/etheride-984
-TAG=latest
 # development, production
 ENV=development
-DOCKER_TAG=$(TAG)
-M4=m4 -D__REPOSITORY__=$(REPO) -D__TAG__=$(TAG) -D__DOCKER_TAG__=$(DOCKER_TAG) -D__ENVIRONMENT__=$(ENV)
+CONTROLLER_TAG=latest
+CONTAINER_TAG=latest
+M4=m4 -D__REPOSITORY__=$(REPO) -D__TAG__=$(CONTROLLER_TAG) -D__DOCKER_TAG__=$(CONTAINER_TAG) -D__ENVIRONMENT__=$(ENV)
 KUBECTL=kubectl --namespace=$(ENV)
 CONFIGS=app/controller.yml app/secrets.yml app/service.yml crossbar/controller.yml crossbar/service.yml environment/namespace.yml riak-kv/controller.yml riak-kv/secrets.yml riak-kv/service.yml www-controller.yml
 DEPLOYS=app/create app/delete app/update crossbar/create crossbar/delete environment/create riak-kv/create-node

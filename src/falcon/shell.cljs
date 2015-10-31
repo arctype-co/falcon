@@ -75,19 +75,3 @@
                      (async/put! ret code)
                      (async/close! ret))))
      ret)))
-
-#_(S/defn passthru
-  "Wait for a process and print all output. Return channel with return code."
-  [proc :- ProcessOutput]
-  (go-loop
-    [chans #{(:stdout proc) (:stderr proc)}]
-    (if (empty? chans)
-      (async/<! (:return proc))
-      (let [output (async/alts! (vec chans))]
-        (match output 
-               [nil port]
-               (recur (disj chans port))
-
-               [buf _]
-               (do (print (str buf))
-                   (recur chans)))))))
