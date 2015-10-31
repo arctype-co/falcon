@@ -9,3 +9,4 @@ local:
       node-mem-mb: 4096
       node-cpus: 1
       kube-ui: true
+      base-ip: "10.100.0"

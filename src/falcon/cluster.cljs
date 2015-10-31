@@ -23,7 +23,8 @@
     "MASTER_CPUS" (str (get ccfg "master-cpus"))
     "NODE_MEM" (str (get ccfg "node-mem-mb"))
     "NODE_CPUS" (str (get ccfg "node-cpus"))
-    "USE_KUBE_UI" (str (get ccfg "kube-ui"))}})
+    "USE_KUBE_UI" (str (get ccfg "kube-ui"))
+    "BASE_IP_ADDR" (str get ccfg "base-ip")}})
 
 (defn- vagrant-cmd
   [ccfg cmd]
