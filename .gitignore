@@ -4,11 +4,11 @@
 tmp
 cloud/*.yml
 cloud/*/*/*.yml
+cloud/*/*/Dockerfile
 secrets/*.json
 secrets/*.ovpn
 *.tar.gz
 .DS_Store
-container/*/Dockerfile
 container/app/etheride.edn
 bin/falcon.js
 target
