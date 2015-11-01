@@ -1,10 +1,11 @@
 (ns falcon.cluster
   (:require 
     [cljs.pprint :refer [pprint]]
-    [cljs.core.async :as async]
+    [cljs.core.async :as async :refer [<!]]
     [cljs.tools.cli :as cli]
     [schema.core :as S]
     [falcon.config :as config]
+    [falcon.core :as core]
     [falcon.schema :as schema]
     [falcon.shell :as shell])
   (:require-macros
@@ -45,6 +46,14 @@
   (pprint ccfg)
   (vagrant-cmd ccfg ["up"]))
 
+(S/defn down
+  "Bring a cluster offline"
+  [ccfg :- schema/ClusterConfig args]
+  (println "Bringing cluster offline:")
+  (pprint ccfg)
+  (go (<! (core/safe-wait))
+      (<! (vagrant-cmd ccfg ["halt"]))))
+
 (S/defn destroy
   "Destroy a cluster"
   [ccfg :- schema/ClusterConfig args]
@@ -52,8 +61,8 @@
   (pprint ccfg)
   (println "Waiting 10 seconds...")
   (go
-    (async/<! (async/timeout 10000))
-    (vagrant-cmd ccfg ["destroy"])))
+    (<! (core/safe-wait))
+    (<! (vagrant-cmd ccfg ["destroy"]))))
 
 (S/defn status
   "Print cluster status"

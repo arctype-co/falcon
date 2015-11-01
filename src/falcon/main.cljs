@@ -27,6 +27,8 @@
                      :function #'cluster/create}
    "cluster-destroy" {:launch #'cluster/command
                       :function #'cluster/destroy}
+   "cluster-down" {:launch #'cluster/command
+                   :function #'cluster/down}
    "cluster-status" {:launch #'cluster/command
                      :function #'cluster/status}
 
