@@ -32,12 +32,12 @@
     "NODE_MEM" (str (get ccfg "node-mem-mb"))
     "NODE_CPUS" (str (get ccfg "node-cpus"))
     "USE_KUBE_UI" (str (get ccfg "kube-ui"))
-    "BASE_IP_ADDR" (str get ccfg "base-ip")}})
+    "BASE_IP_ADDR" (str get ccfg "base-ip")
+    }})
 
 (defn- vagrant-cmd
   [ccfg cmd]
-  (go
-    (-> (shell/passthru (concat ["vagrant"] cmd) (vagrant-options ccfg)))))
+  (shell/passthru (concat ["vagrant"] cmd) (vagrant-options ccfg)))
 
 (S/defn create
   "Create a new cluster"
@@ -59,10 +59,8 @@
   [ccfg :- schema/ClusterConfig args]
   (println "About to DESTROY cluster with configuration:")
   (pprint ccfg)
-  (println "Waiting 10 seconds...")
-  (go
-    (<! (core/safe-wait))
-    (<! (vagrant-cmd ccfg ["destroy"]))))
+  (go (<! (core/safe-wait))
+      (<! (vagrant-cmd ccfg ["destroy"]))))
 
 (S/defn status
   "Print cluster status"
