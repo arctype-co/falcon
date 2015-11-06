@@ -8,8 +8,8 @@
     [falcon.cmd.cluster :as cluster]
     [falcon.cmd.container :as container]
     [falcon.cmd.deploy :as deploy]
-    ;[falcon.cmd.environment :as environment]
-    ;[falcon.cmd.kube :as kube]
+    [falcon.cmd.environment :as environment]
+    [falcon.cmd.kube :as kube]
     [falcon.cmd.service :as service]
     ))
 
@@ -61,7 +61,9 @@
   {"cluster" (cli-exec cluster/cli)
    "container" (cli-exec container/cli)
    "deploy" (cli-exec deploy/cli)
+   "environment" (cli-exec environment/cli)
    "service" (cli-exec service/cli)
+   "kube" (cli-exec kube/cli)
    }
   ;#_[#'cluster #'container #'controller #'deploy #'environment #'kube #'service]
   )

@@ -77,9 +77,7 @@
 
 (def cli
   {:doc "Run a cluster command"
-   :options [["-e" "--environment <env>" "Environment"
-              :default config/default-environment]
-             ["-x" "--cluster <name>" "Cluster name"
+   :options [["-x" "--cluster <name>" "Cluster name"
               :default config/default-cluster]]
    :commands {"create" create
               "destroy" destroy

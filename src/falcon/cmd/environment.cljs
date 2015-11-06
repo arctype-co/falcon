@@ -38,9 +38,6 @@
 
 (def cli
   {:doc "Environment setup"
-   :options [["-e" "--environment <env>" "Environment"
-              :default "local"]
-             ["-x" "--cluster <name>" "Cluster name"
-              :default "main"]]
+   :options []
    :commands {"create" create
               "delete" delete}})

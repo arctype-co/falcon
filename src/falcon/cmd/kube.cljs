@@ -14,27 +14,24 @@
 
 (S/defn pods
   "Get pods status"
-  [{:keys [environment] :as cfg} args]
+  [{:keys [environment] :as opts} args]
   (go
-    (<! (kubectl/run cfg "get" "pods"))))
+    (<! (kubectl/run opts "get" "pods"))))
 
 (S/defn rc
   "Get replication controllers status"
-  [{:keys [environment] :as cfg} args]
+  [{:keys [environment] :as opts} args]
   (go
-    (<! (kubectl/run cfg "get" "rc"))))
+    (<! (kubectl/run opts "get" "rc"))))
 
 (S/defn services
   "Get services status"
-  [{:keys [environment] :as cfg} args]
+  [{:keys [environment] :as opts} args]
   (go
-    (<! (kubectl/run cfg "get" "services"))))
+    (<! (kubectl/run opts "get" "services"))))
 
 (def cli
   {:doc "kubectl"
-   :options [["-e" "--environment <env>" "Environment"
-              :default "local"]
-             ["-x" "--cluster <name>" "Cluster name"
-              :default "main"]]
+   :options []
    :commands {"pods" pods
               "rc" rc}})

@@ -9,6 +9,7 @@
 (def ^:private fs (js/require "fs"))
 (def ^:private yamljs (js/require "yamljs"))
 
+(def default-file "cloud/config.yml")
 (def default-environment "development")
 (def default-cluster "local")
 

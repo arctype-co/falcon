@@ -11,7 +11,9 @@
 
 (def cli-options
   [["-f" "--config-file <file>" "Config file"
-    :default "cloud/config.yml"] 
+    :default config/default-file] 
+   ["-e" "--environment <env>" "Environment"
+    :default config/default-environment]
    ["-h" "--help" "Show this help"
     :default false]])
 

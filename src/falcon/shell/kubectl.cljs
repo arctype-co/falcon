@@ -5,7 +5,7 @@
 
 (def Options
   {:environment S/Str
-   S/Keyword S/Str})
+   S/Keyword S/Any})
 
 (defn- build-flags
   [{:keys [environment]}]

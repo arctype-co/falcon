@@ -38,9 +38,7 @@
 
 (def cli
   {:doc "High-level deployment commands"
-   :options [["-e" "--environment <env>" "Environment"
-              :default config/default-environment]
-             ["-x" "--cluster <name>" "Cluster name"
+   :options [["-x" "--cluster <name>" "Cluster name"
               :default config/default-cluster]
              ["-n" "--no-cache" "Disable docker cache"
               :default false]]
