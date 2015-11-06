@@ -5,7 +5,7 @@
     [cljs.tools.cli :as cli]
     [schema.core :as S]
     [falcon.config :as config]
-    [falcon.core :as core]
+    [falcon.core :as core :refer-macros [require-arguments]]
     [falcon.schema :as schema]
     [falcon.shell :as shell])
   (:require-macros
@@ -75,6 +75,15 @@
     (println ccfg)
     (vagrant-cmd ccfg ["status"])))
 
+(S/defn ssh
+  "SSH into a cluster node"
+  [options :- schema/Options args]
+  (require-arguments
+    args
+    (fn [node]
+      (let [ccfg (cluster-config options)]
+        (vagrant-cmd ccfg ["ssh" node])))))
+
 (def cli
   {:doc "Run a cluster command"
    :options [["-x" "--cluster <name>" "Cluster name"
@@ -83,4 +92,5 @@
               "destroy" destroy
               "up" up
               "down" down
-              "status" status}})
+              "status" status
+              "ssh" ssh}})

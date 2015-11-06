@@ -49,13 +49,13 @@
         command-fn (get cli-commands (first arguments))]
     (cond 
       (some? errors) (println errors)
-      (some? command-fn) (launch! command-fn options stack-options arguments)
+      (some? command-fn) (launch! command-fn options stack-options (vec (rest arguments)))
       :default (print-usage summary cli-commands arguments))))
 
 (defn- cli-exec
   [{:keys [doc options commands]}]
   (fn [stack-options args]
-    (exec! commands options stack-options (vec (rest args)))))
+    (exec! commands options stack-options args)))
 
 (def commands
   {"cluster" (cli-exec cluster/cli)

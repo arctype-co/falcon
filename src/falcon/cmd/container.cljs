@@ -8,57 +8,64 @@
     [falcon.schema :as schema]
     [falcon.shell :as shell]
     [falcon.shell.docker :as docker]
+    [falcon.shell.m4 :as m4]
     [falcon.shell.make :as make])
   (:require-macros
     [cljs.core.async.macros :refer [go]]))
 
-(defn- make-path
+(defn- container-path
   [& path]
   (string/join "/" (concat ["cloud/container"] path)))
 
-(defn- make-opts
-  [tag]
-  {"TAG" tag})
+(defn- m4-defs
+  [{:keys [git-tag] :as opts} params]
+  (merge (m4/defs opts)
+         {"GIT_TAG" git-tag}))
 
-(defn- container-tag
+(defn- full-container-tag
   [repository container tag]
   (str repository "/" container ":" tag))
 
 (S/defn build :- schema/Chan
   "Build a docker image. Returns channel with tag."
-  [{:keys [no-cache tag config]} args]
+  [{:keys [no-cache git-tag container-tag config] :as opts} args]
   (require-arguments
-    (rest args)
+    args
     (fn [container]
-      (let [tag (or tag (core/new-tag))]
+      (let [container-tag (or container-tag (core/new-tag))
+            params {:container container
+                    :container-tag container-tag}]
+        (core/print-summary "Building container" opts params)
         (go
-          (<! (-> (make/run (make-opts tag)
-                            ["-C" (make-path) (str container "/Dockerfile")])
+          (<! (-> (m4/write (m4-defs opts params)
+                            [(container-path container "Dockerfile.m4")]
+                            (container-path container "Dockerfile"))
                   (shell/check-status)))
           (<! (-> (docker/build
                     {:no-cache no-cache}
-                    [(str "-t=" (container-tag (:repository config) container tag)) (make-path container)])
+                    [(str "-t=" (full-container-tag (:repository config) container container-tag))
+                     (container-path container)])
                   (shell/check-status)))
-          (println "Container" container "built with tag:" tag)
-          tag)))))
+          container-tag)))))
 
 (S/defn push :- schema/Chan
   "Push a docker image to the repository. Returns channel with status."
-  [{:keys [config tag]} args]
+  [{:keys [config container-tag]} args]
   (require-arguments
-    (rest args) 
+    args
     (fn [container]
-      (let [tag (or tag (core/new-tag))]
+      (let [container-tag (or container-tag (throw (js/Error. "--container-tag required")))]
         (go 
           (<! (-> (docker/push
                     {}
-                    [(container-tag (:repository config) container tag)])
+                    [(full-container-tag (:repository config) container container-tag)])
                   (shell/check-status))))))))
 
 (def cli 
   {:doc "Container management"
-   :options [["-t" "--tag <tag>" "Container tag"
-              :default nil] 
+   :options [["-t" "--git-tag <tag>" "Git tag"
+              :default "master"]
+             ["-c" "--container-tag <tag>" "Container tag"]
              ["-n" "--no-cache" "Disable docker cache"
               :default false]]
    :commands {"build" build
