@@ -14,19 +14,19 @@
 
 (S/defn pods
   "Get pods status"
-  [{:keys [environment] :as opts} args]
+  [opts args]
   (go
     (<! (kubectl/run opts "get" "pods"))))
 
 (S/defn rc
   "Get replication controllers status"
-  [{:keys [environment] :as opts} args]
+  [opts args]
   (go
     (<! (kubectl/run opts "get" "rc"))))
 
 (S/defn services
   "Get services status"
-  [{:keys [environment] :as opts} args]
+  [opts args]
   (go
     (<! (kubectl/run opts "get" "services"))))
 
@@ -34,4 +34,5 @@
   {:doc "kubectl"
    :options []
    :commands {"pods" pods
-              "rc" rc}})
+              "rc" rc
+              "services" services}})

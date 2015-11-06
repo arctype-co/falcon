@@ -8,6 +8,7 @@
     [falcon.core :as core]
     [falcon.schema :as schema]
     [falcon.shell :as shell]
+    [falcon.shell.m4 :as m4]
     [falcon.shell.make :as make]
     [falcon.shell.kubectl :as kubectl])
   (:require-macros
@@ -18,88 +19,91 @@
   [& path]
   (string/join "/" (concat ["cloud/service"] path)))
 
+(defn- make-service-yml
+  [opts service]
+  (let [defs (m4/base-defs opts)]
+    (m4/write defs [(service-path service "service.yml.m4")] (service-path service "service.yml"))))
+
 (S/defn create
   "Load a service config"
-  [{:keys [environment] :as cfg} args]
+  [opts args]
   (require-arguments
     (rest args)
     (fn [service]
-      (println "Create service from config:")
-      (pprint cfg)
+      (core/print-summary "Create service:" opts {:service service})
       (go
-        (<! (make/run {"ENV" environment} ["-C" (service-path) (str service "/service.yml")]))
-        (<! (kubectl/run cfg "create" "-f" (service-path service "service.yml")))))))
+        (<! (make-service-yml opts service))
+        (<! (kubectl/run opts "create" "-f" (service-path service "service.yml")))))))
 
 (S/defn delete
   "Unload a service config"
-  [{:keys [environment] :as cfg} args]
+  [opts args]
   (require-arguments
     (rest args)
     (fn [service]
-      (println "Delete service from config:")
-      (pprint cfg)
+      (core/print-summary "Delete service:" opts {:service service})
       (go 
         (<! (core/safe-wait))
-        (<! (make/run {"ENV" environment} ["-C" (service-path) (str service "/service.yml")]))
-        (<! (kubectl/run cfg "delete" "-f" (service-path service "service.yml")))))))
+        (<! (make-service-yml opts service))
+        (<! (kubectl/run opts "delete" "-f" (service-path service "service.yml")))))))
 
 (S/defn create-rc
   "Launch a replication controller"
-  [{:keys [environment] :as cfg} args]
+  [{:keys [environment] :as opts} args]
   (require-arguments 
     (rest args)
     (fn [service container-tag]
-      (println "Creating service controller:")
-      (pprint cfg)
       (let [controller-tag (core/new-tag)]
+        (core/print-summary "Create replication controler:" opts {:service service
+                                                                  :controller-tag controller-tag
+                                                                  :container-tag container-tag})
         (go
           (<! (-> (make/run {"ENV" environment
                              "CONTAINER_TAG" container-tag
                              "CONTROLLER_TAG" controller-tag}
                             ["-C" (service-path) (str service "/controller.yml")])
                   (shell/check-status)))
-          (<! (-> (kubectl/run cfg "create" "-f" (service-path service "controller.yml"))
+          (<! (-> (kubectl/run opts "create" "-f" (service-path service "controller.yml"))
                   (shell/check-status))))))))
 
 (S/defn delete-rc
   "Remove a replication controller"
-  [{:keys [environment] :as cfg} args]
+  [opts args]
   (require-arguments 
     (rest args)
     (fn [service controller-tag]
-      (println "Removing service controller:")
-      (pprint cfg)
-      (println "Controller:" controller-tag)
+      (core/print-summary "Delete replication controller:" opts 
+                          {:service service
+                           :controller-tag controller-tag})
       (go
         (<! (core/safe-wait))
-        (<! (kubectl/run cfg "delete" "rc" (str service "." controller-tag)))))))
+        (<! (kubectl/run opts "delete" "rc" (str service "." controller-tag)))))))
 
 (S/defn rolling-update
   "Rolling update a replication controller"
-  [{:keys [environment] :as cfg} args]
+  [{:keys [environment] :as opts} args]
   (require-arguments 
     (rest args)
     (fn [service old-controller-tag container-tag]
-      (println "Rolling update service controller:")
-      (pprint cfg)
       (let [controller-tag (core/new-tag)
             full-old-controller-tag (str service "." old-controller-tag)]
+        (core/print-summary "Rolling update replication controller:" opts
+                            {:service service
+                             :controller-tag controller-tag
+                             :old-controller-tag old-controller-tag})
         (go
           (<! (-> (make/run {"ENV" environment
                              "CONTAINER_TAG" container-tag
                              "CONTROLLER_TAG" controller-tag}
                             ["-C" (service-path) (str service "/controller.yml")])
                   (shell/check-status)))
-          (<! (-> (kubectl/run cfg "rolling-update" full-old-controller-tag "-f" (service-path service "controller.yml"))
+          (<! (-> (kubectl/run opts "rolling-update" full-old-controller-tag "-f" (service-path service "controller.yml"))
                   (shell/check-status))))))))
 
 (def cli
   {:doc "Service configuration and deployment"
    :options
-   [["-e" "--environment <env>" "Environment"
-     :default "local"]
-    ["-x" "--cluster <name>" "Cluster name"
-     :default "main"]]
+   []
    :commands
    {"create" create
     "delete" delete
