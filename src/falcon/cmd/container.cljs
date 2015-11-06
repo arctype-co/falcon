@@ -26,7 +26,7 @@
 
 (S/defn build :- schema/Chan
   "Build a docker image. Returns channel with tag."
-  [{:keys [no-cache tag repository]} args]
+  [{:keys [no-cache tag config]} args]
   (require-arguments
     (rest args)
     (fn [container]
@@ -37,14 +37,14 @@
                   (shell/check-status)))
           (<! (-> (docker/build
                     {:no-cache no-cache}
-                    [(str "-t=" (container-tag repository container tag)) (make-path container)])
+                    [(str "-t=" (container-tag (:repository config) container tag)) (make-path container)])
                   (shell/check-status)))
           (println "Container" container "built with tag:" tag)
           tag)))))
 
 (S/defn push :- schema/Chan
   "Push a docker image to the repository. Returns channel with status."
-  [{:keys [repository tag]} args]
+  [{:keys [config tag]} args]
   (require-arguments
     (rest args) 
     (fn [container]
@@ -52,15 +52,13 @@
         (go 
           (<! (-> (docker/push
                     {}
-                    [(container-tag repository container tag)])
+                    [(container-tag (:repository config) container tag)])
                   (shell/check-status))))))))
 
 (def cli 
   {:doc "Container management"
    :options [["-t" "--tag <tag>" "Container tag"
-              :default nil]
-             ["-r" "--repository <name>" "Docker repository"
-              :default "creeatist"]
+              :default nil] 
              ["-n" "--no-cache" "Disable docker cache"
               :default false]]
    :commands {"build" build

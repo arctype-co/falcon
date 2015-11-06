@@ -20,29 +20,35 @@
 
 (S/defn create
   "Load a service config"
-  [{:keys [environment service] :as cfg} args]
-  (println "Create service from config:")
-  (pprint cfg)
-  (go
-    (<! (make/run {"ENV" environment} ["-C" (service-path) (str service "/service.yml")]))
-    (<! (kubectl/run cfg "create" "-f" (service-path service "service.yml")))))
+  [{:keys [environment] :as cfg} args]
+  (require-arguments
+    (rest args)
+    (fn [service]
+      (println "Create service from config:")
+      (pprint cfg)
+      (go
+        (<! (make/run {"ENV" environment} ["-C" (service-path) (str service "/service.yml")]))
+        (<! (kubectl/run cfg "create" "-f" (service-path service "service.yml")))))))
 
 (S/defn delete
   "Unload a service config"
-  [{:keys [environment service] :as cfg} args]
-  (println "Delete service from config:")
-  (pprint cfg)
-  (go 
-    (<! (core/safe-wait))
-    (<! (make/run {"ENV" environment} ["-C" (service-path) (str service "/service.yml")]))
-    (<! (kubectl/run cfg "delete" "-f" (service-path service "service.yml")))))
+  [{:keys [environment] :as cfg} args]
+  (require-arguments
+    (rest args)
+    (fn [service]
+      (println "Delete service from config:")
+      (pprint cfg)
+      (go 
+        (<! (core/safe-wait))
+        (<! (make/run {"ENV" environment} ["-C" (service-path) (str service "/service.yml")]))
+        (<! (kubectl/run cfg "delete" "-f" (service-path service "service.yml")))))))
 
 (S/defn create-rc
   "Launch a replication controller"
-  [{:keys [environment service] :as cfg} args]
+  [{:keys [environment] :as cfg} args]
   (require-arguments 
-    args
-    (fn [container-tag]
+    (rest args)
+    (fn [service container-tag]
       (println "Creating service controller:")
       (pprint cfg)
       (let [controller-tag (core/new-tag)]
@@ -57,10 +63,10 @@
 
 (S/defn delete-rc
   "Remove a replication controller"
-  [{:keys [environment service] :as cfg} args]
+  [{:keys [environment] :as cfg} args]
   (require-arguments 
-    args
-    (fn [controller-tag]
+    (rest args)
+    (fn [service controller-tag]
       (println "Removing service controller:")
       (pprint cfg)
       (println "Controller:" controller-tag)
@@ -70,10 +76,10 @@
 
 (S/defn rolling-update
   "Rolling update a replication controller"
-  [{:keys [environment service] :as cfg} args]
+  [{:keys [environment] :as cfg} args]
   (require-arguments 
-    args
-    (fn [old-controller-tag container-tag]
+    (rest args)
+    (fn [service old-controller-tag container-tag]
       (println "Rolling update service controller:")
       (pprint cfg)
       (let [controller-tag (core/new-tag)
@@ -89,11 +95,11 @@
 
 (def cli
   {:doc "Service configuration and deployment"
+   :options
    [["-e" "--environment <env>" "Environment"
      :default "local"]
     ["-x" "--cluster <name>" "Cluster name"
-     :default "main"]
-    ["-s" "--service <name>" "Service name"]]
+     :default "main"]]
    :commands
    {"create" create
     "delete" delete

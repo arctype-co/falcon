@@ -7,10 +7,10 @@
     [falcon.schema :as schema]
     [falcon.cmd.cluster :as cluster]
     [falcon.cmd.container :as container]
-    ;[falcon.cmd.deploy :as deploy]
+    [falcon.cmd.deploy :as deploy]
     ;[falcon.cmd.environment :as environment]
     ;[falcon.cmd.kube :as kube]
-    ;[falcon.cmd.service :as service]
+    [falcon.cmd.service :as service]
     ))
 
 (defn- doc-string
@@ -34,8 +34,10 @@
     ; load config once
     (let [stack-options (if (empty? stack-options)
                           {:config (config/read-yml (:config-file options))}
-                          stack-options)]
-      (command-fn (merge stack-options options) args))
+                          stack-options)
+          options (merge stack-options options)]
+      (println options)
+      (command-fn options args))
     (catch js/Error e
       (throw e))))
 
@@ -51,14 +53,16 @@
       (some? command-fn) (launch! command-fn options stack-options arguments)
       :default (print-usage summary cli-commands arguments))))
 
-(defn- exec-fn
+(defn- cli-exec
   [{:keys [doc options commands]}]
   (fn [stack-options args]
     (exec! commands options stack-options (vec (rest args)))))
 
 (def commands
-  {"cluster" (exec-fn cluster/cli)
-   "container" (exec-fn container/cli)
+  {"cluster" (cli-exec cluster/cli)
+   "container" (cli-exec container/cli)
+   "deploy" (cli-exec deploy/cli)
+   "service" (cli-exec service/cli)
    }
   ;#_[#'cluster #'container #'controller #'deploy #'environment #'kube #'service]
   )
