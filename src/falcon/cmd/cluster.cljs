@@ -39,26 +39,31 @@
 
 (S/defn create
   "Create a new cluster"
-  [ccfg :- schema/ClusterConfig args]
-  (println "Creating cluster with configuration:")
-  (pprint ccfg)
-  (vagrant-cmd ccfg ["up"]))
+  [options :- schema/Options args]
+  (let [ccfg (cluster-config options)]
+    (println "Creating cluster with configuration:")
+    (pprint ccfg)
+    (vagrant-cmd ccfg ["up"])))
+
+(def ^{:doc "Bring an existing cluster online"} up create)
 
 (S/defn down
   "Bring a cluster offline"
-  [ccfg :- schema/ClusterConfig args]
-  (println "Bringing cluster offline:")
-  (pprint ccfg)
-  (go (<! (core/safe-wait))
-      (<! (vagrant-cmd ccfg ["halt"]))))
+  [options :- schema/Options args]
+  (let [ccfg (cluster-config options)]
+    (println "Bringing cluster offline:")
+    (pprint ccfg)
+    (go (<! (core/safe-wait))
+        (<! (vagrant-cmd ccfg ["halt"])))))
 
 (S/defn destroy
   "Destroy a cluster"
-  [ccfg :- schema/ClusterConfig args]
-  (println "About to DESTROY cluster with configuration:")
-  (pprint ccfg)
-  (go (<! (core/safe-wait))
-      (<! (vagrant-cmd ccfg ["destroy"]))))
+  [options :- schema/Options args]
+  (let [ccfg (cluster-config options)]
+    (println "About to DESTROY cluster with configuration:")
+    (pprint ccfg)
+    (go (<! (core/safe-wait))
+        (<! (vagrant-cmd ccfg ["destroy"])))))
 
 (S/defn status
   "Print cluster status"
@@ -74,6 +79,7 @@
              ["-x" "--cluster <name>" "Cluster name"
               :default "main"]]
    :commands {"create" create
-              "down" down
               "destroy" destroy
+              "up" up
+              "down" down
               "status" status}})

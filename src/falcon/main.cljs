@@ -4,7 +4,7 @@
     [schema.core :as S]
     [falcon.config :as config]
     [falcon.core :as core]
-    [falcon.cmd :as cmd :refer-macros [ns-command]]
+    [falcon.cmd :as cmd :refer [commands]]
     [falcon.schema :as schema]))
 
 (nodejs/enable-util-print!)
@@ -14,11 +14,6 @@
     :default "cloud/config.yml"] 
    ["-h" "--help" "Show this help"
     :default false]])
-
-(def commands
-  {"cluster" (cmd/exec-fn falcon.cmd.cluster.cli)}
-  ;#_[#'cluster #'container #'controller #'deploy #'environment #'kube #'service]
-  )
 
 (defn -main [& args]
   (S/set-fn-validation! true)

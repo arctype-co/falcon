@@ -6,7 +6,7 @@
     [falcon.config :as config]
     [falcon.schema :as schema]
     [falcon.cmd.cluster :as cluster]
-    ;[falcon.cmd.container :as container]
+    [falcon.cmd.container :as container]
     ;[falcon.cmd.deploy :as deploy]
     ;[falcon.cmd.environment :as environment]
     ;[falcon.cmd.kube :as kube]
@@ -51,7 +51,14 @@
       (some? command-fn) (launch! command-fn options stack-options arguments)
       :default (print-usage summary cli-commands arguments))))
 
-(defn exec-fn
+(defn- exec-fn
   [{:keys [doc options commands]}]
   (fn [stack-options args]
     (exec! commands options stack-options (vec (rest args)))))
+
+(def commands
+  {"cluster" (exec-fn cluster/cli)
+   "container" (exec-fn container/cli)
+   }
+  ;#_[#'cluster #'container #'controller #'deploy #'environment #'kube #'service]
+  )

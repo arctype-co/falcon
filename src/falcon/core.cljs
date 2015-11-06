@@ -7,8 +7,9 @@
 (defn new-tag
   []
   (let [now (js/Date.)]
-    (str (.getFullYear now) "-" (+ 1 (.getMonth now)) "-" (.getDate now)
-         "." (gstring/format "%02d%02d%02d" (.getHours now) (.getMinutes now) (.getSeconds now)))))
+    (gstring/format "%04d-%02d-%02d.%02d%02d%02d"
+                    (.getFullYear now) (+ 1 (.getMonth now)) (.getDate now)
+                    (.getHours now) (.getMinutes now) (.getSeconds now))))
 
 (defn- safe-wait
   []
