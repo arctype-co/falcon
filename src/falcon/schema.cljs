@@ -4,8 +4,7 @@
     [schema.core :as S]))
 
 (def Options
-  {:config S/Str
-   :help S/Bool})
+  {S/Keyword S/Any})
 
 (def Command
   {:options Options

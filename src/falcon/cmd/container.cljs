@@ -1,4 +1,4 @@
-(ns falcon.container
+(ns falcon.cmd.container
   (:require
     [clojure.string :as string]
     [cljs.core.async :as async :refer [<!]]
@@ -11,15 +11,6 @@
     [falcon.shell.make :as make])
   (:require-macros
     [cljs.core.async.macros :refer [go]]))
-
-(def ^:private cli-options
-  [["-x" "--container <name>" "Container name"]
-   ["-t" "--tag <tag>" "Container tag"
-    :default nil]
-   ["-n" "--no-cache" "Disable docker cache"
-    :default false]])
-
-(def ^:private repository "creeatist")
 
 (defn- make-path
   [& path]
@@ -58,18 +49,14 @@
                 [(container-tag container tag)])
               (shell/check-status))))))
 
-(S/defn command
-  "Return the cluster configuration"
-  [function
-   config :- schema/Config
-   {:keys [arguments]} :- schema/Command]
-  (let [{:keys [arguments options errors summary]} (cli/parse-opts arguments cli-options)
-        {:keys [container]} options]
-    (cond
-      (some? errors)
-      (println errors)
-
-      (some? container)
-      (function options (vec (rest arguments)))
-
-      :default (println summary))))
+(def cli 
+  {:doc "Container management"
+   :options [["-x" "--container <name>" "Container name"]
+             ["-t" "--tag <tag>" "Container tag"
+              :default nil]
+             ["-r" "--repository <name>" "Docker repository"
+              :default "creeatist"]
+             ["-n" "--no-cache" "Disable docker cache"
+              :default false]]
+   :commands {"build" build
+              "push" push}})

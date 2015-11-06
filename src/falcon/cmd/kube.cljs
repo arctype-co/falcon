@@ -1,4 +1,4 @@
-(ns falcon.kube
+(ns falcon.cmd.kube
   (:require
     [clojure.string :as string]
     [cljs.core.async :as async :refer [<!]]
@@ -11,12 +11,6 @@
   (:require-macros
     [falcon.core :refer [require-arguments]]
     [cljs.core.async.macros :refer [go]]))
-
-(def ^:private cli-options
-  [["-e" "--environment <env>" "Environment"
-    :default "local"]
-   ["-x" "--cluster <name>" "Cluster name"
-    :default "main"]])
 
 (S/defn pods
   "Get pods status"
@@ -36,18 +30,11 @@
   (go
     (<! (kubectl/run cfg "get" "services"))))
 
-(S/defn command
-  "Run a kube command"
-  [function
-   config :- schema/Config
-   {:keys [arguments]} :- schema/Command]
-  (let [{:keys [arguments options errors summary]} (cli/parse-opts arguments cli-options)
-        {:keys [environment cluster]} options]
-    (cond
-      (some? errors) 
-      (println errors)
-
-      (= "help" (second arguments))
-      (println summary)
-
-      :default (function options (vec (rest arguments))))))
+(def cli
+  {:doc "kubectl"
+   :options [["-e" "--environment <env>" "Environment"
+              :default "local"]
+             ["-x" "--cluster <name>" "Cluster name"
+              :default "main"]]
+   :commands {"pods" pods
+              "rc" rc}})

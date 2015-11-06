@@ -1,4 +1,4 @@
-(ns falcon.cluster
+(ns falcon.cmd.cluster
   (:require 
     [cljs.pprint :refer [pprint]]
     [cljs.core.async :as async :refer [<!]]
@@ -10,12 +10,6 @@
     [falcon.shell :as shell])
   (:require-macros
     [cljs.core.async.macros :refer [go]]))
-
-(def ^:private cli-options
-  [["-e" "--environment <env>" "Environment"
-    :default "local"]
-   ["-x" "--cluster <name>" "Cluster name"
-    :default "main"]])
 
 (defn- vagrant-dir
   []
@@ -34,6 +28,10 @@
     "USE_KUBE_UI" (str (get ccfg "kube-ui"))
     "BASE_IP_ADDR" (str get ccfg "base-ip")
     }})
+
+(S/defn ^:private cluster-config :- schema/ClusterConfig
+  [options]
+  (get-in options [:config (:environment options) "clusters" (:cluster options)]))
 
 (defn- vagrant-cmd
   [ccfg cmd]
@@ -64,17 +62,18 @@
 
 (S/defn status
   "Print cluster status"
-  [ccfg :- schema/ClusterConfig args]
-  (vagrant-cmd ccfg ["status"]))
+  [options :- schema/Options args]
+  (let [ccfg (cluster-config options)]
+    (println ccfg)
+    (vagrant-cmd ccfg ["status"])))
 
-(S/defn command
-  "Run a cluster command"
-  [function
-   config :- schema/Config
-   {:keys [arguments]} :- schema/Command]
-  (let [{:keys [options errors summary]} (cli/parse-opts arguments cli-options)
-        {:keys [environment cluster]} options]
-    (cond
-      (some? errors) (println errors)
-      (some? cluster) (function (get-in config [environment "clusters" cluster]) arguments)
-      :default (println summary))))
+(def cli
+  {:doc "Run a cluster command"
+   :options [["-e" "--environment <env>" "Environment"
+              :default "local"]
+             ["-x" "--cluster <name>" "Cluster name"
+              :default "main"]]
+   :commands {"create" create
+              "down" down
+              "destroy" destroy
+              "status" status}})

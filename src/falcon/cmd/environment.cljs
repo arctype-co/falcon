@@ -1,4 +1,4 @@
-(ns falcon.environment
+(ns falcon.cmd.environment
   (:require
     [clojure.string :as string]
     [cljs.core.async :as async :refer [<!]]
@@ -11,12 +11,6 @@
     [falcon.shell.make :as make])
   (:require-macros
     [cljs.core.async.macros :refer [go]]))
-
-(def ^:private cli-options
-  [["-e" "--environment <env>" "Environment"
-    :default "local"]
-   ["-x" "--cluster <name>" "Cluster name"
-    :default "main"]])
 
 (defn- make-path
   [& path]
@@ -42,18 +36,11 @@
                   ["-C" (make-path) "environment/namespace.yml"]))
     (<! (kubectl/run cfg "delete" "-f" (make-path "environment" "namespace.yml")))))
 
-(S/defn command
-  "Run a command"
-  [function
-   config :- schema/Config
-   {:keys [arguments]} :- schema/Command]
-  (let [{:keys [options errors summary]} (cli/parse-opts arguments cli-options)
-        {:keys [environment cluster]} options]
-    (cond
-      (some? errors) 
-      (println errors)
-
-      (and (some? cluster) (some? environment))
-      (function options arguments)
-
-      :default (println summary))))
+(def cli
+  {:doc "Environment setup"
+   :options [["-e" "--environment <env>" "Environment"
+              :default "local"]
+             ["-x" "--cluster <name>" "Cluster name"
+              :default "main"]]
+   :commands {"create" create
+              "delete" delete}})

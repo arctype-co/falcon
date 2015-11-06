@@ -1,4 +1,4 @@
-(ns falcon.service
+(ns falcon.cmd.service
   (:require
     [clojure.string :as string]
     [cljs.core.async :as async :refer [<!]]
@@ -13,13 +13,6 @@
   (:require-macros
     [falcon.core :refer [require-arguments]]
     [cljs.core.async.macros :refer [go]]))
-
-(def ^:private cli-options
-  [["-e" "--environment <env>" "Environment"
-    :default "local"]
-   ["-x" "--cluster <name>" "Cluster name"
-    :default "main"]
-   ["-s" "--service <name>" "Service name"]])
 
 (defn- service-path
   [& path]
@@ -94,18 +87,16 @@
           (<! (-> (kubectl/run cfg "rolling-update" full-old-controller-tag "-f" (service-path service "controller.yml"))
                   (shell/check-status))))))))
 
-(S/defn command
-  "Run a service command"
-  [function
-   config :- schema/Config
-   {:keys [arguments]} :- schema/Command]
-  (let [{:keys [arguments options errors summary]} (cli/parse-opts arguments cli-options)
-        {:keys [environment cluster service]} options]
-    (cond
-      (some? errors) 
-      (println errors)
-
-      (and (some? cluster) (some? service))
-      (function options (vec (rest arguments)))
-
-      :default (println summary))))
+(def cli
+  {:doc "Service configuration and deployment"
+   [["-e" "--environment <env>" "Environment"
+     :default "local"]
+    ["-x" "--cluster <name>" "Cluster name"
+     :default "main"]
+    ["-s" "--service <name>" "Service name"]]
+   :commands
+   {"create" create
+    "delete" delete
+    "create-rc" create-rc
+    "delete-rc" delete-rc
+    "rolling-update" "rolling-update"}})
