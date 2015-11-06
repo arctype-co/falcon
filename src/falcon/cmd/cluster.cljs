@@ -19,19 +19,22 @@
   [ccfg :- schema/ClusterConfig]
   {:cwd (vagrant-dir) 
    :env
-   {"NODES" (str (:nodes ccfg))
-    "CHANNEL" (str (:coreos-channel ccfg))
-    "MASTER_MEM" (str (:master-mem-mb ccfg))
-    "MASTER_CPUS" (str (:master-cpus ccfg))
-    "NODE_MEM" (str (:node-mem-mb ccfg))
-    "NODE_CPUS" (str (:node-cpus ccfg))
-    "USE_KUBE_UI" (str (:kube-ui ccfg))
-    "BASE_IP_ADDR" (str (:base-ip ccfg))
-    }})
+   (cond->
+     {"NODES" (str (:nodes ccfg))
+      "CHANNEL" (str (:coreos-channel ccfg))
+      "MASTER_MEM" (str (:master-mem-mb ccfg))
+      "MASTER_CPUS" (str (:master-cpus ccfg))
+      "NODE_MEM" (str (:node-mem-mb ccfg))
+      "NODE_CPUS" (str (:node-cpus ccfg))
+      "USE_KUBE_UI" (str (:kube-ui ccfg))}
+     (some? (:base-ip ccfg)) (assoc "BASE_IP_ADDR" (str (:base-ip ccfg))))})
 
 (S/defn ^:private cluster-config :- schema/ClusterConfig
   [options]
-  (get-in options [:config :clusters (:cluster options)]))
+  (let [ccfg (get-in options [:config :clusters (keyword (:cluster options))])]
+    (if (nil? ccfg)
+      (throw (js/Error. (str "Cluster not defined: " (:cluster options))))
+      ccfg)))
 
 (defn- vagrant-cmd
   [ccfg cmd]
@@ -75,9 +78,9 @@
 (def cli
   {:doc "Run a cluster command"
    :options [["-e" "--environment <env>" "Environment"
-              :default "development"]
+              :default config/default-environment]
              ["-x" "--cluster <name>" "Cluster name"
-              :default "local"]]
+              :default config/default-cluster]]
    :commands {"create" create
               "destroy" destroy
               "up" up

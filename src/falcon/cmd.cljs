@@ -36,7 +36,6 @@
                           {:config (config/read-yml (:config-file options))}
                           stack-options)
           options (merge stack-options options)]
-      (println options)
       (command-fn options args))
     (catch js/Error e
       (throw e))))

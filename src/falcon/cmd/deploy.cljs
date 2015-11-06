@@ -5,6 +5,7 @@
     [cljs.pprint :refer [pprint]]
     [cljs.tools.cli :as cli]
     [schema.core :as S]
+    [falcon.config :as config]
     [falcon.core :as core]
     [falcon.schema :as schema]
     [falcon.cmd.container :as container-ns]
@@ -38,9 +39,9 @@
 (def cli
   {:doc "High-level deployment commands"
    :options [["-e" "--environment <env>" "Environment"
-              :default "local"]
+              :default config/default-environment]
              ["-x" "--cluster <name>" "Cluster name"
-              :default "main"]
+              :default config/default-cluster]
              ["-n" "--no-cache" "Disable docker cache"
               :default false]]
    :commands {"create" create
