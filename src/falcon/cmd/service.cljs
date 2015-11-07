@@ -10,7 +10,8 @@
     [falcon.shell :as shell]
     [falcon.shell.m4 :as m4]
     [falcon.shell.make :as make]
-    [falcon.shell.kubectl :as kubectl])
+    [falcon.shell.kubectl :as kubectl]
+    [falcon.cmd.kube :as kube])
   (:require-macros
     [falcon.core :refer [require-arguments]]
     [cljs.core.async.macros :refer [go]]))
@@ -33,6 +34,21 @@
                   [(service-path service (str yml-name ".m4"))]
                   (service-path service yml-name))
         (shell/check-status))))
+
+(S/defn list-services
+  "List running services"
+  [opts args]
+  (go
+    (<! (kube/services opts args))
+    (<! (kube/rc opts args))))
+
+(S/defn status
+  "Show all applications' status"
+  [opts args]
+  (go
+    (<! (kube/services opts args))
+    (<! (kube/rc opts args))
+    (<! (kube/pods opts args))))
 
 (S/defn create
   "Load a service config"
@@ -61,7 +77,7 @@
 
 (S/defn create-rc
   "Launch a replication controller"
-  [{:keys [environment] :as opts} args]
+  [opts args]
   (require-arguments 
     args
     (fn [service container-tag]
@@ -91,7 +107,7 @@
 
 (S/defn rolling-update
   "Rolling update a replication controller"
-  [{:keys [environment] :as opts} args]
+  [opts args]
   (require-arguments 
     args
     (fn [service old-controller-tag container-tag]
@@ -99,6 +115,7 @@
             full-old-controller-tag (str service "." old-controller-tag)
             params {:service service
                     :controller-tag controller-tag
+                    :container-tag container-tag
                     :old-controller-tag old-controller-tag}]
         (core/print-summary "Rolling update replication controller:" opts params)
         (go
@@ -115,4 +132,6 @@
     "delete" delete
     "create-rc" create-rc
     "delete-rc" delete-rc
-    "rolling-update" "rolling-update"}})
+    "list" list-services
+    "status" status
+    "rolling-update" rolling-update}})

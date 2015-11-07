@@ -15,8 +15,11 @@
 
 (defn- doc-string
   [fn-var]
-  (let [doc (:doc (meta fn-var))]
-    (string/trim (reduce str (drop 2 (string/split doc #"\n"))))))
+  (let [doc (:doc (meta fn-var))
+        schema-doc (string/trim (reduce str (drop 2 (string/split doc #"\n"))))]
+    (if (empty? schema-doc)
+      (if (nil? doc) "" doc)
+      schema-doc)))
 
 (defn- print-usage
   [options-summary commands invoked-args]
@@ -54,8 +57,10 @@
 
 (defn- cli-exec
   [{:keys [doc options commands]}]
-  (fn [stack-options args]
-    (exec! commands options stack-options args)))
+  (with-meta
+    (fn [stack-options args]
+      (exec! commands options stack-options args))
+    {:doc doc}))
 
 (def commands
   {"cluster" (cli-exec cluster/cli)
@@ -64,6 +69,4 @@
    "environment" (cli-exec environment/cli)
    "service" (cli-exec service/cli)
    "kube" (cli-exec kube/cli)
-   }
-  ;#_[#'cluster #'container #'controller #'deploy #'environment #'kube #'service]
-  )
+   })

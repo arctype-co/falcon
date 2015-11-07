@@ -26,7 +26,7 @@
   [repository container tag]
   (str repository "/" container ":" tag))
 
-(S/defn build :- schema/Chan
+(S/defn build
   "Build a docker image. Returns channel with tag."
   [{:keys [no-cache git-tag container-tag config] :as opts} args]
   (require-arguments
@@ -48,7 +48,7 @@
                   (shell/check-status)))
           container-tag)))))
 
-(S/defn push :- schema/Chan
+(S/defn push
   "Push a docker image to the repository. Returns channel with status."
   [{:keys [config container-tag]} args]
   (require-arguments

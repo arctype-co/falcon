@@ -26,7 +26,9 @@
       "MASTER_CPUS" (str (:master-cpus ccfg))
       "NODE_MEM" (str (:node-mem-mb ccfg))
       "NODE_CPUS" (str (:node-cpus ccfg))
+      "USE_DOCKERCFG" "true" ; use docker config from the host machine
       "USE_KUBE_UI" (str (:kube-ui ccfg))}
+     (some? (:dockercfg ccfg)) (assoc "DOCKERCFG" (str (:dockercfg ccfg)))
      (some? (:base-ip ccfg)) (assoc "BASE_IP_ADDR" (str (:base-ip ccfg))))})
 
 (S/defn ^:private cluster-config :- schema/ClusterConfig

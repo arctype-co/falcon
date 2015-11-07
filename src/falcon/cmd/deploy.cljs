@@ -37,8 +37,9 @@
                     :old-controller-tag old-controller-tag}]
         (core/print-summary "Rolling deployment:" opts params)
         (go
-          (let [container-tag (or container-tag (<! (container-ns/build opts [service])))]
-            (<! (container-ns/push (assoc opts :container-tag container-tag) [service]))
+          (let [container-tag (or container-tag (<! (container-ns/build opts [service])))
+                opts (assoc opts :container-tag container-tag)]
+            (<! (container-ns/push opts [service]))
             (<! (service-ns/rolling-update opts [service old-controller-tag container-tag]))))))))
 
 (def cli

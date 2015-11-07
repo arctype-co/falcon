@@ -24,6 +24,7 @@
    (S/required-key :node-mem-mb) S/Int
    (S/required-key :node-cpus) S/Int
    (S/required-key :kube-ui) S/Bool
+   (S/optional-key :dockercfg) S/Str 
    (S/optional-key :base-ip) VagrantBaseIp})
 
 (def EnvironmentConfig
