@@ -18,9 +18,10 @@
   (string/join "/" (concat ["cloud/container"] path)))
 
 (defn- m4-defs
-  [{:keys [git-tag] :as opts} params]
+  [{:keys [config git-tag] :as opts} params]
   (merge (m4/defs opts)
-         {"GIT_TAG" git-tag}))
+         {"GIT_TAG" git-tag
+          "LOGGLY_TOKEN" (get-in config [:loggly :token])}))
 
 (defn- full-container-tag
   [repository container tag]
@@ -34,10 +35,12 @@
     (fn [container]
       (let [container-tag (or container-tag (core/new-tag))
             params {:container container
-                    :container-tag container-tag}]
+                    :container-tag container-tag}
+            defs (m4-defs opts params)]
         (core/print-summary "Building container" opts params)
         (go
-          (<! (-> (m4/write (m4-defs opts params)
+          (<! (-> (make/run defs ["-C" (container-path container)])))
+          (<! (-> (m4/write defs
                             [(container-path container "Dockerfile.m4")]
                             (container-path container "Dockerfile"))
                   (shell/check-status)))

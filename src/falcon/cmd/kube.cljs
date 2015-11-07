@@ -38,10 +38,20 @@
   (go
     (<! (kubectl/run opts "get" "services"))))
 
+(S/defn sh
+  "Launch a shell in a pod"
+  [opts args]
+  (require-arguments
+    args
+    (fn [pod]
+      (go 
+        (<! (kubectl/run opts "exec" "-i" "--tty" "-p" pod "bash"))))))
+
 (def cli
-  {:doc "kubectl"
+  {:doc "Integrated kubectl commands"
    :options []
    :commands {"logs" logs
               "pods" pods
               "rc" rc
+              "sh" sh
               "services" services}})

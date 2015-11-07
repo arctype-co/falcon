@@ -1,5 +1,6 @@
 (ns falcon.core
   (:require
+    [clojure.string :as string]
     [cljs.core.async :as async]
     [cljs.pprint :refer [pprint]]
     [goog.string :as gstring]
@@ -21,3 +22,11 @@
   [message opts details]
   (println message)
   (pprint (merge (select-keys opts [:environment :cluster]) details)))
+
+(defn base64
+  [str-val]
+  (-> (js/Buffer. (str str-val)) (.toString "base64")))
+
+(defn cloud-path
+  [& path]
+  (string/join "/" (concat ["cloud/service"] path)))

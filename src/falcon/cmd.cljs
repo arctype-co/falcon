@@ -10,8 +10,8 @@
     [falcon.cmd.deploy :as deploy]
     [falcon.cmd.environment :as environment]
     [falcon.cmd.kube :as kube]
-    [falcon.cmd.service :as service]
-    ))
+    [falcon.cmd.secret :as secret]
+    [falcon.cmd.service :as service]))
 
 (defn- doc-string
   [fn-var]
@@ -67,6 +67,7 @@
    "container" (cli-exec container/cli)
    "deploy" (cli-exec deploy/cli)
    "environment" (cli-exec environment/cli)
+   "secret" (cli-exec secret/cli)
    "service" (cli-exec service/cli)
    "kube" (cli-exec kube/cli)
    })

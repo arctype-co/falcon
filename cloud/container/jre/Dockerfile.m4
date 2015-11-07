@@ -1,4 +1,4 @@
-FROM __REPOSITORY__/base
+FROM REPOSITORY/base
 
 #  Authorship
 MAINTAINER ryan.sundberg@gmail.com

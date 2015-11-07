@@ -1,14 +1,14 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: openvpn
+  name: SERVICE
   labels:
-     name: openvpn
+     name: SERVICE
 spec:
   ports:
     - port: 1194
       targetPort: 1194
       protocol: TCP
   selector:
-    name: openvpn
+    name: SERVICE
   type: LoadBalancer

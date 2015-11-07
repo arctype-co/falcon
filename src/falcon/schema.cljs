@@ -7,8 +7,8 @@
   {S/Keyword S/Any})
 
 (def Command
-  {:options Options
-   :arguments [S/Str]
+  {(S/required-key :options) Options
+   (S/required-key :arguments) [S/Str]
    (S/optional-key :errors) S/Any
    (S/optional-key :summary) S/Any})
 
@@ -30,8 +30,12 @@
 (def EnvironmentConfig
   {})
 
+(def LogglyConfig
+  {(S/required-key :token) S/Str})
+
 (def Config
   {(S/required-key :clusters) {S/Keyword ClusterConfig}
-   (S/required-key :repository) S/Str})
+   (S/required-key :repository) S/Str
+   (S/optional-key :loggly) LogglyConfig})
 
 (def Chan js/Object)

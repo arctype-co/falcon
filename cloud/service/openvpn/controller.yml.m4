@@ -1,23 +1,22 @@
-# Does not work
 # Requires privileged execution
 kind: ReplicationController
 apiVersion: v1
 metadata:
-  name: openvpn
+  name: SERVICE
   labels:
-    name: openvpn
+    name: SERVICE
 spec:
   replicas: 1
   selector:
-    name: openvpn
+    name: SERVICE
   template:
     metadata:
       labels:
-        name: openvpn
+        name: SERVICE
     spec:
       containers:
-        - name: openvpn
-          image: gcr.io/etheride-984/openvpn
+        - name: SERVICE
+          image: REPOSITORY/openvpn:CONTAINER_TAG
           ports:
             - containerPort: 1194
               hostPort: 1194

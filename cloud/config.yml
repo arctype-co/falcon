@@ -1,4 +1,6 @@
 repository: creeatist
+loggly:
+  token: 5741714c-b518-43a8-8968-bf971771a7ae
 clusters:
   local:
     provider: vagrant

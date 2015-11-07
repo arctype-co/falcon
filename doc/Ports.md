@@ -7,9 +7,11 @@
 
 ## Applications
 port | protocol | description
+514  | rsyslog | syslogd
 4000 | http | www.chowder.us
 4001 | etcd | CoreOS etcd
 4501 | http | Chowdr API service
+4514 | rsyslog | Loggly syslogd
 
 9200 | elk | ELK stack
 5514 | elk | ELK stack

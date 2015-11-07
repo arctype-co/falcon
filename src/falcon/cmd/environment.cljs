@@ -5,6 +5,7 @@
     [cljs.pprint :refer [pprint]]
     [cljs.tools.cli :as cli]
     [schema.core :as S]
+    [falcon.core :as core :refer [cloud-path]]
     [falcon.schema :as schema]
     [falcon.shell :as shell]
     [falcon.shell.kubectl :as kubectl]
@@ -12,18 +13,14 @@
   (:require-macros
     [cljs.core.async.macros :refer [go]]))
 
-(defn- make-path
-  [& path]
-  (string/join "/" (concat ["cloud/service"] path)))
-
 (S/defn create
   "Create a new environment (namespace)"
   [{:keys [environment] :as cfg} args]
   (println "Creating namespace: " cfg)
   (go 
     (<! (make/run {"ENV" environment}
-              ["-C" (make-path) "environment/namespace.yml"]))
-    (<! (kubectl/run cfg "create" "-f" (make-path "environment" "namespace.yml")))))
+              ["-C" (cloud-path) "environment/namespace.yml"]))
+    (<! (kubectl/run cfg "create" "-f" (cloud-path "environment" "namespace.yml")))))
 
 (S/defn delete
   "Delete an environment (namespace)"
@@ -33,8 +30,8 @@
   (go 
     (<! (async/timeout 10000))
     (<! (make/run {"ENV" environment}
-                  ["-C" (make-path) "environment/namespace.yml"]))
-    (<! (kubectl/run cfg "delete" "-f" (make-path "environment" "namespace.yml")))))
+                  ["-C" (cloud-path) "environment/namespace.yml"]))
+    (<! (kubectl/run cfg "delete" "-f" (cloud-path "environment" "namespace.yml")))))
 
 (def cli
   {:doc "Environment setup"
