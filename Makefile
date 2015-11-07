@@ -4,6 +4,8 @@ all: node_modules bin/falcon.js
 
 deps:
 	lein deps
+	git submodule init
+	git submodule update --remote
 
 node_modules: deps project.clj
 	lein npm update

@@ -11,6 +11,15 @@ clusters:
     node-mem-mb: 4096
     node-cpus: 1
     kube-ui: true
+  dalek:
+    provider: vagrant
+    nodes: 3
+    coreos-channel: alpha
+    master-mem-mb: 2048
+    master-cpus: 1
+    node-mem-mb: 8192
+    node-cpus: 1
+    kube-ui: true
     # base-ip: "10.100.0.0" # causes errors
     
 #  environments:
