@@ -10,3 +10,9 @@ clusters:
     node-cpus: 1
     kube-ui: true
     # base-ip: "10.100.0.0" # causes errors
+    
+#  environments:
+#    development:
+#      services:
+#        chowder-api:
+#        www:

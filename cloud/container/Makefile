@@ -32,6 +32,9 @@ base-image: base/Dockerfile
 base-image-push: base-image
 	$(DOCKER) push $(REPO)/base:$(TAG)
 
+chowder-api/Dockerfile: chowder-api/Dockerfile.m4
+	$(M4) -D__APP_TAG__=$(APP_TAG) $^ > $@
+
 crossbar/Dockerfile: crossbar/Dockerfile.m4
 	$(M4) $^ > $@
 

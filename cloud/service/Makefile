@@ -5,7 +5,7 @@ CONTROLLER_TAG=latest
 CONTAINER_TAG=latest
 M4=m4 -D__REPOSITORY__=$(REPO) -D__TAG__=$(CONTROLLER_TAG) -D__DOCKER_TAG__=$(CONTAINER_TAG) -D__ENVIRONMENT__=$(ENV)
 KUBECTL=kubectl --namespace=$(ENV)
-CONFIGS=app/controller.yml app/secrets.yml app/service.yml crossbar/controller.yml crossbar/service.yml environment/namespace.yml riak-kv/controller.yml riak-kv/secrets.yml riak-kv/service.yml www/controller.yml www/service.yml
+CONFIGS=app/controller.yml app/secrets.yml app/service.yml crossbar/controller.yml crossbar/service.yml environment/namespace.yml riak-kv/controller.yml riak-kv/secrets.yml riak-kv/service.yml www/controller.yml www/service.yml chowder-api/controller.yml chowder-api/service.yml
 DEPLOYS=app/create app/delete app/update crossbar/create crossbar/delete environment/create riak-kv/create-node
 
 # App specific
@@ -43,13 +43,16 @@ secrets:
 services:
 	$(KUBECTL) get services
 
+%/controller.yml:
+	$(M4) $*/controller.yml.m4 > $@
+
+%/service.yml:
+	$(M4) $*/service.yml.m4 > $@
+
 app/secrets.yml: app/secrets.yml.m4
 	$(M4) -D__ETHERIDE_EDN_BASE64__=$$(base64 "app/etheride.edn.$(ENV)") $^ > $@
 
 app/controller.yml: app/controller.yml.m4
-	$(M4) $^ > $@
-
-app/service.yml: app/service.yml.m4
 	$(M4) $^ > $@
 
 app/create: app/secrets.yml app/controller.yml app/service.yml | announce
@@ -68,9 +71,6 @@ app/update: app/secrets.yml app/controller.yml | announce
 	$(KUBECTL) rolling-update app-$(OLD_TAG) -f app/controller.yml
 
 crossbar/controller.yml: crossbar/controller.yml.m4
-	$(M4) $^ > $@
-
-crossbar/service.yml: crossbar/service.yml.m4
 	$(M4) $^ > $@
 
 crossbar/create: crossbar/controller.yml crossbar/service.yml | announce
@@ -93,9 +93,6 @@ riak-kv/secrets.yml: riak-kv/secrets.yml.m4
 		-D__CLUSTER_SIZE_BASE64__=$$(base64 <<< $(RIAK_CLUSTER_SIZE)) \
 	 	$^ > $@
 
-riak-kv/service.yml: riak-kv/service.yml.m4
-	$(M4) $^ > $@
-
 riak-kv/create-cluster: riak-kv/controller.yml riak-kv/service.yml riak-kv/secrets.yml | announce
 	$(KUBECTL) create -f riak-kv/secrets.yml
 	$(KUBECTL) create -f riak-kv/service.yml
@@ -112,7 +109,4 @@ riak-kv/delete-cluster: | announce
 	$(KUBECTL) delete -f riak-kv/secrets.yml
 
 www/controller.yml: www/controller.yml.m4
-	$(M4) $^ > $@
-
-www/service.yml: www/service.yml.m4
 	$(M4) $^ > $@
