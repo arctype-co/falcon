@@ -1,7 +1,9 @@
 #!/bin/sh
-PACKAGES=virtualbox-5.0 openjdk-8-jdk npm git
+SYSADMIN_PACKAGES=vim screen
+FALCON_PACKAGES=virtualbox-5.0 openjdk-8-jdk npm git
 
-apt-get install -y $PACKAGES
+apt-get install -y $SYSADMIN_PACKAGES
+apt-get install -y $FALCON_PACKAGES
 
 # Alias node js
 ln -s /usr/bin/nodejs /usr/bin/node
