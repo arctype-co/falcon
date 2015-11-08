@@ -1,6 +1,6 @@
 #!/bin/sh
-SYSADMIN_PACKAGES=vim screen
-FALCON_PACKAGES=virtualbox-5.0 openjdk-8-jdk npm git
+SYSADMIN_PACKAGES="vim screen"
+FALCON_PACKAGES="virtualbox-5.0 openjdk-8-jdk npm git"
 
 apt-get install -y $SYSADMIN_PACKAGES
 apt-get install -y $FALCON_PACKAGES
