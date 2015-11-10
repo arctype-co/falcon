@@ -28,9 +28,8 @@
    ;(S/optional-key :base-ip) VagrantBaseIp ; buggy, not allowed
    })
 
-(def UbuntuClusterCOnfig
-  {(S/required-key :provider) (S/enum "ubuntu")
-   S/Keyword S/Any})
+(def UbuntuClusterConfig
+  {(S/required-key :provider) (S/enum "native")})
 
 (def ClusterConfig
   (S/either VagrantClusterConfig UbuntuClusterConfig))
