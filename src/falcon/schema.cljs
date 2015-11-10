@@ -15,7 +15,7 @@
 (def VagrantBaseIp
   (S/pred (fn [addr] (= 4 (count (string/split addr #"\."))))))
 
-(def ClusterConfig
+(def VagrantClusterConfig
   {(S/required-key :provider) (S/enum "vagrant")
    (S/required-key :nodes) S/Int
    (S/required-key :coreos-channel) S/Str
@@ -25,7 +25,15 @@
    (S/required-key :node-cpus) S/Int
    (S/required-key :kube-ui) S/Bool
    (S/optional-key :dockercfg) S/Str 
-   (S/optional-key :base-ip) VagrantBaseIp})
+   ;(S/optional-key :base-ip) VagrantBaseIp ; buggy, not allowed
+   })
+
+(def UbuntuClusterCOnfig
+  {(S/required-key :provider) (S/enum "ubuntu")
+   S/Keyword S/Any})
+
+(def ClusterConfig
+  (S/either VagrantClusterConfig UbuntuClusterConfig))
 
 (def EnvironmentConfig
   {})

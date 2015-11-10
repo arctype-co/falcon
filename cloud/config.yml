@@ -12,16 +12,17 @@ clusters:
     node-cpus: 1
     kube-ui: true
   dalek:
-    provider: vagrant
-    nodes: 3
-    coreos-channel: alpha
-    master-mem-mb: 2048
-    master-cpus: 1
-    node-mem-mb: 8192
-    node-cpus: 1
+    provider: ubuntu
+    nodes: 1
     kube-ui: true
-    # base-ip: "10.100.0.0" # causes errors
-    
+    nodes: "10.0.0.70"
+    service-cluster-ip-range: "10.15.0.0/16"
+    role: "ai"
+    flannel-net: "172.0.16.0.0/16"
+    dns-server-ip: "10.15.0.254"
+    dns-domain: "dev.chowdr.us"
+    dns-replicas: 1
+
 #  environments:
 #    development:
 #      services:
