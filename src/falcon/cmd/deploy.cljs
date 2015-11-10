@@ -44,9 +44,7 @@
 
 (def cli
   {:doc "High-level deployment commands"
-   :options [["-x" "--cluster <name>" "Cluster name"
-              :default config/default-cluster]
-             ["-t" "--git-tag <tag>" "Git tag"
+   :options [["-t" "--git-tag <tag>" "Git tag"
               :default "master"]
              ["-c" "--container-tag <tag>" "Container tag"]
              ["-n" "--no-cache" "Disable docker cache"

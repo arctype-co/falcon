@@ -44,7 +44,9 @@
   [opts args]
   (go
     (<! (kube/services opts args))
+    (println)
     (<! (kube/rc opts args))
+    (println)
     (<! (kube/pods opts args))))
 
 (S/defn create

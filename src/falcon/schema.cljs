@@ -28,11 +28,14 @@
    ;(S/optional-key :base-ip) VagrantBaseIp ; buggy, not allowed
    })
 
-(def UbuntuClusterConfig
-  {(S/required-key :provider) (S/enum "native")})
+(def NativeClusterConfig
+  {(S/required-key :provider) (S/enum "native")
+   (S/required-key :kube-server) S/Str ; ip:port
+   })
 
 (def ClusterConfig
-  (S/either VagrantClusterConfig UbuntuClusterConfig))
+  (S/conditional #(= (:provider %) "vagrant") VagrantClusterConfig
+                 #(= (:provider %) "native") NativeClusterConfig))
 
 (def EnvironmentConfig
   {})
@@ -40,9 +43,15 @@
 (def LogglyConfig
   {(S/required-key :token) S/Str})
 
-(def Config
-  {(S/required-key :clusters) {S/Keyword ClusterConfig}
+(def ConfigOptions
+  {(S/required-key :cluster) S/Str
    (S/required-key :repository) S/Str
+   (S/required-key :environment) S/Str
+   S/Keyword S/Any})
+
+(def Config
+  {(S/optional-key :options) ConfigOptions
+   (S/required-key :clusters) {S/Keyword ClusterConfig}
    (S/optional-key :loggly) LogglyConfig})
 
 (def Chan js/Object)

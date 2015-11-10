@@ -7,75 +7,92 @@
     [falcon.config :as config]
     [falcon.core :as core :refer-macros [require-arguments]]
     [falcon.schema :as schema]
-    [falcon.shell :as shell])
+    [falcon.shell :as shell]
+    [falcon.shell.kubectl :as kubectl]
+    [falcon.shell.vagrant :as vagrant])
   (:require-macros
     [cljs.core.async.macros :refer [go]]))
 
-(defn- vagrant-dir
-  []
-  (str (.cwd js/process) "/cloud/cluster/kubernetes-vagrant-coreos-cluster"))
+(defmulti do-create :provider)
 
-(S/defn ^:private vagrant-options
-  [ccfg :- schema/ClusterConfig]
-  {:cwd (vagrant-dir) 
-   :env
-   (cond->
-     {"NODES" (str (:nodes ccfg))
-      "CHANNEL" (str (:coreos-channel ccfg))
-      "MASTER_MEM" (str (:master-mem-mb ccfg))
-      "MASTER_CPUS" (str (:master-cpus ccfg))
-      "NODE_MEM" (str (:node-mem-mb ccfg))
-      "NODE_CPUS" (str (:node-cpus ccfg))
-      "USE_DOCKERCFG" "true" ; use docker config from the host machine
-      "USE_KUBE_UI" (str (:kube-ui ccfg))}
-     (some? (:dockercfg ccfg)) (assoc "DOCKERCFG" (str (:dockercfg ccfg)))
-     (some? (:base-ip ccfg)) (assoc "BASE_IP_ADDR" (str (:base-ip ccfg))))})
+(defmethod do-create :default
+  [ccfg]
+  (throw js/Error. "Operation not supported"))
 
-(S/defn ^:private cluster-config :- schema/ClusterConfig
-  [options]
-  (let [ccfg (get-in options [:config :clusters (keyword (:cluster options))])]
-    (if (nil? ccfg)
-      (throw (js/Error. (str "Cluster not defined: " (:cluster options))))
-      ccfg)))
-
-(defn- vagrant-cmd
-  [ccfg cmd]
-  (shell/passthru (concat ["vagrant"] cmd) (vagrant-options ccfg)))
+(defmethod do-create :vagrant
+  [ccfg]
+  (println "Creating cluster with configuration:")
+  (pprint ccfg)
+  (vagrant/run ccfg ["up"]))
 
 (S/defn create
   "Create a new cluster"
   [options :- schema/Options args]
-  (let [ccfg (cluster-config options)]
-    (println "Creating cluster with configuration:")
-    (pprint ccfg)
-    (vagrant-cmd ccfg ["up"])))
+  (do-create (config/cluster options)))
 
 (def ^{:doc "Bring an existing cluster online"} up create)
+
+(defmulti do-down :provider)
+
+(defmethod do-down :default
+  [ccfg]
+  (throw js/Error. "Operation not supported"))
+
+(defmethod do-down :vagrant
+  [ccfg]
+  (println "Bringing cluster offline:")
+  (pprint ccfg)
+  (go (<! (core/safe-wait))
+      (<! (vagrant/run ccfg ["halt"]))))
 
 (S/defn down
   "Bring a cluster offline"
   [options :- schema/Options args]
-  (let [ccfg (cluster-config options)]
-    (println "Bringing cluster offline:")
-    (pprint ccfg)
-    (go (<! (core/safe-wait))
-        (<! (vagrant-cmd ccfg ["halt"])))))
+  (do-down (config/cluster options)))
+
+(defmulti do-destroy :provider)
+
+(defmethod do-destroy :default
+  [ccfg]
+  (throw js/Error. "Operation not supported"))
+
+(defmethod do-destroy :vagrant
+  [ccfg]
+  (println "About to DESTROY cluster with configuration:")
+  (pprint ccfg)
+  (go (<! (core/safe-wait))
+      (<! (vagrant/run ccfg ["destroy"]))))
 
 (S/defn destroy
   "Destroy a cluster"
   [options :- schema/Options args]
-  (let [ccfg (cluster-config options)]
-    (println "About to DESTROY cluster with configuration:")
-    (pprint ccfg)
-    (go (<! (core/safe-wait))
-        (<! (vagrant-cmd ccfg ["destroy"])))))
+  (do-destroy (config/cluster options)))
+
+(defmulti do-status (fn [ccfg options] (:provider ccfg)))
+
+(defmethod do-status :default
+  [ccfg opts]
+  (go (<! (kubectl/run opts "get" "nodes"))))
+
+(defmethod do-status :vagrant
+  [ccfg opts]
+  (go (<! (vagrant/run ccfg ["status"]))
+      (<! (kubectl/run opts "get" "nodes"))))
 
 (S/defn status
   "Print cluster status"
   [options :- schema/Options args]
-  (let [ccfg (cluster-config options)]
-    (println ccfg)
-    (vagrant-cmd ccfg ["status"])))
+  (do-status (config/cluster options) options))
+
+(defmulti do-ssh (fn [ccfg node] (:provider ccfg)))
+
+(defmethod do-ssh :default
+  [ccfg node]
+  (throw (js/Error. "Operation not supported")))
+
+(defmethod do-ssh :vagrant
+  [ccfg node]
+  (vagrant/run ccfg ["ssh" node]))
 
 (S/defn ssh
   "SSH into a cluster node"
@@ -83,13 +100,10 @@
   (require-arguments
     args
     (fn [node]
-      (let [ccfg (cluster-config options)]
-        (vagrant-cmd ccfg ["ssh" node])))))
+      (do-ssh (config/cluster options) node))))
 
 (def cli
   {:doc "Run a cluster command"
-   :options [["-x" "--cluster <name>" "Cluster name"
-              :default config/default-cluster]]
    :commands {"create" create
               "destroy" destroy
               "up" up

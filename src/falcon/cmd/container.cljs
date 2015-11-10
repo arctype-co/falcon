@@ -29,7 +29,7 @@
 
 (S/defn build
   "Build a docker image. Returns channel with tag."
-  [{:keys [no-cache git-tag container-tag config] :as opts} args]
+  [{:keys [no-cache git-tag container-tag repository] :as opts} args]
   (require-arguments
     args
     (fn [container]
@@ -46,14 +46,14 @@
                   (shell/check-status)))
           (<! (-> (docker/build
                     {:no-cache no-cache}
-                    [(str "-t=" (full-container-tag (:repository config) container container-tag))
+                    [(str "-t=" (full-container-tag repository container container-tag))
                      (container-path container)])
                   (shell/check-status)))
           container-tag)))))
 
 (S/defn push
   "Push a docker image to the repository. Returns channel with status."
-  [{:keys [config container-tag]} args]
+  [{:keys [container-tag repository]} args]
   (require-arguments
     args
     (fn [container]
@@ -61,7 +61,7 @@
         (go 
           (<! (-> (docker/push
                     {}
-                    [(full-container-tag (:repository config) container container-tag)])
+                    [(full-container-tag repository container container-tag)])
                   (shell/check-status))))))))
 
 (def cli 

@@ -8,8 +8,8 @@
   {S/Str (S/maybe S/Str)})
 
 (S/defn defs :- Defs
-  [{:keys [config environment] :as opts} :- schema/Options]
-  {"REPOSITORY" (:repository config)
+  [{:keys [config environment repository] :as opts} :- schema/Options]
+  {"REPOSITORY" repository 
    "ENVIRONMENT" environment})
 
 (S/defn write :- schema/Chan

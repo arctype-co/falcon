@@ -28,6 +28,11 @@
   (doseq [[cmd-str cmd-fn] commands]
     (println "\t" cmd-str "\t" (doc-string cmd-fn))))
 
+(defn- initial-conf
+  [options]
+  (let [conf (config/read-yml (:config-file options))]
+    (merge {:config conf} (:options conf))))
+
 (S/defn ^:private launch!
   [command-fn :- S/Any
    options :- schema/Options
@@ -35,8 +40,7 @@
    args :- [S/Str]]
   (try 
     ; load config once
-    (let [stack-options (if (empty? stack-options)
-                          {:config (config/read-yml (:config-file options))}
+    (let [stack-options (if (empty? stack-options) (initial-conf options) 
                           stack-options)
           options (merge stack-options options)]
       (command-fn options args))

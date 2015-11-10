@@ -1,4 +1,7 @@
-repository: creeatist
+options:
+  repository: creeatist
+  cluster: dalek
+  environment: development
 loggly:
   token: 5741714c-b518-43a8-8968-bf971771a7ae
 clusters:
@@ -13,6 +16,7 @@ clusters:
     kube-ui: true
   dalek:
     provider: native
+    kube-server: 10.0.0.70:8080
 
 #  environments:
 #    development:

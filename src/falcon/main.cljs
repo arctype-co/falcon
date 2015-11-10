@@ -12,8 +12,8 @@
 (def cli-options
   [["-f" "--config-file <file>" "Config file"
     :default config/default-file] 
-   ["-e" "--environment <env>" "Environment"
-    :default config/default-environment]
+   ["-e" "--environment <env>" "Environment"]
+   ["-x" "--cluster <name>" "Cluster name"]
    ["-h" "--help" "Show this help"
     :default false]])
 
