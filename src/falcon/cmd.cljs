@@ -70,7 +70,7 @@
   {"cluster" (cli-exec cluster/cli)
    "container" (cli-exec container/cli)
    "deploy" (cli-exec deploy/cli)
-   "environment" (cli-exec environment/cli)
+   "env" (cli-exec environment/cli)
    "secret" (cli-exec secret/cli)
    "service" (cli-exec service/cli)
    "kube" (cli-exec kube/cli)

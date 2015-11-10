@@ -8,7 +8,7 @@
   {S/Str (S/maybe S/Str)})
 
 (S/defn defs :- Defs
-  [{:keys [config environment repository] :as opts} :- schema/Options]
+  [{:keys [environment repository] :as opts} :- schema/Options]
   {"REPOSITORY" repository 
    "ENVIRONMENT" environment})
 

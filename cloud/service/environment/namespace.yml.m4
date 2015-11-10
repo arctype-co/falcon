@@ -1,6 +1,6 @@
 kind: Namespace
 apiVersion: v1
 metadata:
-  name: __ENVIRONMENT__
+  name: ENVIRONMENT
   labels:
-    name: __ENVIRONMENT__
+    name: ENVIRONMENT

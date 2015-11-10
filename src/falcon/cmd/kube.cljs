@@ -12,6 +12,12 @@
     [falcon.core :refer [require-arguments]]
     [cljs.core.async.macros :refer [go]]))
 
+(S/defn env
+  "Get environments"
+  [opts args]
+  (go
+    (<! (kubectl/run opts "get" "namespaces"))))
+
 (S/defn logs
   "Get logs"
   [opts args]
@@ -19,6 +25,12 @@
     args
     (fn [node] (go
                  (<! (kubectl/run opts "logs" node))))))
+
+(S/defn nodes
+  "Get nodes status"
+  [opts args]
+  (go
+    (<! (kubectl/run opts "get" "nodes"))))
 
 (S/defn pods
   "Get pods status"
@@ -50,7 +62,9 @@
 (def cli
   {:doc "Integrated kubectl commands"
    :options []
-   :commands {"logs" logs
+   :commands {"env" env
+              "logs" logs
+              "nodes" nodes
               "pods" pods
               "rc" rc
               "sh" sh

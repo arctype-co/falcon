@@ -9,29 +9,31 @@
     [falcon.schema :as schema]
     [falcon.shell :as shell]
     [falcon.shell.kubectl :as kubectl]
-    [falcon.shell.make :as make])
+    [falcon.shell.m4 :as m4])
   (:require-macros
     [cljs.core.async.macros :refer [go]]))
 
 (S/defn create
   "Create a new environment (namespace)"
-  [{:keys [environment] :as cfg} args]
-  (println "Creating namespace: " cfg)
+  [opts :- schema/Options args]
+  (println opts)
+  (core/print-summary "Create namespace:" opts {})
   (go 
-    (<! (make/run {"ENV" environment}
-              ["-C" (cloud-path) "environment/namespace.yml"]))
-    (<! (kubectl/run cfg "create" "-f" (cloud-path "environment" "namespace.yml")))))
+    (<! (m4/write (m4/defs opts)
+                  [(cloud-path "environment" "namespace.yml.m4")]
+                  (cloud-path "environment" "namespace.yml")))
+    (<! (kubectl/run opts "create" "-f" (cloud-path "environment" "namespace.yml")))))
 
 (S/defn delete
   "Delete an environment (namespace)"
-  [{:keys [environment] :as cfg} args]
-  (println "Deleting namespace: " cfg)
-  (println "Waiting 10 seconds...")
+  [opts :- schema/Options args]
+  (core/print-summary "Deleting namespace:" opts {})
   (go 
-    (<! (async/timeout 10000))
-    (<! (make/run {"ENV" environment}
-                  ["-C" (cloud-path) "environment/namespace.yml"]))
-    (<! (kubectl/run cfg "delete" "-f" (cloud-path "environment" "namespace.yml")))))
+    (<! (core/safe-wait))
+    (<! (m4/write (m4/defs opts)
+                  [(cloud-path "environment" "namespace.yml.m4")]
+                  (cloud-path "environment" "namespace.yml")))
+    (<! (kubectl/run opts "delete" "-f" (cloud-path "environment" "namespace.yml")))))
 
 (def cli
   {:doc "Environment setup"
