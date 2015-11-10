@@ -28,6 +28,11 @@
    ;(S/optional-key :base-ip) VagrantBaseIp ; buggy, not allowed
    })
 
+(def UbuntuClusterConfig
+  {(S/required-key :provider) (S/enum "ubuntu")
+   (S/required-key :kube-server) S/Str ; ip:port
+   (S/required-key :install-env) {S/Keyword S/Str}})
+
 (def NativeClusterConfig
   {(S/required-key :provider) (S/enum "native")
    (S/required-key :kube-server) S/Str ; ip:port
@@ -35,6 +40,7 @@
 
 (def ClusterConfig
   (S/conditional #(= (:provider %) "vagrant") VagrantClusterConfig
+                 #(= (:provider %) "ubuntu") UbuntuClusterConfig
                  #(= (:provider %) "native") NativeClusterConfig))
 
 (def EnvironmentConfig

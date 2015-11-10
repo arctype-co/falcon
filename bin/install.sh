@@ -1,5 +1,6 @@
 #!/bin/sh
 SYSADMIN_PACKAGES="vim screen htop"
+KUBE_PACKAGES="golang"
 FALCON_PACKAGES="virtualbox-5.0 openjdk-7-jdk npm git"
 
 # https://help.ubuntu.com/community/VirtualBox/Installation
@@ -7,6 +8,7 @@ sudo sh -c "echo 'deb http://download.virtualbox.org/virtualbox/debian '$(lsb_re
 
 # sudo apt-get update
 echo $SYSADMIN_PACKAGES | sudo xargs apt-get install -y 
+echo $KUBE_PACKAGES | sudo xargs apt-get install -y 
 echo $FALCON_PACKAGES | sudo xargs apt-get install -y 
 
 # Alias node js

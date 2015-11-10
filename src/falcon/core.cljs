@@ -27,6 +27,10 @@
   [str-val]
   (-> (js/Buffer. (str str-val)) (.toString "base64")))
 
+(defn map-keys
+  [key-fn dict]
+  (into {} (map (fn [[k v]] [(key-fn k) v])) dict))
+
 (defn cloud-path
   [& path]
   (string/join "/" (concat ["cloud/service"] path)))

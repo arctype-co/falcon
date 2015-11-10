@@ -17,9 +17,9 @@
 
 (defmethod do-create :default
   [ccfg]
-  (throw js/Error. "Operation not supported"))
+  (throw (js/Error. "Operation not supported")))
 
-(defmethod do-create :vagrant
+(defmethod do-create "vagrant"
   [ccfg]
   (println "Creating cluster with configuration:")
   (pprint ccfg)
@@ -36,9 +36,9 @@
 
 (defmethod do-down :default
   [ccfg]
-  (throw js/Error. "Operation not supported"))
+  (throw (js/Error. "Operation not supported")))
 
-(defmethod do-down :vagrant
+(defmethod do-down "vagrant"
   [ccfg]
   (println "Bringing cluster offline:")
   (pprint ccfg)
@@ -50,23 +50,34 @@
   [options :- schema/Options args]
   (do-down (config/cluster options)))
 
-(defmulti do-destroy :provider)
+(defmulti do-destroy
+  (fn [ccfg options] (:provider ccfg)))
 
 (defmethod do-destroy :default
-  [ccfg]
-  (throw js/Error. "Operation not supported"))
+  [ccfg options]
+  (throw (js/Error. "Operation not supported")))
 
-(defmethod do-destroy :vagrant
-  [ccfg]
-  (println "About to DESTROY cluster with configuration:")
-  (pprint ccfg)
+(defmethod do-destroy "ubuntu"
+  [{:keys [install-env] :as ccfg} options]
+  (core/print-summary "About to DESTROY cluster:" options ccfg)
+  (let [install-env (core/map-keys name install-env)]
+    (go (<! (core/safe-wait))
+        (<! (-> (shell/passthru 
+                  ["./kube-down.sh"]
+                  {:cwd "cloud/cluster/kubernetes/cluster"
+                   :env install-env})
+                (shell/check-status))))))
+
+(defmethod do-destroy "vagrant"
+  [ccfg options]
+  (core/print-summary "About to DESTROY cluster:" options ccfg)
   (go (<! (core/safe-wait))
-      (<! (vagrant/run ccfg ["destroy"]))))
+      (<! (-> (vagrant/run ccfg ["destroy"])))))
 
 (S/defn destroy
   "Destroy a cluster"
   [options :- schema/Options args]
-  (do-destroy (config/cluster options)))
+  (do-destroy (config/cluster options) options))
 
 (defmulti do-status (fn [ccfg options] (:provider ccfg)))
 
@@ -74,7 +85,7 @@
   [ccfg opts]
   (go (<! (kubectl/run opts "get" "nodes"))))
 
-(defmethod do-status :vagrant
+(defmethod do-status "vagrant"
   [ccfg opts]
   (go (<! (vagrant/run ccfg ["status"]))
       (<! (kubectl/run opts "get" "nodes"))))
@@ -90,7 +101,7 @@
   [ccfg node]
   (throw (js/Error. "Operation not supported")))
 
-(defmethod do-ssh :vagrant
+(defmethod do-ssh "vagrant"
   [ccfg node]
   (vagrant/run ccfg ["ssh" node]))
 
