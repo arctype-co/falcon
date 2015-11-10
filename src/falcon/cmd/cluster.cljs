@@ -19,6 +19,24 @@
   [ccfg]
   (throw (js/Error. "Operation not supported")))
 
+(defmethod do-create "ubuntu"
+  [{:keys [install-env] :as ccfg} options]
+  (core/print-summary "About to create cluster:" options ccfg)
+  (let [install-env (core/map-keys name install-env)]
+    (go (<! (core/safe-wait))
+        (<! (-> (shell/passthru 
+                  ["./build.sh"]
+                  {:cwd "cloud/cluster/kubernetes/cluster/ubuntu"
+                   :env install-env})))
+        (<! (-> (shell/passthru 
+                  ["./kube-up.sh"]
+                  {:cwd "cloud/cluster/kubernetes/cluster"
+                   :env install-env})))
+        (<! (-> (shell/passthru 
+                  ["./deployAddons.sh"]
+                  {:cwd "cloud/cluster/kubernetes/cluster/ubuntu"
+                   :env install-env}))))))
+
 (defmethod do-create "vagrant"
   [ccfg]
   (println "Creating cluster with configuration:")
