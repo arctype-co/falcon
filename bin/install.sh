@@ -1,7 +1,7 @@
 #!/bin/sh
 SYSADMIN_PACKAGES="vim screen htop"
 KUBE_PACKAGES="golang"
-FALCON_PACKAGES="virtualbox-5.0 openjdk-7-jdk npm git"
+FALCON_PACKAGES="virtualbox-5.0 openjdk-7-jdk npm git m4"
 
 # https://help.ubuntu.com/community/VirtualBox/Installation
 sudo sh -c "echo 'deb http://download.virtualbox.org/virtualbox/debian '$(lsb_release -cs)' contrib non-free' > /etc/apt/sources.list.d/virtualbox.list" && wget -q http://download.virtualbox.org/virtualbox/debian/oracle_vbox.asc -O- | sudo apt-key add -

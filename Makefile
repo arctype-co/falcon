@@ -15,3 +15,6 @@ bin/falcon.js:
 
 clean: 
 	lein clean
+
+update: clean deps bin/falcon.js
+	
