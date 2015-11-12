@@ -5,7 +5,8 @@
     [cljs.pprint :refer [pprint]]
     [cljs.tools.cli :as cli]
     [schema.core :as S]
-    [falcon.core :as core :refer [cloud-path]]
+    [falcon.core :as core :refer [cloud-path map-keys]]
+    [falcon.config :as config-ns]
     [falcon.schema :as schema]
     [falcon.shell :as shell]
     [falcon.shell.m4 :as m4]
@@ -17,12 +18,13 @@
     [cljs.core.async.macros :refer [go]]))
 
 (defn- m4-defs
-  [{:keys [config] :as opts} {:keys [container-tag controller-tag service] :as params}]
+  [opts {:keys [container-tag controller-tag service] :as params}]
   (merge (m4/defs opts)
          {"SERVICE" service
           "CONTAINER_TAG" container-tag
           "CONTROLLER_TAG" controller-tag
-          "LOGGLY_TOKEN" (get-in config [:loggly :token])}))
+          "LOGGLY_TOKEN" (get-in (:config opts) [:loggly :token])}
+         (map-keys name (:m4-params (config-ns/service opts service)))))
 
 (defn- make-yml
   [yml-name opts {:keys [service] :as defs}]

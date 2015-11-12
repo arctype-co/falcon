@@ -4,7 +4,8 @@
     [cljs.core.async :as async :refer [<!]]
     [cljs.tools.cli :as cli]
     [schema.core :as S]
-    [falcon.core :as core :refer-macros [require-arguments]]
+    [falcon.core :as core :refer [map-keys] :refer-macros [require-arguments]]
+    [falcon.config :as config-ns]
     [falcon.schema :as schema]
     [falcon.shell :as shell]
     [falcon.shell.docker :as docker]
@@ -21,7 +22,8 @@
   [{:keys [config git-tag] :as opts} params]
   (merge (m4/defs opts)
          {"GIT_TAG" git-tag
-          "LOGGLY_TOKEN" (get-in config [:loggly :token])}))
+          "LOGGLY_TOKEN" (get-in config [:loggly :token])}
+         (map-keys name (:m4-params (config-ns/container opts (:container params))))))
 
 (defn- full-container-tag
   [repository container tag]

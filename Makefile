@@ -1,4 +1,4 @@
-.PHONY: all clean deps node_modules
+.PHONY: all auto clean deps node_modules
 
 all: node_modules bin/falcon.js
 
@@ -15,6 +15,9 @@ bin/falcon.js:
 
 clean: 
 	lein clean
+
+auto:
+	lein do clean, cljsbuild auto
 
 update: clean deps bin/falcon.js
 	

@@ -21,16 +21,13 @@ announce:
 all: 
 	@echo Please specify a configuration: $(CONFIGS)
 
-environment/namespace.yml: environment/namespace.yml.m4
-	$(M4) $^ > $@
-
 riak-kv/controller.yml: riak-kv/controller.yml.m4
 	$(M4) $^ > $@
 
 riak-kv/secrets.yml: riak-kv/secrets.yml.m4
 	$(M4) \
-	 	-D__CLUSTER_HOST_BASE64__=$$(base64 <<< `${call FIRST_POD_ROLE_IP, "riak-kv"}`) \
-		-D__CLUSTER_SIZE_BASE64__=$$(base64 <<< $(RIAK_CLUSTER_SIZE)) \
+	 	-DCLUSTER_HOST_BASE64=$$(base64 <<< `${call FIRST_POD_ROLE_IP, "riak-kv"}`) \
+		-DCLUSTER_SIZE_BASE64=$$(base64 <<< $(RIAK_CLUSTER_SIZE)) \
 	 	$^ > $@
 
 riak-kv/create-cluster: riak-kv/controller.yml riak-kv/service.yml riak-kv/secrets.yml | announce

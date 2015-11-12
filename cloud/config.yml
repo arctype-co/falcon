@@ -2,8 +2,10 @@ options:
   repository: creeatist
   cluster: dalek
   environment: development
+
 loggly:
   token: 5741714c-b518-43a8-8968-bf971771a7ae
+
 clusters:
   local:
     provider: vagrant
@@ -32,8 +34,16 @@ clusters:
       ENABLE_CLUSTER_UI: "true"
       KUBERNETES_PROVIDER: "ubuntu"
 
-#  environments:
-#    development:
-#      services:
-#        chowder-api:
-#        www:
+containers:
+  riak-kv:
+    m4-params: 
+      RIAK_VERSION: "2.1.1-1"
+
+environments:
+  development:
+    services:
+      riak-kv:
+        m4-params: 
+          REPLICAS: 1
+          RIAK_CLUSTER_HOST: "127.0.0.1"
+          RIAK_CLUSTER_SIZE: 5
