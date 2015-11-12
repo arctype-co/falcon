@@ -1,9 +1,9 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: riak-kv
+  name: SERVICE
   labels:
-    name: riak-kv
+    name: SERVICE
 spec:
   ports:
     - port: 8087
@@ -15,5 +15,5 @@ spec:
       protocol: TCP
       name: http-client
   selector:
-    role: riak-kv
+    role: SERVICE
   type: ClusterIP

@@ -43,8 +43,14 @@
                  #(= (:provider %) "ubuntu") UbuntuClusterConfig
                  #(= (:provider %) "native") NativeClusterConfig))
 
+(def ContainerConfig
+  {(S/optional-key :m4-params) {S/Keyword S/Any}})
+
+(def ServiceConfig
+  {(S/optional-key :m4-params) {S/Keyword S/Any}})
+
 (def EnvironmentConfig
-  {})
+  {(S/required-key :services) {S/Keyword ServiceConfig}})
 
 (def LogglyConfig
   {(S/required-key :token) S/Str})
@@ -58,6 +64,8 @@
 (def Config
   {(S/optional-key :options) ConfigOptions
    (S/required-key :clusters) {S/Keyword ClusterConfig}
-   (S/optional-key :loggly) LogglyConfig})
+   (S/optional-key :loggly) LogglyConfig
+   (S/optional-key :containers) {S/Keyword ContainerConfig}
+   (S/optional-key :environments) {S/Keyword EnvironmentConfig}})
 
 (def Chan js/Object)

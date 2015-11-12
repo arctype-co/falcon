@@ -1,4 +1,4 @@
-FROM __REPOSITORY__/base
+FROM REPOSITORY/base
 
 # Open ports for protobuf client, HTTP client, handoff, epmd
 EXPOSE 8087 8098 8099 4369
@@ -8,8 +8,11 @@ VOLUME /var/lib/riak
 VOLUME /var/log/riak
 
 # Install Riak
-RUN curl https://packagecloud.io/install/repositories/basho/riak/script.deb.sh | bash
-RUN apt-get install -y riak=__RIAK_VERSION__
+RUN curl https://packagecloud.io/gpg.key | sudo apt-key add -
+RUN apt-get install -y apt-transport-https
+ADD basho.list /etc/apt/sources.list.d/basho.list
+RUN apt-get update
+RUN apt-get install -y riak=RIAK_VERSION
 
 # Setup the Riak service
 RUN mkdir -p /etc/service/riak

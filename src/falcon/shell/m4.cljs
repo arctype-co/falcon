@@ -5,7 +5,7 @@
     [falcon.shell :as shell]))
 
 (def Defs
-  {S/Str (S/maybe S/Str)})
+  {S/Str (S/maybe S/Any)})
 
 (S/defn defs :- Defs
   [{:keys [environment repository] :as opts} :- schema/Options]
@@ -13,8 +13,8 @@
    "ENVIRONMENT" environment})
 
 (S/defn write :- schema/Chan
-  [defs :- Defs
+  [local-defs :- Defs
    m4-args :- [S/Str]
    to-path :- S/Str]
-  (let [def-params (map (fn [[k v]] (str "-D" k "=" (or v "undefined"))) defs)]
+  (let [def-params (map (fn [[k v]] (str "-D" k "=" (or v "undefined"))) local-defs)]
     (shell/write (concat ["m4"] def-params m4-args) {} to-path)))

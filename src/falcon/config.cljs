@@ -24,3 +24,13 @@
     (if (nil? ccfg)
       (throw (js/Error. (str "Cluster not defined: " (:cluster options))))
       ccfg)))
+
+(S/defn container :- schema/ContainerConfig
+  "Returns a container-specific config"
+  [options :- schema/ConfigOptions ctnr]
+  (or (get-in options [:config :containers (keyword ctnr)]) {}))
+
+(S/defn service :- schema/ServiceConfig
+  "Returns a service-specific config in it's environment"
+  [{:keys [environment] :as options} :- schema/ConfigOptions svc]
+  (or (get-in options [:config :environments (keyword environment) :services (keyword svc)]) {}))
