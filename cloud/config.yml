@@ -20,7 +20,7 @@ clusters:
     provider: ubuntu
     kube-server: 10.0.0.70:8080
     install-env:
-      KUBE_VERSION: "1.0.7"
+      KUBE_VERSION: "1.1.1"
       nodes: "falcon@10.0.0.70"
       role: "ai"
       NUM_MINIONS: "1"
@@ -29,7 +29,7 @@ clusters:
       DOCKER_OPTS: "" 
       ENABLE_CLUSTER_DNS: "true"
       DNS_SERVER_IP: "10.15.0.254"
-      DNS_DOMAIN: "dev.chowder.us"
+      DNS_DOMAIN: "dalek.chowder.us"
       DNS_REPLICAS: "1"
       ENABLE_CLUSTER_UI: "true"
       KUBERNETES_PROVIDER: "ubuntu"

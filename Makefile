@@ -4,8 +4,7 @@ all: node_modules bin/falcon.js
 
 deps:
 	lein deps
-	git submodule init
-	git submodule update --remote
+	git submodule update --init
 
 node_modules: deps project.clj
 	lein npm update
@@ -17,7 +16,12 @@ clean:
 	lein clean
 
 auto:
+	git pull
+	git submodule update --init
 	lein do clean, cljsbuild auto
 
-update: clean deps bin/falcon.js
+update: 
+	git pull
+	git submodule update --init
+	lein do clean, cljsbuild once
 	
