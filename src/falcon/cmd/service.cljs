@@ -22,8 +22,7 @@
   (merge (m4/defs opts)
          {"SERVICE" service
           "CONTAINER_TAG" container-tag
-          "CONTROLLER_TAG" controller-tag
-          "LOGGLY_TOKEN" (get-in (:config opts) [:loggly :token])}
+          "CONTROLLER_TAG" controller-tag}
          (map-keys name (:m4-params (config-ns/service opts service)))))
 
 (defn- make-yml

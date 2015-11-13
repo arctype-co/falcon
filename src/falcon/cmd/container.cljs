@@ -21,8 +21,7 @@
 (defn- m4-defs
   [{:keys [config git-tag] :as opts} params]
   (merge (m4/defs opts)
-         {"GIT_TAG" git-tag
-          "LOGGLY_TOKEN" (get-in config [:loggly :token])}
+         {"GIT_TAG" git-tag}
          (map-keys name (:m4-params (config-ns/container opts (:container params))))))
 
 (defn- full-container-tag

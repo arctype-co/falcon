@@ -3,9 +3,6 @@ options:
   cluster: dalek
   environment: development
 
-loggly:
-  token: 5741714c-b518-43a8-8968-bf971771a7ae
-
 clusters:
   local:
     provider: vagrant
@@ -33,8 +30,15 @@ clusters:
       DNS_REPLICAS: "1"
       ENABLE_CLUSTER_UI: "true"
       KUBERNETES_PROVIDER: "ubuntu"
+    #m4-params: # Cluster parameters
+    #  CLUSTER_SUBNET: "10.15.0.0"
+    #  CLUSTER_SUBNET_MASK: "255.255.0.0"
+      
 
 containers:
+  base:
+    m4-params: 
+      LOGGLY_TOKEN: "5741714c-b518-43a8-8968-bf971771a7ae"
   riak-kv:
     m4-params: 
       RIAK_VERSION: "2.1.1-1"

@@ -16,8 +16,7 @@
 (defn- m4-defs
   [{:keys [config] :as opts} {:keys [secret]}]
   (merge (m4/defs opts)
-         {"SECRET" secret
-          "LOGGLY_TOKEN_BASE64" (core/base64 (get-in config [:loggly :token]))}))
+         {"SECRET" secret}))
 
 (defn- make-yml
   [yml-name opts {:keys [secret] :as params}]
