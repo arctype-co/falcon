@@ -3,8 +3,6 @@
 RIAK_NODE_HOST=`hostname -i`
 RIAK_DATA_DIR=/var/lib/riak
 RIAK_LOG_DIR=/var/log/riak
-export RIAK_CLUSTER_HOST=`cat /etc/riak/secrets/cluster-host`
-export RIAK_CLUSTER_SIZE=`cat /etc/riak/secrets/cluster-size`
 
 m4 -DRIAK_NODE_HOST=$RIAK_NODE_HOST -DRIAK_DATA_DIR=$RIAK_DATA_DIR -DRIAK_LOG_DIR=$RIAK_LOG_DIR riak.conf.m4 > /etc/riak/riak.conf
 

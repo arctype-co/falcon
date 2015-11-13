@@ -57,7 +57,7 @@
     args
     (fn [pod]
       (go 
-        (<! (kubectl/run opts "exec" "-i" "--tty" "-p" pod "bash"))))))
+        (<! (kubectl/run opts "exec" "-i" "--tty" pod "bash"))))))
 
 (def cli
   {:doc "Integrated kubectl commands"

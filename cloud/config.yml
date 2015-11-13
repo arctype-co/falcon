@@ -45,5 +45,5 @@ environments:
       riak-kv:
         m4-params: 
           REPLICAS: 1
-          RIAK_CLUSTER_HOST: "127.0.0.1"
+          RIAK_CLUSTER_HOST: "" # blank to bootstrap new cluster
           RIAK_CLUSTER_SIZE: 5
