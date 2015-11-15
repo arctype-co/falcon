@@ -1,0 +1,13 @@
+#!/bin/bash
+
+m4 \
+  -DVPN_VIRTUAL_NETWORK=$VPN_VIRTUAL_NETWORK \
+  -DVPN_VIRTUAL_MASK=$VPN_VIRTUAL_MASK \
+  -DVPN_SUBNET_A_NETWORK=$VPN_SUBNET_A_NETWORK \
+  -DVPN_SUBNET_A_MASK=$VPN_SUBNET_A_MASK \
+  -DVPN_SUBNET_B_NETWORK=$VPN_SUBNET_B_NETWORK \
+  -DVPN_SUBNET_B_MASK=$VPN_SUBNET_B_MASK \
+  /etc/openvpn/openvpn.conf.m4 > /etc/openvpn/openvpn.conf
+
+iptables -t nat -A POSTROUTING -s $VPN_VIRTUAL_NAT -o eth0 -j MASQUERADE
+openvpn --config /etc/openvpn/openvpn.conf --dev tun

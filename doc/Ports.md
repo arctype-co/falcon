@@ -13,6 +13,7 @@ port | protocol | description
 4501 | http | Chowdr API service
 4514 | rsyslog | Loggly syslogd
 30501 | http | Chowder API service node port
+31194 | openvpn | openvpn node port
 
 9200 | elk | ELK stack
 5514 | elk | ELK stack

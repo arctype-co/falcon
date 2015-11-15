@@ -51,3 +51,12 @@ environments:
           REPLICAS: 1
           RIAK_CLUSTER_HOST: "" # blank to bootstrap new cluster
           RIAK_CLUSTER_SIZE: 5
+      openvpn:
+        m4-params:
+          VPN_VIRTUAL_NETWORK: "10.99.0.0"
+          VPN_VIRTUAL_MASK: "255.255.0.0"
+          VPN_VIRTUAL_NAT: "10.99.0.0/16"
+          VPN_SUBNET_A_NETWORK: "172.16.75.0"
+          VPN_SUBNET_A_MASK: "255.255.255.0"
+          VPN_SUBNET_B_NETWORK: "10.15.0.0"
+          VPN_SUBNET_B_MASK: "255.255.0.0"

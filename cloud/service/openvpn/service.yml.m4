@@ -8,7 +8,8 @@ spec:
   ports:
     - port: 1194
       targetPort: 1194
+      nodePort: 31194
       protocol: TCP
   selector:
-    name: SERVICE
-  type: LoadBalancer
+    role: SERVICE
+  type: NodePort

@@ -1,24 +1,24 @@
 kind: ReplicationController
 apiVersion: v1
 metadata:
-  name: chowder-api.CONTROLLER_TAG
+  name: SERVICE.CONTROLLER_TAG
   labels:
-    name: chowder-api.CONTROLLER_TAG
-    role: chowder-api
+    name: SERVICE.CONTROLLER_TAG
+    role: SERVICE
 spec:
   replicas: 2
   selector:
-    name: chowder-api.CONTROLLER_TAG
-    role: chowder-api
+    name: SERVICE.CONTROLLER_TAG
+    role: SERVICE
   template:
     metadata:
       labels:
-        name: chowder-api.CONTROLLER_TAG
-        role: chowder-api
+        name: SERVICE.CONTROLLER_TAG
+        role: SERVICE
     spec:
       imagePullPolicy: Always
       containers:
-        - name: chowder-api
+        - name: SERVICE
           image: REPOSITORY/chowder-api:CONTAINER_TAG
           ports:
             - containerPort: 4501
