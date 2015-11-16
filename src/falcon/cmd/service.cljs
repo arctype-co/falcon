@@ -71,7 +71,7 @@
       (let [params {:service service}]
         (core/print-summary "Delete service:" opts params)
         (go 
-          (<! (core/safe-wait))
+          (when-not (:yes opts) (<! (core/safe-wait)))
           (<! (make-yml "service.yml" opts params))
           (<! (kubectl/run opts "delete" "-f" (cloud-path service "service.yml"))))))))
 
@@ -101,7 +101,7 @@
                     :controller-tag controller-tag}]
         (core/print-summary "Delete replication controller:" opts params)
         (go
-          (<! (core/safe-wait))
+          (when-not (:yes opts) (<! (core/safe-wait)))
           (<! (make-yml "controller.yml" opts params))
           (<! (kubectl/run opts "delete" "-f" (cloud-path service "controller.yml"))))))))
 
@@ -126,7 +126,7 @@
 (def cli
   {:doc "Service configuration and deployment"
    :options
-   []
+   [["-y" "--yes" "Skip safety prompts" :default false]]
    :commands
    {"create" create
     "delete" delete
