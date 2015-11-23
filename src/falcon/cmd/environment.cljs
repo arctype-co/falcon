@@ -16,7 +16,6 @@
 (S/defn create
   "Create a new environment (namespace)"
   [opts :- schema/Options args]
-  (println opts)
   (core/print-summary "Create namespace:" opts {})
   (go 
     (<! (m4/write (m4/defs opts)
