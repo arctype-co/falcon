@@ -7,7 +7,7 @@ metadata:
     name: SERVICE.CONTROLLER_TAG
     role: SERVICE
 spec:
-  replicas: 1
+  replicas: REPLICAS
   selector:
     name: SERVICE.CONTROLLER_TAG
     role: SERVICE

@@ -22,7 +22,7 @@ spec:
             - containerPort: 8099
             - containerPort: 4369
           env:
-            - name: `RIAK_CLUSTER_HOST'
-              value: "RIAK_CLUSTER_HOST"
+            - name: `KUBE_NAMESPACE'
+              value: "ENVIRONMENT"
             - name: `RIAK_CLUSTER_SIZE'
               value: "RIAK_CLUSTER_SIZE"

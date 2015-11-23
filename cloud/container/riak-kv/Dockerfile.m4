@@ -14,6 +14,9 @@ ADD basho.list /etc/apt/sources.list.d/basho.list
 RUN apt-get update
 RUN apt-get install -y riak=RIAK_VERSION
 
+# Install jq
+RUN apt-get install -y jq
+
 # Setup the Riak service
 RUN mkdir -p /etc/service/riak
 ADD run /etc/service/riak/

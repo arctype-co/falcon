@@ -48,11 +48,11 @@ environments:
     services:
       riak-kv:
         m4-params: 
-          REPLICAS: 1
-          RIAK_CLUSTER_HOST: "" # blank to bootstrap new cluster
-          RIAK_CLUSTER_SIZE: 5
+          REPLICAS: 2
+          RIAK_CLUSTER_SIZE: 3
       openvpn:
         m4-params:
+          REPLICAS: 1
           VPN_VIRTUAL_NETWORK: "10.99.0.0"
           VPN_VIRTUAL_MASK: "255.255.0.0"
           VPN_VIRTUAL_NAT: "10.99.0.0/16"

@@ -4,6 +4,20 @@ RIAK_NODE_HOST=`hostname -i`
 RIAK_DATA_DIR=/var/lib/riak
 RIAK_LOG_DIR=/var/log/riak
 
+if [ $KUBERNETES_SERVICE_PORT -eq 443 ]; then
+  KUBE_MASTER_ENDPOINT="https://$KUBERNETES_SERVICE_HOST"
+else
+  KUBE_MASTER_ENDPOINT="http://$KUBERNETES_SERVICE_HOST:$KUBERNETES_SERVICE_PORT"
+fi
+
+# Get the IP of any running riak sibling
+RIAK_ROLE="riak-kv"
+RIAK_CLUSTER_HOST=$(curl --insecure --cacert /var/run/secrets/kubernetes.io/serviceaccount/ca.crt -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" "${KUBE_MASTER_ENDPOINT}/api/v1/namespaces/${KUBE_NAMESPACE}/pods/?pretty=false" | jq -r ".items | map(select(.metadata.labels[\"role\"] == \"${RIAK_ROLE}\")) | map(select(.status.phase == \"Running\")) | map(.status.podIP) | map(select(. != \"${RIAK_NODE_HOST}\")) | .[0]")
+
+if [ "$RIAK_CLUSTER_HOST" == "null" ]; then
+  RIAK_CLUSTER_HOST=""
+fi
+
 m4 -DRIAK_NODE_HOST=$RIAK_NODE_HOST -DRIAK_DATA_DIR=$RIAK_DATA_DIR -DRIAK_LOG_DIR=$RIAK_LOG_DIR riak.conf.m4 > /etc/riak/riak.conf
 
 chown riak:riak $RIAK_DATA_DIR $RIAK_LOG_DIR
