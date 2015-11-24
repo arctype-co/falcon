@@ -9,11 +9,15 @@ spec:
     - port: 8087
       targetPort: 8087
       protocol: TCP
-      name: protobuf-client
+      name: protobuf-api
     - port: 8098
       targetPort: 8098
       protocol: TCP
-      name: http-client
+      name: http-api
+    - port: 8093
+      targetPort: 8093
+      protocol: TCP
+      name: solr-api
   selector:
     role: SERVICE
   type: ClusterIP

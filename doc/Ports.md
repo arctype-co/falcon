@@ -21,3 +21,11 @@ port | protocol | description
 80 | elk | ELK stack
 8500 | elk | ELK stack
 
+## Riak
+4369 | epmd | Erlang Port Mapper Daemon
+8087 | protobuf | Riak Protobuf
+8093 | solr | Riak Solr Search
+8098 | http | Riak HTTP
+8099 | riak | Riak handoff
+8985 | jmx | Riak Solr JMX
+

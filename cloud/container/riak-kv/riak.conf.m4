@@ -466,7 +466,7 @@ leveldb.maximum_memory.percent = 70
 ## 
 ## Acceptable values:
 ##   - on or off
-search = off
+search = on
 
 ## How long Riak will wait for Solr to start. The start sequence
 ## will be tried twice. If both attempts timeout, then the Riak node
@@ -509,9 +509,15 @@ search.solr.jmx_port = 8985
 search.solr.jvm_options = -d64 -Xms1g -Xmx1g -XX:+UseStringCache -XX:+UseCompressedOops
 
 ## Multi backend config
-# Not using bitcask, only leveldb & memory
-# multi_backend.bitcask_mult.storage_backend = bitcask
-# multi_backend.bitcask_mult.bitcask.data_root = $(platform_data_dir)/bitcask_mult
+## Bitcask
+multi_backend.bitcask_mult.storage_backend = bitcask
+multi_backend.bitcask_mult.bitcask.data_root = $(platform_data_dir)/bitcask_mult
+## LevelDB
 multi_backend.leveldb_mult.storage_backend = leveldb
 multi_backend.leveldb_mult.leveldb.data_root = $(platform_data_dir)/leveldb_mult
-multi_backend.default = leveldb_mult
+## 24-hour in-memory sessions
+multi_backend.memory_24h.storage_backend = memory
+multi_backend.memory_24h.memory_backend.ttl = 24h # 1 day session life
+multi_backend.memory_24h.memory_backend.max_memory_per_vnode = 16MB
+## Default backend
+multi_backend.default = leveldb

@@ -1,7 +1,8 @@
-FROM REPOSITORY/base
+FROM REPOSITORY/jre
+# JRE required for Solr (Riak Search)
 
-# Open ports for protobuf client, HTTP client, handoff, epmd
-EXPOSE 8087 8098 8099 4369
+# Open ports (see doc/Ports.md)
+EXPOSE 4369 8087 8093 8098 8099 8985
 
 # Data volumes
 VOLUME /var/lib/riak
