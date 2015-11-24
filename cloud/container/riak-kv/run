@@ -13,10 +13,10 @@ fi
 # Get the IP of any running riak sibling
 RIAK_ROLE="riak-kv"
 RIAK_CLUSTER_HOST=$(curl --insecure --cacert /var/run/secrets/kubernetes.io/serviceaccount/ca.crt -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" "${KUBE_MASTER_ENDPOINT}/api/v1/namespaces/${KUBE_NAMESPACE}/pods/?pretty=false" | jq -r ".items | map(select(.metadata.labels[\"role\"] == \"${RIAK_ROLE}\")) | map(select(.status.phase == \"Running\")) | map(.status.podIP) | map(select(. != \"${RIAK_NODE_HOST}\")) | .[0]")
-
 if [ "$RIAK_CLUSTER_HOST" == "null" ]; then
   RIAK_CLUSTER_HOST=""
 fi
+export RIAK_CLUSTER_HOST
 
 m4 -DRIAK_NODE_HOST=$RIAK_NODE_HOST -DRIAK_DATA_DIR=$RIAK_DATA_DIR -DRIAK_LOG_DIR=$RIAK_LOG_DIR riak.conf.m4 > /etc/riak/riak.conf
 
@@ -26,11 +26,11 @@ chmod 0755 $RIAK_DATA_DIR $RIAK_LOG_DIR
 riak start
 riak ping
 if [ -z $RIAK_CLUSTER_HOST ]; then
-  echo "RIAK_CLUSTER_HOST undefined. Initializing new cluster."
-  /etc/service/riak/cluster-init.sh
+  echo "RIAK_CLUSTER_HOST undefined. Not joining any cluster."
 else
   /etc/service/riak/cluster-join.sh
 fi
+
 # Wait while riak is alive
 while [ true ]; do
   sleep 60

@@ -20,7 +20,6 @@ RUN apt-get install -y jq
 # Setup the Riak service
 RUN mkdir -p /etc/service/riak
 ADD run /etc/service/riak/
-ADD cluster-init.sh /etc/service/riak/
 ADD cluster-join.sh /etc/service/riak/
 RUN chmod 0755 /etc/service/riak/*
 
