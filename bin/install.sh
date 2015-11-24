@@ -1,7 +1,17 @@
 #!/bin/sh
+# Install falcon and it's dependencies on a Ubuntu machine
+
 SYSADMIN_PACKAGES="vim screen htop"
 KUBE_PACKAGES="golang"
 FALCON_PACKAGES="virtualbox-5.0 openjdk-7-jdk npm git m4"
+
+grep 14.04 /etc/issue > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+  echo "Ubuntu version 14.04 required"
+  exit 1
+fi
+
+exit 2
 
 # https://help.ubuntu.com/community/VirtualBox/Installation
 sudo sh -c "echo 'deb http://download.virtualbox.org/virtualbox/debian '$(lsb_release -cs)' contrib non-free' > /etc/apt/sources.list.d/virtualbox.list" && wget -q http://download.virtualbox.org/virtualbox/debian/oracle_vbox.asc -O- | sudo apt-key add -

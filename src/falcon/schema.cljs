@@ -25,7 +25,7 @@
    (S/required-key :node-cpus) S/Int
    (S/required-key :kube-ui) S/Bool
    (S/optional-key :dockercfg) S/Str 
-   ;(S/optional-key :base-ip) VagrantBaseIp ; buggy, not allowed
+   ;(S/optional-key :base-ip) VagrantBaseIp ; buggy, not working
    })
 
 (def UbuntuClusterConfig
