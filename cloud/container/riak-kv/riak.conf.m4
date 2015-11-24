@@ -520,4 +520,4 @@ multi_backend.memory_24h.storage_backend = memory
 multi_backend.memory_24h.memory_backend.ttl = 24h # 1 day session life
 multi_backend.memory_24h.memory_backend.max_memory_per_vnode = 16MB
 ## Default backend
-multi_backend.default = leveldb
+multi_backend.default = leveldb_mult
