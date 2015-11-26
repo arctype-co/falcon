@@ -22,6 +22,14 @@ spec:
           image: REPOSITORY/chowder-api:CONTAINER_TAG
           ports:
             - containerPort: 4501
+          volumeMounts:
+            - name: chowdr-api
+              mountPath: /var/run/secrets
+              readOnly: true
+      volumes:
+        - name: chowdr-api
+          secret:
+            secretName: chowdr-api
       livenessProbe:
             httpGet:
               path: /api/health

@@ -1,7 +1,0 @@
-#!/bin/bash
-
-cd /home/app
-cp -f secrets/etheride.edn etheride/resources/etheride.edn
-chmod 0644 etheride/resources/etheride.edn
-cd etheride
-setuser app lein run

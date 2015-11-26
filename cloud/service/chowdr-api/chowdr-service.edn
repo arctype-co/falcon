@@ -1,0 +1,38 @@
+{:system
+ {:heartbeat-ms 30000}
+
+ :http
+ {:port 4501}
+
+ :api
+ {:media-s3-bucket "chowdr-development-uploads"}
+
+ :client
+ {:css-s3-bucket "chowdr-development-assets"
+  :compass-bin "/usr/bin/compass"
+  :device-scss-resource "scss/device.scss"
+  :compass-out "resources/public/app/css/app.css"}
+
+ :kv
+ {:url "http://riak-kv:8098"
+  :namespace "staging"
+  :connections 4
+  :keep-alive-ms 60000
+  :timeout-ms 500
+  :msg-queue-size 16
+  :buckets
+  {:schema {:name "schema" :bucket-type "leveldb_consistent"}
+   :media {:name "media" :bucket-type "leveldb"}
+   :post {:name "posts" :bucket-type "leveldb"}
+   :user {:name "users" :bucket-type "leveldb"} ; 2i by user-name
+   :user-name {:name "user-names" :bucket-type "leveldb_consistent"}
+   :session {:name "sessions" :bucket-type "memory_24h"}}}
+
+ :s3
+ {:creds 
+  {:endpoint "objects.dreamhost.com"
+   :access-key "dhHDT4h79yECbhVZwTNx"
+   :secret-key "LFwFlsNlPN6qIeymV-KgjByFqFf23WLYFAI3kABU"}
+  :upload-queue-size 100
+  :multipart-threads 1 ; since we are only uploading small files
+  }}

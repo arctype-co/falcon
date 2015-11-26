@@ -47,7 +47,8 @@
   {(S/optional-key :m4-params) {S/Keyword S/Any}})
 
 (def ServiceConfig
-  {(S/optional-key :m4-params) {S/Keyword S/Any}})
+  {(S/optional-key :m4-params) {S/Keyword S/Any}
+   (S/optional-key :secret-files) [S/Str]})
 
 (def EnvironmentConfig
   {(S/required-key :services) {S/Keyword ServiceConfig}})

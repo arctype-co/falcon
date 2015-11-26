@@ -6,6 +6,8 @@
     [goog.string :as gstring]
     [goog.string.format :as gformat]))
 
+(def ^:private fs (js/require "fs"))
+
 (defn new-tag
   []
   (let [now (js/Date.)]
@@ -34,3 +36,7 @@
 (defn cloud-path
   [& path]
   (string/join "/" (concat ["cloud/service"] path)))
+
+(defn read-file
+  [file-path]
+  (.readFileSync fs file-path #js {:encoding "utf8" :flag "r"}))

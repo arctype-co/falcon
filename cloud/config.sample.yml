@@ -46,6 +46,9 @@ containers:
 environments:
   development:
     services:
+      chowdr-api:
+        secret-files:
+          - chowdr-service.edn
       riak-kv:
         m4-params: 
           REPLICAS: 2
@@ -59,3 +62,4 @@ environments:
           VPN_SUBNET_A_NETWORK: "172.16.75.0" # 1st subnet to route to
           VPN_SUBNET_A_MASK: "255.255.255.0"
           VPN_SUBNET_B_NETWORK: "10.15.0.0" # 2nd subnet to route to
+    

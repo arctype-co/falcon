@@ -1,10 +1,12 @@
 (ns falcon.cmd.secret
+  (:refer-clojure :exclude [update])
   (:require
     [cljs.core.async :as async :refer [<!]]
     [cljs.pprint :refer [pprint]]
     [cljs.tools.cli :as cli]
     [schema.core :as S]
     [falcon.core :as core :refer [cloud-path]]
+    [falcon.config :as config-ns]
     [falcon.schema :as schema]
     [falcon.shell :as shell]
     [falcon.shell.m4 :as m4]
@@ -13,10 +15,31 @@
     [falcon.core :refer [require-arguments]]
     [cljs.core.async.macros :refer [go]]))
 
+(defn- env-file-name
+  "Name an environment variable for a file"
+  [file-name]
+  (->
+    (-> file-name 
+        (.replace #"\." "_")
+        (.replace #"\-" "_"))
+    (str "_base64")
+    (.toUpperCase)))
+
+(defn- encode-secret-files
+  [secret secret-file-names]
+  (into {} (map
+             (fn [secret-file-name]
+               [(env-file-name secret-file-name)
+                (core/base64 (core/read-file (cloud-path secret secret-file-name)))])
+             secret-file-names)))
+
 (defn- m4-defs
   [{:keys [config] :as opts} {:keys [secret]}]
-  (merge (m4/defs opts)
-         {"SECRET" secret}))
+  (let [secret-files (map name (:secret-files (config-ns/service opts secret)))
+        secrets-base64 (encode-secret-files secret secret-files)]
+    (merge (m4/defs opts)
+         {"SECRET" secret}
+         secrets-base64)))
 
 (defn- make-yml
   [yml-name opts {:keys [secret] :as params}]
@@ -45,6 +68,19 @@
           (<! (make-yml "secret.yml" opts params))
           (<! (kubectl/run opts "create" "-f" (cloud-path secret "secret.yml"))))))))
 
+(S/defn update
+  "Replace a secret config"
+  [opts :- schema/Options
+   args]
+  (require-arguments
+    args
+    (fn [secret]
+      (let [params {:secret secret}]
+        (core/print-summary "Update secret" opts params)
+        (go
+          (<! (make-yml "secret.yml" opts params))
+          (<! (kubectl/run opts "update" "-f" (cloud-path secret "secret.yml"))))))))
+
 (S/defn delete 
   "Unload a secret config"
   [opts :- schema/Options
@@ -66,4 +102,5 @@
    :commands
    {"create" create
     "delete" delete
+    "update" update
     "list" list-secrets}})
