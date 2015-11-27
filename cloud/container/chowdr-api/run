@@ -1,7 +1,4 @@
 #!/bin/bash
 
-cd /home/app
-# cp -f secrets/chowder-service.edn tender/resources/chowder-service.edn
-# chmod 0644 tender/resources/chowder-service.edn
-cd tender
+cd /home/app/chowdr
 setuser app lein with-profile service run

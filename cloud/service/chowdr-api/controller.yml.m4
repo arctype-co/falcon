@@ -16,27 +16,29 @@ spec:
         name: SERVICE.CONTROLLER_TAG
         role: SERVICE
     spec:
-      imagePullPolicy: Always
       containers:
         - name: SERVICE
-          image: REPOSITORY/chowder-api:CONTAINER_TAG
+          image: REPOSITORY/SERVICE:CONTAINER_TAG
           ports:
             - containerPort: 4501
+          env:
+            - name: CHOWDR_SERVICE_CONFIG
+              value: /home/chowdr/secret/chowdr-service.edn
           volumeMounts:
-            - name: chowdr-api
-              mountPath: /var/run/secrets
+            - name: SERVICE-secret-volume
+              mountPath: /home/chowdr/secret
               readOnly: true
+          livenessProbe:
+                httpGet:
+                  path: /api/health
+                  port: 4501
+                initialDelaySeconds: 30 
+                timeoutSeconds: 1
+          readinessProbe:
+                httpGet:
+                  path: /api/health
+                  port: 4501
       volumes:
-        - name: chowdr-api
+        - name: SERVICE-secret-volume
           secret:
-            secretName: chowdr-api
-      livenessProbe:
-            httpGet:
-              path: /api/health
-              port: 4501
-            initialDelaySeconds: 30 
-            timeoutSeconds: 1
-      readinessProbe:
-            httpGet:
-              path: /api/health
-              port: 4501
+            secretName: SERVICE
