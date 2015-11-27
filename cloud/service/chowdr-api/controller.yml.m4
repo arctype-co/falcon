@@ -23,10 +23,10 @@ spec:
             - containerPort: 4501
           env:
             - name: CHOWDR_SERVICE_CONFIG
-              value: /home/chowdr/secret/chowdr-service.edn
+              value: /home/app/secret/chowdr-service.edn
           volumeMounts:
             - name: SERVICE-secret-volume
-              mountPath: /home/chowdr/secret
+              mountPath: /home/app/secret
               readOnly: true
           livenessProbe:
                 httpGet:
