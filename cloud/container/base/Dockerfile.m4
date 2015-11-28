@@ -10,7 +10,8 @@ RUN apt-get upgrade --yes
 # Install utitiles
 RUN apt-get install -y wget less screen m4 make git
 
-# Install syslog
+# Configure syslog
+ADD syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
 ADD loggly.conf /etc/syslog-ng/conf.d/loggly.conf
 
 RUN useradd -m app
