@@ -13,6 +13,7 @@ RUN git submodule update --init
 USER root
 RUN apt-get update
 RUN apt-get install -y ruby-dev
+RUN apt-get install -y npm
 RUN make tools
 
 # Build deployment branch
@@ -21,7 +22,7 @@ RUN git fetch -t origin GIT_TAG
 RUN git checkout GIT_TAG
 RUN git submodule update
 RUN git log -n 1
-RUN make service
+RUN make service || make service
 
 USER root
 RUN mkdir -p /etc/service/app

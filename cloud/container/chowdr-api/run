@@ -3,4 +3,4 @@
 cp -f /home/app/secret/log4j.properties /home/app/chowdr/resources/
 
 cd /home/app/chowdr
-setuser app lein with-profile service run
+setuser app make run

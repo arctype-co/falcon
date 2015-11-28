@@ -9,7 +9,7 @@
 
  :client
  {:css-s3-bucket "chowdr-development-assets"
-  :compass-bin "/usr/bin/compass"
+  :compass-bin "/usr/local/bin/compass"
   :device-scss-resource "scss/device.scss"
   :compass-out "resources/public/app/css/app.css"}
 
