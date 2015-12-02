@@ -49,6 +49,7 @@ environments:
       chowdr-api:
         secret-files:
           - chowdr-service.edn
+          - log4j.properties
       riak-kv:
         m4-params: 
           REPLICAS: 2
