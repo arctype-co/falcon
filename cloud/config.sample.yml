@@ -5,7 +5,11 @@ options:
 
 clusters:
   local:
+    provider: native
+    kube-server: 127.0.0.1:18080
+  vagrant:
     provider: vagrant
+    kube-server: todo-set-this:1234
     nodes: 2
     coreos-channel: alpha
     master-mem-mb: 1024
