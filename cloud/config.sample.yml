@@ -46,6 +46,12 @@ containers:
   riak-kv:
     m4-params: 
       RIAK_VERSION: "2.1.1-1"
+  #chowdr-api:
+    # TODO declarative container tag configuration
+    #tags:
+    #  xyz:
+    #    git-tag: xyz
+
 
 environments:
   development:
@@ -54,9 +60,21 @@ environments:
         secret-files:
           - chowdr-service.edn
           - log4j.properties
+      kafka-zk:
+        m4-params:
+          HOST_VOLUME_PATH: /var/local/kafka-dev/0
+      postgres:
+        # TODO declarative controller tag configuration
+        #tags:
+        #  index-2015-12-2-a:
+        #    container-tag: 9.4
+        m4-params:
+          POSTGRES_PASSWORD: m42SB#A7CJaNDdG$#bD8sGE5
+          HOST_VOLUME_PATH: /var/local/postgres/0
       riak-kv:
         m4-params: 
-          REPLICAS: 2
+          # To bootstrap a riak cluster, start 1 node, then scale it up to RIAK_CLUSTER_SIZE
+          REPLICAS: 1
           RIAK_CLUSTER_SIZE: 3
       openvpn:
         m4-params:
