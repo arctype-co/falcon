@@ -16,7 +16,9 @@ port | protocol | description
 8099 | riak | Riak handoff
 8985 | jmx | Riak Solr JMX
 ## Zookeeper
-2181 | zk | Zookeeper
+2181 | zk | Zookeeper client
+2888 | zk-follow | Zookeeper follower
+3888 | zk-elect | Zookeeper election
 ## Kafka
 9092 | kafka | Kafka broker
 ## Postgres

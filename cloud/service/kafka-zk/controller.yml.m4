@@ -28,4 +28,4 @@ spec:
       volumes:
         - name: SERVICE-volume-0
           hostPath:
-            path: /var/local/kafka-dev/0
+            path: HOST_VOLUME_PATH

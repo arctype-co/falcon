@@ -1,13 +1,14 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: SERVICE
+  name: SERVICE-ZK_ID
   labels:
-    name: SERVICE
+    name: SERVICE-ZK_ID
 spec:
   ports:
     - port: 2181 # Zookeeper
       protocol: TCP
   selector:
-    role: kafka-zk # Right now, we are running standalone kafka+zk combo image
+    role: SERVICE
+    zk-id: ZK_ID
   type: ClusterIP
