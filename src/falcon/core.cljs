@@ -8,6 +8,13 @@
 
 (def ^:private fs (js/require "fs"))
 
+(defn rmerge
+  "Recursive merge"
+  [& maps]
+  (if (map? (first maps))
+    (apply merge-with rmerge maps)
+    (first (remove nil? maps))))
+
 (defn new-tag
   []
   (let [now (js/Date.)]

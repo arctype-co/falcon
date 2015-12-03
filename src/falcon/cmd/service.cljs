@@ -80,8 +80,9 @@
   [opts args]
   (require-arguments 
     args
-    (fn [service container-tag]
-      (let [controller-tag (core/new-tag)
+    (fn [service]
+      (let [{:keys [container-tag]} (config-ns/service opts service)
+            controller-tag (or (:tag opts) (core/new-tag))
             params {:service service
                     :controller-tag controller-tag
                     :container-tag container-tag}]
@@ -126,7 +127,8 @@
 (def cli
   {:doc "Service configuration and deployment"
    :options
-   [["-y" "--yes" "Skip safety prompts" :default false]]
+   [["-t" "--tag <tag>" "Service tag"]
+    ["-y" "--yes" "Skip safety prompts" :default false]]
    :commands
    {"create" create
     "delete" delete

@@ -2,6 +2,7 @@
   (:require
     [cljs.core.async :as async]
     [schema.core :as S]
+    [falcon.core :refer [rmerge]]
     [falcon.schema :as schema])
   (:require-macros
     [cljs.core.async.macros :refer [go]]))
@@ -32,5 +33,7 @@
 
 (S/defn service :- schema/ServiceConfig
   "Returns a service-specific config in it's environment"
-  [{:keys [environment] :as options} :- schema/ConfigOptions svc]
-  (or (get-in options [:config :environments (keyword environment) :services (keyword svc)]) {}))
+  [{:keys [environment tag] :as options} :- schema/ConfigOptions svc]
+  (let [svc-cfg (or (get-in options [:config :environments (keyword environment) :services (keyword svc)]) {})]
+    (when (some? tag)
+      (rmerge svc-cfg (get-in svc-cfg [:tags (keyword tag)])))))

@@ -49,9 +49,14 @@
 (def ContainerConfig
   {(S/optional-key :m4-params) {S/Keyword S/Any}})
 
-(def ServiceConfig
+(def BaseServiceConfig
   {(S/optional-key :m4-params) {S/Keyword S/Any}
+   (S/optional-key :container-tag) S/Str ; Default container tag
    (S/optional-key :secret-files) [S/Str]})
+
+(def ServiceConfig
+  (merge BaseServiceConfig
+         {(S/optional-key :tags) {S/Keyword BaseServiceConfig}}))
 
 (def EnvironmentConfig
   {(S/required-key :services) {S/Keyword ServiceConfig}})
