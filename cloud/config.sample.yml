@@ -60,7 +60,7 @@ environments:
           - chowdr-service.edn
           - log4j.properties
       kafka: 
-        container-tag: 2015-12-04.004413
+        container-tag: 2015-12-04.010312
         secret-files:
           - log4j.properties
         profiles:
