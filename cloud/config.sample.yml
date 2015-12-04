@@ -52,7 +52,6 @@ containers:
     #  xyz:
     #    git-tag: xyz
 
-
 environments:
   development:
     services:
@@ -60,14 +59,31 @@ environments:
         secret-files:
           - chowdr-service.edn
           - log4j.properties
-      kafka-zk:
+      kafka: 
+        container-tag: 2015-12-03.214706
+        secret-files:
+          - log4j.properties
+        profiles:
+          node-0:
+            m4-params:
+              BROKER_ID: 0
+              HOST_VOLUME_PATH: /var/local/kafka/0
+          node-1:
+            m4-params:
+              BROKER_ID: 1
+              HOST_VOLUME_PATH: /var/local/kafka/1
+          node-2:
+            m4-params:
+              BROKER_ID: 2
+              HOST_VOLUME_PATH: /var/local/kafka/2
         m4-params:
-          HOST_VOLUME_PATH: /var/local/kafka-dev/0
+          ZOOKEEPER_CONNECT: zookeeper:2181
+      # Not in use
+      #kafka-zk:
+      #  m4-params:
+      #    HOST_VOLUME_PATH: /var/local/kafka-dev/0
       postgres:
-        # TODO declarative controller tag configuration
-        #profiles:
-        #  index-2015-12-2-a:
-        #    container-tag: 9.4
+        container-tag: "9.4"
         m4-params:
           POSTGRES_PASSWORD: m42SB#A7CJaNDdG$#bD8sGE5
           HOST_VOLUME_PATH: /var/local/postgres/0

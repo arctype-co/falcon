@@ -1,3 +1,4 @@
+# This is a standalone kafka-zookeeper instance
 kind: ReplicationController
 apiVersion: v1
 metadata:

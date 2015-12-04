@@ -2,10 +2,11 @@ FROM REPOSITORY/jre
 
 EXPOSE 9092
 
-ENV KAFKA_SERVER_PROPERTIES_PATH /usr/local/kafka/config/server.properties
-ENV KAFKA_LOG4J_PROPERTIES_PATH /usr/local/kafka/config/log4j.properties
-# From kafka-server-start.sh
-ENV KAFKA_LOG4J_OPTS "-Dlog4j.configuration=file:${KAFKA_LOG4J_PROPERTIES_PATH}"
+ENV LOG4J_PROPERTIES_PATH /usr/local/kafka/config/log4j.properties
+ENV SERVER_PROPERTIES_M4_PATH /etc/service/kafka/server.properties.m4
+ENV BROKER_ID 0
+ENV ZOOKEEPER_CONNECT localhost:2181
+ENV KAFKA_LOG_DIRS /tmp/kafka-logs
 ENV KAFKA_HEAP_OPTS "-Xmx1G -Xms1G"
 
 WORKDIR /usr/local/kafka
