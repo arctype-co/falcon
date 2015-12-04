@@ -96,7 +96,7 @@ environments:
           node-3:
             m4-params:
               ZK_ID: 3
-        container-tag: 3.4.6-ubuntu-14.04
+        container-tag: 2015-12-03.190244
         m4-params:
           ZK_NODES: zookeeper-1,zookeeper-2,zookeeper-3
 

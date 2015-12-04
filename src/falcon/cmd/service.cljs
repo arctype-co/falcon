@@ -89,18 +89,18 @@
   (require-arguments 
     args
     (fn [service]
-      (do-all-profiles opts (profiles opts service)
-        (fn [opts]
-          (let [{:keys [container-tag]} (config-ns/service opts service)
-                controller-tag (core/new-tag)
-                params {:service service
-                        :controller-tag controller-tag
-                        :container-tag container-tag}]
-            (core/print-summary "Create replication controler:" opts params)
-            (go
-              (<! (make-yml "controller.yml" opts params))
-              (<! (-> (kubectl/run opts "create" "-f" (cloud-path service "controller.yml"))
-                      (shell/check-status))))))))))
+      (let [controller-tag (core/new-tag)]
+        (do-all-profiles opts (profiles opts service)
+          (fn [opts]
+            (let [{:keys [container-tag]} (config-ns/service opts service)
+                  params {:service service
+                          :controller-tag controller-tag
+                          :container-tag container-tag}]
+              (core/print-summary "Create replication controler:" opts params)
+              (go
+                (<! (make-yml "controller.yml" opts params))
+                (<! (-> (kubectl/run opts "create" "-f" (cloud-path service "controller.yml"))
+                        (shell/check-status)))))))))))
 
 (S/defn delete-rc
   "Remove a replication controller"
@@ -108,13 +108,15 @@
   (require-arguments 
     args
     (fn [service controller-tag]
-      (let [params {:service service
-                    :controller-tag controller-tag}]
-        (core/print-summary "Delete replication controller:" opts params)
-        (go
-          (when-not (:yes opts) (<! (core/safe-wait)))
-          (<! (make-yml "controller.yml" opts params))
-          (<! (kubectl/run opts "delete" "-f" (cloud-path service "controller.yml"))))))))
+      (do-all-profiles opts (profiles opts service)
+        (fn [opts]
+          (let [params {:service service
+                        :controller-tag controller-tag}]
+            (core/print-summary "Delete replication controller:" opts params)
+            (go
+              (when-not (:yes opts) (<! (core/safe-wait)))
+              (<! (make-yml "controller.yml" opts params))
+              (<! (kubectl/run opts "delete" "-f" (cloud-path service "controller.yml"))))))))))
 
 (S/defn rolling-update
   "Rolling update a replication controller"

@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
         - name: SERVICE
-          image: mesoscloud/zookeeper:CONTAINER_TAG 
+          image: REPOSITORY/SERVICE:CONTAINER_TAG 
           ports:
             - containerPort: 2181
             - containerPort: 2888
