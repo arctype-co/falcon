@@ -15,3 +15,4 @@ RUN curl -fL http://www.us.apache.org/dist/zookeeper/stable/zookeeper-3.4.7.tar.
 VOLUME /tmp/zookeeper
 RUN mkdir -p /etc/service/zookeeper
 ADD run /etc/service/zookeeper/
+RUN chmod 0755 /etc/service/zookeeper/run
