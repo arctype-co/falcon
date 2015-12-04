@@ -35,6 +35,7 @@
     args
     (fn [container]
       (let [container-tag (or container-tag (core/new-tag))
+            container-id (full-container-tag repository container container-tag)
             params {:container container
                     :container-tag container-tag}
             defs (m4-defs opts params)]
@@ -47,9 +48,10 @@
                   (shell/check-status)))
           (<! (-> (docker/build
                     {:no-cache no-cache}
-                    [(str "-t=" (full-container-tag repository container container-tag))
+                    [(str "-t=" container-id)
                      (container-path container)])
                   (shell/check-status)))
+          (println "Built container:" container-id)
           container-tag)))))
 
 (S/defn push
