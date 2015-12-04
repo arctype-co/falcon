@@ -9,7 +9,6 @@
                         [(nth fn-args i) `(nth ~args ~i)])
                       (reduce concat)
                       (vec))]
-    #_(println bindings)
-    `(try (let ~bindings ~@fn-body)
-          (catch js/Error e#
-            (println "Expected arguments:" ~fn-arg-names)))))
+    `(if (= (count ~fn-arg-names) (count ~args)) 
+       (let ~bindings (do ~@fn-body))
+       (println "Expected arguments:" ~fn-arg-names))))

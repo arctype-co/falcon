@@ -5,7 +5,7 @@
     [falcon.shell :as core]))
 
 (def Options
-  {S/Str S/Str})
+  {S/Str (S/maybe S/Str)})
 
 (S/defn run :- schema/Chan
   [make-opts :- Options

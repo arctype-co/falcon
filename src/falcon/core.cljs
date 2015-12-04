@@ -1,19 +1,16 @@
 (ns falcon.core
   (:require
+    [cljs.core.async :refer [<!]]
     [clojure.string :as string]
     [cljs.core.async :as async]
     [cljs.pprint :refer [pprint]]
     [goog.string :as gstring]
-    [goog.string.format :as gformat]))
+    [goog.string.format :as gformat]
+    [falcon.config :as config-ns])
+  (:require-macros
+    [cljs.core.async.macros :refer [go]]))
 
 (def ^:private fs (js/require "fs"))
-
-(defn rmerge
-  "Recursive merge"
-  [& maps]
-  (if (map? (first maps))
-    (apply merge-with rmerge maps)
-    (first (remove nil? maps))))
 
 (defn new-tag
   []
@@ -30,7 +27,7 @@
 (defn print-summary
   [message opts details]
   (println message)
-  (pprint (merge (select-keys opts [:environment :cluster]) details)))
+  (pprint (merge (select-keys opts [:environment :cluster :profile]) details)))
 
 (defn base64
   [str-val]
@@ -47,3 +44,14 @@
 (defn read-file
   [file-path]
   (.readFileSync fs file-path #js {:encoding "utf8" :flag "r"}))
+
+(defn do-all-profiles
+  "When the :all option is enabled, run do-fn for each profile option.
+   do-fn must return a channel."
+  [opts profile-keys do-fn]
+  (if (:all opts)
+    (go (doseq [profile-key profile-keys]
+          (<! (do-fn (-> opts
+                         (assoc :profile (name profile-key))
+                         (dissoc :all))))))
+    (do-fn opts)))

@@ -5,7 +5,7 @@
     [cljs.pprint :refer [pprint]]
     [cljs.tools.cli :as cli]
     [schema.core :as S]
-    [falcon.core :as core :refer [cloud-path map-keys]]
+    [falcon.core :as core :refer [cloud-path map-keys do-all-profiles]]
     [falcon.config :as config-ns]
     [falcon.schema :as schema]
     [falcon.shell :as shell]
@@ -16,6 +16,10 @@
   (:require-macros
     [falcon.core :refer [require-arguments]]
     [cljs.core.async.macros :refer [go]]))
+
+(defn- profiles
+  [opts svc]
+  (keys (:profiles (config-ns/service opts svc))))
 
 (defn- m4-defs
   [opts {:keys [container-tag controller-tag service] :as params}]
@@ -56,11 +60,13 @@
   (require-arguments
     args
     (fn [service]
-      (let [params {:service service}]
-      (core/print-summary "Create service:" opts params)
-      (go
-        (<! (make-yml "service.yml" opts params))
-        (<! (kubectl/run opts "create" "-f" (cloud-path service "service.yml"))))))))
+      (do-all-profiles opts (profiles opts service)
+        (fn [opts]
+          (let [params {:service service}]
+            (core/print-summary "Create service:" opts params)
+            (go
+              (<! (make-yml "service.yml" opts params))
+              (<! (kubectl/run opts "create" "-f" (cloud-path service "service.yml"))))))))))
 
 (S/defn delete
   "Unload a service config"
@@ -68,12 +74,14 @@
   (require-arguments
     args
     (fn [service]
-      (let [params {:service service}]
-        (core/print-summary "Delete service:" opts params)
-        (go 
-          (when-not (:yes opts) (<! (core/safe-wait)))
-          (<! (make-yml "service.yml" opts params))
-          (<! (kubectl/run opts "delete" "-f" (cloud-path service "service.yml"))))))))
+      (do-all-profiles opts (profiles opts service)
+        (fn [opts]
+          (let [params {:service service}]
+            (core/print-summary "Delete service:" opts params)
+            (go 
+              (when-not (:yes opts) (<! (core/safe-wait)))
+              (<! (make-yml "service.yml" opts params))
+              (<! (kubectl/run opts "delete" "-f" (cloud-path service "service.yml"))))))))))
 
 (S/defn create-rc
   "Launch a replication controller"
@@ -81,16 +89,18 @@
   (require-arguments 
     args
     (fn [service]
-      (let [{:keys [container-tag]} (config-ns/service opts service)
-            controller-tag (or (:tag opts) (core/new-tag))
-            params {:service service
-                    :controller-tag controller-tag
-                    :container-tag container-tag}]
-        (core/print-summary "Create replication controler:" opts params)
-        (go
-          (<! (make-yml "controller.yml" opts params))
-          (<! (-> (kubectl/run opts "create" "-f" (cloud-path service "controller.yml"))
-                  (shell/check-status))))))))
+      (do-all-profiles opts (profiles opts service)
+        (fn [opts]
+          (let [{:keys [container-tag]} (config-ns/service opts service)
+                controller-tag (core/new-tag)
+                params {:service service
+                        :controller-tag controller-tag
+                        :container-tag container-tag}]
+            (core/print-summary "Create replication controler:" opts params)
+            (go
+              (<! (make-yml "controller.yml" opts params))
+              (<! (-> (kubectl/run opts "create" "-f" (cloud-path service "controller.yml"))
+                      (shell/check-status))))))))))
 
 (S/defn delete-rc
   "Remove a replication controller"
@@ -127,7 +137,8 @@
 (def cli
   {:doc "Service configuration and deployment"
    :options
-   [["-t" "--tag <tag>" "Service tag"]
+   [["-a" "--all" "Run command for all profiles"]
+    ["-p" "--profile <profile>" "Service profile"]
     ["-y" "--yes" "Skip safety prompts" :default false]]
    :commands
    {"create" create

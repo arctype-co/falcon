@@ -8,9 +8,10 @@
   {S/Str (S/maybe S/Any)})
 
 (S/defn defs :- Defs
-  [{:keys [environment repository] :as opts} :- schema/Options]
+  [{:keys [environment repository profile] :as opts} :- schema/Options]
   {"REPOSITORY" repository 
-   "ENVIRONMENT" environment})
+   "ENVIRONMENT" environment
+   "PROFILE" profile})
 
 (S/defn write :- schema/Chan
   [local-defs :- Defs

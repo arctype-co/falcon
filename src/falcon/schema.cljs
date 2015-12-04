@@ -56,7 +56,7 @@
 
 (def ServiceConfig
   (merge BaseServiceConfig
-         {(S/optional-key :tags) {S/Keyword BaseServiceConfig}}))
+         {(S/optional-key :profiles) {S/Keyword BaseServiceConfig}}))
 
 (def EnvironmentConfig
   {(S/required-key :services) {S/Keyword ServiceConfig}})
