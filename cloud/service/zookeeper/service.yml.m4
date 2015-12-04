@@ -1,11 +1,11 @@
-define(NAME, SERVICE-ZK_ID)
+define(NAME, ifdef(`ZK_ID', SERVICE-ZK_ID, SERVICE))
 kind: Service
 apiVersion: v1
 metadata:
   name: NAME
   labels:
     name: NAME
-    zk-id: "ZK_ID"
+    ifdef(`ZK_ID', zk-id: "ZK_ID")
 spec:
   ports:
     - port: 2181
@@ -19,5 +19,5 @@ spec:
       name: zk-elect
   selector:
     role: SERVICE
-    zk-id: "ZK_ID"
+    ifdef(`ZK_ID', zk-id: "ZK_ID")
   type: ClusterIP
