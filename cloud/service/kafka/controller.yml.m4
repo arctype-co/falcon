@@ -32,7 +32,7 @@ spec:
               value: ZOOKEEPER_CONNECT
             - name: KAFKA_LOG_DIRS
               value: /var/local/kafka
-            - env: LOG4J_PROPERTIES_PATH
+            - name: LOG4J_PROPERTIES_PATH
               value: /etc/service/kafka/secret/log4j.properties
           volumeMounts:
             - name: SERVICE-volume-BROKER_ID
