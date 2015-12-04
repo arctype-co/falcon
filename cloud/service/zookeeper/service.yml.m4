@@ -1,14 +1,23 @@
+define(NAME, SERVICE-ZK_ID)
 kind: Service
 apiVersion: v1
 metadata:
-  name: SERVICE-ZK_ID
+  name: NAME
   labels:
-    name: SERVICE-ZK_ID
+    name: NAME
+    zk-id: "ZK_ID"
 spec:
   ports:
-    - port: 2181 # Zookeeper
+    - port: 2181
       protocol: TCP
+      name: zk-client
+    - port: 2888 
+      protocol: TCP
+      name: zk-peer
+    - port: 3888 
+      protocol: TCP
+      name: zk-elect
   selector:
     role: SERVICE
-    zk-id: ZK_ID
+    zk-id: "ZK_ID"
   type: ClusterIP

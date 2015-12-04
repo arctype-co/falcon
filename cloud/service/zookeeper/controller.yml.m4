@@ -1,23 +1,27 @@
+define(NAME, SERVICE-PROFILE-CONTROLLER_TAG)
 kind: ReplicationController
 apiVersion: v1
 metadata:
-  name: SERVICE-CONTROLLER_TAG
+  name: NAME
   labels:
-    name: SERVICE-CONTROLLER_TAG
+    name: NAME
     role: SERVICE
-    zk-id: ZK_ID
+    profile: PROFILE
+    zk-id: "ZK_ID"
 spec:
   replicas: 1 # Do NOT replicate this controller -RS
   selector:
-    name: SERVICE-CONTROLLER_TAG
+    name: NAME
     role: SERVICE
-    zk-id: ZK_ID
+    profile: PROFILE
+    zk-id: "ZK_ID"
   template:
     metadata:
       labels:
-        name: SERVICE-CONTROLLER_TAG
+        name: NAME
         role: SERVICE
-        zk-id: ZK_ID
+        profile: PROFILE
+        zk-id: "ZK_ID"
     spec:
       containers:
         - name: SERVICE
@@ -28,7 +32,7 @@ spec:
             - containerPort: 3888
           env:
             - name: MYID
-              value: ZK_ID
+              value: "ZK_ID"
             - name: SERVERS
               value: ZK_NODES
               

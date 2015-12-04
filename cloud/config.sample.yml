@@ -48,7 +48,7 @@ containers:
       RIAK_VERSION: "2.1.1-1"
   #chowdr-api:
     # TODO declarative container tag configuration
-    #tags:
+    #profiles:
     #  xyz:
     #    git-tag: xyz
 
@@ -65,7 +65,7 @@ environments:
           HOST_VOLUME_PATH: /var/local/kafka-dev/0
       postgres:
         # TODO declarative controller tag configuration
-        #tags:
+        #profiles:
         #  index-2015-12-2-a:
         #    container-tag: 9.4
         m4-params:
@@ -86,19 +86,19 @@ environments:
           VPN_SUBNET_A_MASK: "255.255.255.0"
           VPN_SUBNET_B_NETWORK: "10.15.0.0" # 2nd subnet to route to
       zookeeper:
-        tags:
-          zk-0:
-            m4-params:
-              ZK_ID: 0
-          zk-1:
+        profiles:
+          node-1:
             m4-params:
               ZK_ID: 1
-          zk-2:
+          node-2:
             m4-params:
               ZK_ID: 2
+          node-3:
+            m4-params:
+              ZK_ID: 3
         container-tag: 3.4.6-ubuntu-14.04
         m4-params:
-          ZK_NODES: zookeeper-0,zookeeper-1,zookeeper-2
+          ZK_NODES: zookeeper-1,zookeeper-2,zookeeper-3
 
 
     
