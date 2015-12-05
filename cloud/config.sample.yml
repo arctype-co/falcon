@@ -106,15 +106,17 @@ environments:
           node-1:
             m4-params:
               ZK_ID: 1
+              HOST_VOLUME_PATH: /var/local/zookeeper/1
           node-2:
             m4-params:
               ZK_ID: 2
+              HOST_VOLUME_PATH: /var/local/zookeeper/2
           node-3:
             m4-params:
               ZK_ID: 3
-        container-tag: 2015-12-03.191945
+              HOST_VOLUME_PATH: /var/local/zookeeper/3
+        container-tag: zk-with-log4j-2015-12-04-c
+        secret-files:
+          - log4j.properties
         m4-params:
           ZK_NODES: zookeeper-1,zookeeper-2,zookeeper-3
-
-
-    

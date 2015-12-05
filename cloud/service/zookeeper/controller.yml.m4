@@ -35,5 +35,20 @@ spec:
               value: "ZK_ID"
             - name: SERVERS
               value: ZK_NODES
-              
-            
+            - name: LOG4J_PROPERTIES_PATH
+              value: /etc/service/zookeeper/secret/log4j.properties
+            - name: ZOODATA
+              value: /var/local/zookeeper
+          volumeMounts:
+            - name: SERVICE-volume-ZK_ID
+              mountPath: /var/local
+            - name: SERVICE-secret
+              mountPath: /etc/service/zookeeper/secret
+              readOnly: true
+      volumes:
+        - name: SERVICE-volume-ZK_ID
+          hostPath:
+            path: HOST_VOLUME_PATH
+        - name: SERVICE-secret
+          secret:
+            secretName: SERVICE
