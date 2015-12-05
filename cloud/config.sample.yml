@@ -60,7 +60,7 @@ environments:
           - chowdr-service.edn
           - log4j.properties
       kafka: 
-        container-tag: 2015-12-04.004413
+        container-tag: 2015-12-04.010312
         secret-files:
           - log4j.properties
         profiles:
@@ -101,6 +101,7 @@ environments:
           VPN_SUBNET_A_NETWORK: "172.16.75.0" # 1st subnet to route to
           VPN_SUBNET_A_MASK: "255.255.255.0"
           VPN_SUBNET_B_NETWORK: "10.15.0.0" # 2nd subnet to route to
+          VPN_SUBNET_B_MASK: "255.255.0.0"
       zookeeper:
         profiles:
           node-1:
