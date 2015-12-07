@@ -2,7 +2,7 @@
 *.swo
 *.tar.xz
 tmp
-cloud/*.yml
+config.yml
 cloud/*/*/*.yml
 cloud/*/*/Dockerfile
 secrets/*.json
