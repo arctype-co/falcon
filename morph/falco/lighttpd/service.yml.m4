@@ -4,14 +4,14 @@ define(`SERVICE_TYPE',
 kind: Service
 apiVersion: v1
 metadata:
-  name: www
+  name: SERVICE.CONTROLLER_TAG
   labels:
-    name: www
+    name: SERVICE
 spec:
   ports:
     - port: 80
-      targetPort: 4000
+      targetPort: 8080
       protocol: TCP
   selector:
-    role: www
+    role: SERVICE
   type: SERVICE_TYPE

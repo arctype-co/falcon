@@ -1,4 +1,4 @@
-FROM __REPOSITORY__/base
+FROM REPOSITORY/base
 
 WORKDIR /usr/local/src
 RUN wget https://bitbucket.org/pypy/pypy/downloads/pypy-2.6.0-linux64.tar.bz2

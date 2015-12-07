@@ -1,6 +1,6 @@
 FROM REPOSITORY/base
 
-EXPOSE 4000
+EXPOSE 8080
 
 RUN apt-get install -y lighttpd
 ADD lighttpd.conf /etc/lighttpd/lighttpd.conf

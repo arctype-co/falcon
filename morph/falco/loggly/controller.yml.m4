@@ -21,7 +21,6 @@ spec:
           image: sendgridlabs/loggly-docker:CONTAINER_TAG
           ports:
             - containerPort: 514
-              hostPort: 4514
           env:
             - name: `TOKEN'
               value: LOGGLY_TOKEN

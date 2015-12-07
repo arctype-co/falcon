@@ -1,4 +1,4 @@
-FROM __REPOSITORY__/pypy
+FROM REPOSITORY/pypy
 
 RUN apt-get install -y libssl-dev libffi-dev
 RUN useradd -m crossbar

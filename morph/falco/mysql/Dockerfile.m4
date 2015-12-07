@@ -1,4 +1,4 @@
-FROM __REPOSITORY__/base
+FROM REPOSITORY/base
 
 # Open MySQL server port
 EXPOSE 3306

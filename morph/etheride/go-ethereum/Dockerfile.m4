@@ -1,4 +1,4 @@
-FROM __REPOSITORY__/eth
+FROM REPOSITORY/ethereum
 
 # Install go
 WORKDIR /usr/local/src/

@@ -1,4 +1,4 @@
-FROM __REPOSITORY__/base
+FROM REPOSITORY/base
 
 WORKDIR /usr/local/src
 

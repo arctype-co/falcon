@@ -1,4 +1,4 @@
-FROM __REPOSITORY__/base
+FROM REPOSITORY/base
 
 WORKDIR /usr/local/src
 RUN wget https://storage.googleapis.com/golang/go1.4.2.linux-amd64.tar.gz 

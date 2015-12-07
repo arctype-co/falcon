@@ -6,7 +6,7 @@ metadata:
     name: SERVICE
 spec:
   ports:
-    - port: 4514
+    - port: 514
       targetPort: 4514
       protocol: UDP
   selector:
