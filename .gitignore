@@ -3,8 +3,8 @@
 *.tar.xz
 tmp
 config.yml
-cloud/*/*/*.yml
-cloud/*/*/Dockerfile
+morph/*/*/*.yml
+morph/*/*/Dockerfile
 secrets/*.json
 secrets/*.ovpn
 *.tar.gz
