@@ -12,6 +12,21 @@
 
 (def ^:private fs (js/require "fs"))
 
+(def ^:private morphs-path "./morph")
+
+(def ^:private morphs-cache (atom nil)) ; List of morphs available
+
+(defn- all-morphs
+  []
+  "Return a list of morphs available"
+  (swap! morphs-cache
+         (fn [morphs-val]
+           (if (some? morphs-val)
+             morphs-val
+             (let [morphs-val (vec (.readdirSync fs morphs-path))]
+               #_(println "Morphs loaded:" morphs-val)
+               morphs-val)))))
+
 (defn new-tag
   []
   (let [now (js/Date.)]
@@ -38,8 +53,16 @@
   (into {} (map (fn [[k v]] [(key-fn k) v])) dict))
 
 (defn cloud-path
-  [& path]
-  (string/join "/" (concat ["cloud/service"] path)))
+  [species & inner-path]
+  "Lookup a file within any morph"
+  (loop [morphs (all-morphs)]
+    (if-let [morph (first morphs)]
+      (let [species-path (string/join "/" (concat [morphs-path morph "service" species]))
+            species-path-stat (try (.statSync fs species-path) (catch js/Error e nil))]
+        (if (some? species-path-stat) ; path exists 
+          (string/join "/" (concat [species-path] inner-path))
+          (recur (rest morphs))))
+      (throw (js/Error. (str "Morph species not found: " species))))))
 
 (defn read-file
   [file-path]
