@@ -13,6 +13,10 @@
   (:require-macros
     [cljs.core.async.macros :refer [go]]))
 
+(defn- env-defs
+  [ccfg]
+  (core/map-keys name (:params ccfg)))
+
 (defmulti do-create :provider)
 
 (defmethod do-create :default
@@ -20,9 +24,9 @@
   (throw (js/Error. (str "Operation not supported for provider: " (:provider ccfg)))))
 
 (defmethod do-create "ubuntu"
-  [{:keys [install-env] :as ccfg} options]
+  [ccfg options]
   (core/print-summary "About to create cluster:" options ccfg)
-  (let [install-env (core/map-keys name install-env)]
+  (let [install-env (env-defs ccfg)]
     (go (<! (core/safe-wait))
         (<! (-> (shell/passthru 
                   ["./build.sh"]

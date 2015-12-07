@@ -10,17 +10,19 @@ clusters:
   vagrant:
     provider: vagrant
     kube-server: todo-set-this:1234
-    nodes: 2
-    coreos-channel: alpha
-    master-mem-mb: 1024
-    master-cpus: 1
-    node-mem-mb: 4096
-    node-cpus: 1
-    kube-ui: true
+    params:
+      NODES: 1
+      CHANNEL: alpha
+      MASTER_MEM: 1024
+      MASTER_CPUS: 1
+      NODE_MEM: 10240
+      NODE_CPUS: 2
+      USE_DOCKERCFG: true
+      USE_KUBE_UI: true
   dalek:
     provider: ubuntu
     kube-server: 10.0.0.70:8080
-    install-env:
+    params:
       KUBE_VERSION: "1.1.1"
       nodes: "falcon@10.0.0.70"
       role: "ai"
@@ -34,10 +36,6 @@ clusters:
       DNS_REPLICAS: "1"
       ENABLE_CLUSTER_UI: "true"
       KUBERNETES_PROVIDER: "ubuntu"
-    #m4-params: # Cluster parameters
-    #  CLUSTER_SUBNET: "10.15.0.0"
-    #  CLUSTER_SUBNET_MASK: "255.255.0.0"
-      
 
 containers:
   base:
@@ -46,15 +44,11 @@ containers:
   riak-kv:
     m4-params: 
       RIAK_VERSION: "2.1.1-1"
-  #chowdr-api:
-    # TODO declarative container tag configuration
-    #profiles:
-    #  xyz:
-    #    git-tag: xyz
 
 environments:
   development:
     services:
+      base: 
       chowdr-api:
         secret-files:
           - chowdr-service.edn
@@ -79,7 +73,7 @@ environments:
         m4-params:
           ZOOKEEPER_CONNECT: zookeeper:2181
       # Not in use
-      #kafka-zk:
+      #kafka-standalone:
       #  m4-params:
       #    HOST_VOLUME_PATH: /var/local/kafka-dev/0
       postgres:

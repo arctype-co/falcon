@@ -18,24 +18,25 @@
 (def BaseClusterConfig
   {(S/required-key :kube-server) S/Str}) ; ip:port
 
+(def VagrantClusterParams
+  {(S/required-key "NODES") S/Int
+   (S/required-key "CHANNEL") S/Str
+   (S/required-key "MASTER_MEM") S/Int
+   (S/required-key "MASTER_CPUS") S/Int
+   (S/required-key "NODE_MEM") S/Int
+   (S/required-key "NODE_CPUS") S/Int
+   (S/required-key "USE_DOCKERCFG") S/Bool
+   (S/required-key "USE_KUBE_UI") S/Bool})
+
 (def VagrantClusterConfig
   (merge BaseClusterConfig
          {(S/required-key :provider) (S/enum "vagrant")
-          (S/required-key :nodes) S/Int
-          (S/required-key :coreos-channel) S/Str
-          (S/required-key :master-mem-mb) S/Int
-          (S/required-key :master-cpus) S/Int
-          (S/required-key :node-mem-mb) S/Int
-          (S/required-key :node-cpus) S/Int
-          (S/required-key :kube-ui) S/Bool
-          (S/optional-key :dockercfg) S/Str 
-          ;(S/optional-key :base-ip) VagrantBaseIp ; buggy, not working
-          }))
+          (S/required-key :params) VagrantClusterParams}))
 
 (def UbuntuClusterConfig
   (merge BaseClusterConfig
          {(S/required-key :provider) (S/enum "ubuntu")
-          (S/required-key :install-env) {S/Keyword S/Str}}))
+          (S/required-key :params) {S/Keyword S/Str}}))
 
 (def NativeClusterConfig
   (merge BaseClusterConfig

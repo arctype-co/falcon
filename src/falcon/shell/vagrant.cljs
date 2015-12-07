@@ -1,28 +1,22 @@
 (ns falcon.shell.vagrant
   (:require
     [schema.core :as S]
+    [falcon.core :as core :refer [map-keys species-path]]
     [falcon.schema :as schema]
     [falcon.shell :as shell]))
 
+(defn- env-defs
+  [ccfg]
+  (core/map-keys name (:params ccfg)))
+
 (defn- vagrant-dir
   []
-  (str (.cwd js/process) "/cloud/cluster/kubernetes-vagrant-coreos-cluster"))
+  (str (.cwd js/process) "/" (species-path "cluster" "kubernetes-vagrant-coreos-cluster")))
 
 (S/defn ^:private vagrant-options
   [ccfg :- schema/VagrantClusterConfig]
   {:cwd (vagrant-dir) 
-   :env
-   (cond->
-     {"NODES" (str (:nodes ccfg))
-      "CHANNEL" (str (:coreos-channel ccfg))
-      "MASTER_MEM" (str (:master-mem-mb ccfg))
-      "MASTER_CPUS" (str (:master-cpus ccfg))
-      "NODE_MEM" (str (:node-mem-mb ccfg))
-      "NODE_CPUS" (str (:node-cpus ccfg))
-      "USE_DOCKERCFG" "true" ; use docker config from the host machine
-      "USE_KUBE_UI" (str (:kube-ui ccfg))}
-     (some? (:dockercfg ccfg)) (assoc "DOCKERCFG" (str (:dockercfg ccfg)))
-     (some? (:base-ip ccfg)) (assoc "BASE_IP_ADDR" (str (:base-ip ccfg))))})
+   :env (env-defs ccfg)})
 
 (defn run
   [ccfg cmd]
