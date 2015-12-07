@@ -1,6 +1,0 @@
-[submodule "cloud/cluster/kubernetes-vagrant-coreos-cluster"]
-	path = cloud/cluster/kubernetes-vagrant-coreos-cluster
-	url = git@github.com:pires/kubernetes-vagrant-coreos-cluster.git
-[submodule "cloud/cluster/kubernetes"]
-	path = cloud/cluster/kubernetes
-	url = git@github.com:kubernetes/kubernetes.git
