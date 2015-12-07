@@ -5,7 +5,7 @@
     [cljs.tools.cli :as cli]
     [schema.core :as S]
     [falcon.config :as config]
-    [falcon.core :as core :refer-macros [require-arguments]]
+    [falcon.core :as core :refer [species-path] :refer-macros [require-arguments]]
     [falcon.schema :as schema]
     [falcon.shell :as shell]
     [falcon.shell.kubectl :as kubectl]
@@ -17,7 +17,7 @@
 
 (defmethod do-create :default
   [ccfg]
-  (throw (js/Error. "Operation not supported")))
+  (throw (js/Error. (str "Operation not supported for provider: " (:provider ccfg)))))
 
 (defmethod do-create "ubuntu"
   [{:keys [install-env] :as ccfg} options]
@@ -26,15 +26,15 @@
     (go (<! (core/safe-wait))
         (<! (-> (shell/passthru 
                   ["./build.sh"]
-                  {:cwd "cloud/cluster/kubernetes/cluster/ubuntu"
+                  {:cwd (species-path "cluster" "kubernetes/cluster/ubuntu")
                    :env install-env})))
         (<! (-> (shell/passthru 
                   ["./kube-up.sh"]
-                  {:cwd "cloud/cluster/kubernetes/cluster"
+                  {:cwd (species-path "cluster" "kubernetes/cluster")
                    :env install-env})))
         (<! (-> (shell/passthru 
                   ["./deployAddons.sh"]
-                  {:cwd "cloud/cluster/kubernetes/cluster/ubuntu"
+                  {:cwd (species-path "cluster" "kubernetes/cluster/ubuntu")
                    :env install-env}))))))
 
 (defmethod do-create "vagrant"
@@ -82,7 +82,7 @@
     (go (<! (core/safe-wait))
         (<! (-> (shell/passthru 
                   ["./kube-down.sh"]
-                  {:cwd "cloud/cluster/kubernetes/cluster"
+                  {:cwd (species-path "cluster" "kubernetes/cluster")
                    :env install-env})
                 (shell/check-status))))))
 
