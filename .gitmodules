@@ -1,0 +1,6 @@
+[submodule "morph/falco/cluster/kubernetes-vagrant-coreos-cluster"]
+	path = morph/falco/cluster/kubernetes-vagrant-coreos-cluster
+	url = https://github.com/pires/kubernetes-vagrant-coreos-cluster.git
+[submodule "morph/falco/cluster/kubernetes"]
+	path = morph/falco/cluster/kubernetes
+	url = https://github.com/kubernetes/kubernetes.git
