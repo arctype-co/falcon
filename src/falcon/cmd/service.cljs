@@ -5,7 +5,7 @@
     [cljs.pprint :refer [pprint]]
     [cljs.tools.cli :as cli]
     [schema.core :as S]
-    [falcon.core :as core :refer [cloud-path map-keys do-all-profiles]]
+    [falcon.core :as core :refer [species-path map-keys do-all-profiles]]
     [falcon.config :as config-ns]
     [falcon.schema :as schema]
     [falcon.shell :as shell]
@@ -33,8 +33,8 @@
   [yml-name opts {:keys [service] :as defs}]
   (let []
     (-> (m4/write (m4-defs opts defs)
-                  [(cloud-path service (str yml-name ".m4"))]
-                  (cloud-path service yml-name))
+                  [(species-path service (str yml-name ".m4"))]
+                  (species-path service yml-name))
         (shell/check-status))))
 
 (S/defn list-services
@@ -66,7 +66,7 @@
             (core/print-summary "Create service:" opts params)
             (go
               (<! (make-yml "service.yml" opts params))
-              (<! (kubectl/run opts "create" "-f" (cloud-path service "service.yml"))))))))))
+              (<! (kubectl/run opts "create" "-f" (species-path service "service.yml"))))))))))
 
 (S/defn delete
   "Unload a service config"
@@ -81,7 +81,7 @@
             (go 
               (when-not (:yes opts) (<! (core/safe-wait)))
               (<! (make-yml "service.yml" opts params))
-              (<! (kubectl/run opts "delete" "-f" (cloud-path service "service.yml"))))))))))
+              (<! (kubectl/run opts "delete" "-f" (species-path service "service.yml"))))))))))
 
 (S/defn create-rc
   "Launch a replication controller"
@@ -99,7 +99,7 @@
               (core/print-summary "Create replication controler:" opts params)
               (go
                 (<! (make-yml "controller.yml" opts params))
-                (<! (-> (kubectl/run opts "create" "-f" (cloud-path service "controller.yml"))
+                (<! (-> (kubectl/run opts "create" "-f" (species-path service "controller.yml"))
                         (shell/check-status)))))))))))
 
 (S/defn delete-rc
@@ -116,7 +116,7 @@
             (go
               (when-not (:yes opts) (<! (core/safe-wait)))
               (<! (make-yml "controller.yml" opts params))
-              (<! (kubectl/run opts "delete" "-f" (cloud-path service "controller.yml"))))))))))
+              (<! (kubectl/run opts "delete" "-f" (species-path service "controller.yml"))))))))))
 
 (S/defn rolling-update
   "Rolling update a replication controller"
@@ -133,7 +133,7 @@
         (core/print-summary "Rolling update replication controller:" opts params)
         (go
           (<! (make-yml "controller.yml" opts params))
-          (<! (-> (kubectl/run opts "rolling-update" full-old-controller-tag "-f" (cloud-path service "controller.yml"))
+          (<! (-> (kubectl/run opts "rolling-update" full-old-controller-tag "-f" (species-path service "controller.yml"))
                   (shell/check-status))))))))
 
 (def cli

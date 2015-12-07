@@ -4,7 +4,7 @@
     [cljs.core.async :as async :refer [<!]]
     [cljs.tools.cli :as cli]
     [schema.core :as S]
-    [falcon.core :as core :refer [map-keys] :refer-macros [require-arguments]]
+    [falcon.core :as core :refer [map-keys species-path] :refer-macros [require-arguments]]
     [falcon.config :as config-ns]
     [falcon.schema :as schema]
     [falcon.shell :as shell]
@@ -13,10 +13,6 @@
     [falcon.shell.make :as make])
   (:require-macros
     [cljs.core.async.macros :refer [go]]))
-
-(defn- container-path
-  [& path]
-  (string/join "/" (concat ["cloud/container"] path)))
 
 (defn- m4-defs
   [{:keys [config git-tag] :as opts} params]
@@ -41,15 +37,16 @@
             defs (m4-defs opts params)]
         (core/print-summary "Building container" opts params)
         (go
-          (<! (-> (make/run defs ["-C" (container-path container)])))
+          ; Run a Makefile if there is one
+          (<! (-> (make/run defs ["-C" (species-path container)])))
           (<! (-> (m4/write defs
-                            [(container-path container "Dockerfile.m4")]
-                            (container-path container "Dockerfile"))
+                            [(species-path container "Dockerfile.m4")]
+                            (species-path container "Dockerfile"))
                   (shell/check-status)))
           (<! (-> (docker/build
                     {:no-cache no-cache}
                     [(str "-t=" container-id)
-                     (container-path container)])
+                     (species-path container)])
                   (shell/check-status)))
           (println "Built container:" container-id)
           container-tag)))))

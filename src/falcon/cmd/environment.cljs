@@ -5,7 +5,7 @@
     [cljs.pprint :refer [pprint]]
     [cljs.tools.cli :as cli]
     [schema.core :as S]
-    [falcon.core :as core :refer [cloud-path]]
+    [falcon.core :as core :refer [species-path]]
     [falcon.schema :as schema]
     [falcon.shell :as shell]
     [falcon.shell.kubectl :as kubectl]
@@ -19,9 +19,9 @@
   (core/print-summary "Create namespace:" opts {})
   (go 
     (<! (m4/write (m4/defs opts)
-                  [(cloud-path "environment" "namespace.yml.m4")]
-                  (cloud-path "environment" "namespace.yml")))
-    (<! (kubectl/run opts "create" "-f" (cloud-path "environment" "namespace.yml")))))
+                  [(species-path "environment" "namespace.yml.m4")]
+                  (species-path "environment" "namespace.yml")))
+    (<! (kubectl/run opts "create" "-f" (species-path "environment" "namespace.yml")))))
 
 (S/defn delete
   "Delete an environment (namespace)"
@@ -30,9 +30,9 @@
   (go 
     (<! (core/safe-wait))
     (<! (m4/write (m4/defs opts)
-                  [(cloud-path "environment" "namespace.yml.m4")]
-                  (cloud-path "environment" "namespace.yml")))
-    (<! (kubectl/run opts "delete" "-f" (cloud-path "environment" "namespace.yml")))))
+                  [(species-path "environment" "namespace.yml.m4")]
+                  (species-path "environment" "namespace.yml")))
+    (<! (kubectl/run opts "delete" "-f" (species-path "environment" "namespace.yml")))))
 
 (def cli
   {:doc "Environment setup"

@@ -5,7 +5,7 @@
     [cljs.pprint :refer [pprint]]
     [cljs.tools.cli :as cli]
     [schema.core :as S]
-    [falcon.core :as core :refer [cloud-path]]
+    [falcon.core :as core :refer [species-path]]
     [falcon.config :as config-ns]
     [falcon.schema :as schema]
     [falcon.shell :as shell]
@@ -30,7 +30,7 @@
   (into {} (map
              (fn [secret-file-name]
                [(env-file-name secret-file-name)
-                (core/base64 (core/read-file (cloud-path secret secret-file-name)))])
+                (core/base64 (core/read-file (species-path secret secret-file-name)))])
              secret-file-names)))
 
 (defn- m4-defs
@@ -45,8 +45,8 @@
   [yml-name opts {:keys [secret] :as params}]
   (let []
     (-> (m4/write (m4-defs opts params)
-                  [(cloud-path secret (str yml-name ".m4"))]
-                  (cloud-path secret yml-name))
+                  [(species-path secret (str yml-name ".m4"))]
+                  (species-path secret yml-name))
         (shell/check-status))))
 
 (S/defn list-secrets
@@ -66,7 +66,7 @@
         (core/print-summary "Create secret" opts params)
         (go
           (<! (make-yml "secret.yml" opts params))
-          (<! (kubectl/run opts "create" "-f" (cloud-path secret "secret.yml"))))))))
+          (<! (kubectl/run opts "create" "-f" (species-path secret "secret.yml"))))))))
 
 (S/defn update
   "Replace a secret config"
@@ -79,7 +79,7 @@
         (core/print-summary "Update secret" opts params)
         (go
           (<! (make-yml "secret.yml" opts params))
-          (<! (kubectl/run opts "update" "-f" (cloud-path secret "secret.yml"))))))))
+          (<! (kubectl/run opts "update" "-f" (species-path secret "secret.yml"))))))))
 
 (S/defn delete 
   "Unload a secret config"
@@ -93,7 +93,7 @@
         (go
           (<! (core/safe-wait))
           (<! (make-yml "secret.yml" opts params))
-          (<! (kubectl/run opts "delete" "-f" (cloud-path secret "secret.yml"))))))))
+          (<! (kubectl/run opts "delete" "-f" (species-path secret "secret.yml"))))))))
 
 (def cli
   {:doc "Secret configuration and deployment"

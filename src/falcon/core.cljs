@@ -1,4 +1,5 @@
 (ns falcon.core
+  (:refer-clojure :exclude [exists?])
   (:require
     [cljs.core.async :refer [<!]]
     [clojure.string :as string]
@@ -52,21 +53,27 @@
   [key-fn dict]
   (into {} (map (fn [[k v]] [(key-fn k) v])) dict))
 
-(defn cloud-path
+(defn read-file
+  [file-path]
+  (.readFileSync fs file-path #js {:encoding "utf8" :flag "r"}))
+
+(defn exists?
+  [path]
+  (try 
+    (.statSync fs path)
+    true
+    (catch js/Error e false)))
+
+(defn species-path
   [species & inner-path]
   "Lookup a file within any morph"
   (loop [morphs (all-morphs)]
     (if-let [morph (first morphs)]
-      (let [species-path (string/join "/" (concat [morphs-path morph "service" species]))
-            species-path-stat (try (.statSync fs species-path) (catch js/Error e nil))]
-        (if (some? species-path-stat) ; path exists 
+      (let [species-path (string/join "/" (concat [morphs-path morph species]))]
+        (if (exists? species-path)
           (string/join "/" (concat [species-path] inner-path))
           (recur (rest morphs))))
       (throw (js/Error. (str "Morph species not found: " species))))))
-
-(defn read-file
-  [file-path]
-  (.readFileSync fs file-path #js {:encoding "utf8" :flag "r"}))
 
 (defn do-all-profiles
   "When the :all option is enabled, run do-fn for each profile option.
