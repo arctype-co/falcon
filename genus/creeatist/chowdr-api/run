@@ -1,6 +1,0 @@
-#!/bin/bash
-
-cp -f /home/app/secret/log4j.properties /home/app/chowdr/resources/
-
-cd /home/app/chowdr
-setuser app make run
