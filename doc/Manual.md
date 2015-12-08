@@ -1,59 +1,26 @@
 # Falcon
-Falcon builds and configures the various services for the cluster.
-
-## Publishing an app image
-
-Tags should be in the form YYYY-mm-dd-x, where x is an incrementing letter.
-
-Variables:
-  - TAG is the tag for the docker image
-  - APP_TAG is the git tag for the app.
-
-```
-make app-image-push TAG=2015-08-03-a APP_TAG=2015-08-03-a
-```
+Falcon builds and configures the various services for a Kubernetes cluster.
 
 # Kubernetes 
 Kubernetes is the cluster manager which orchestrates running docker images.
 
-## Connect to the master
-```
-ssh -fN -L 8080:localhost:8080 -i ~/.ssh/google_compute_engine kube.etheride.com 
-# Show cluster info
-kubectl cluster-info
-```
-
 ## Creating a new service
 
-1. Create a template replication controller 
-2. Create a service (exposes pods to the network)
+1. Write a Dockerfile template
+`vim morph/myorg/myservice/Dockerfile.m4`
+2. Build the container
+`falcon container build myorg/myservice`
+3. Define a replication controller
+`vim morph/myorg/myservice/controller.yml.m4`
+4. Deploy the controller
+`falcon service create-rc myorg/myservice`
+5. Define the network service
+`vim morph/myorg/myservice/service.yml.m4`
+6. Create the network service
+`falcon service create myorg/myservice`
 
-## Deploying a new service
-
-1. Deploy a replication controller
-```
-kubectl create -f my-replication-controller.yml
-kubectl get rc
-kubectl get pods
-```
-
-2. Define a service configuration (manages networking)
-```
-kubectl create -f my-service.yml
-kubectl get services
-```
-
-3. Open firewall port to cluster nodes (external services only)
-
-```
-gcloud compute firewall-rules create --allow=tcp:$PORT --target-tags=k8s-cluster-1-node $SERVICE-$PORT
-```
-
-## Creating a disk
-```
-gcloud compute disks create --size=500GB --zone=us-central1-f my-data-disk
-```
-
-## Pushing a Docker image
-docker tag etheride/image-name gcr.io/etheride-984/image-name:tag
-gcloud docker push gcr.io/etheride-984/image-name:tag 
+## Updating a controller
+1. Deploy the new controller
+`falcon service create-rc myorg/myservice`
+2. Undelploy the old controller
+`falcon service delete-rc myorg/myservice <controller-tag>`

@@ -23,9 +23,3 @@ port | protocol | description
 9092 | kafka | Kafka broker
 ## Postgres
 5432 | psql | PostgreSQL
-## NginX
-4501 | http | Chowdr API gateway
-## Applications
-4000 | http | www.chowder.us
-4501 | http | Chowdr API service
-30501 | http | Chowder API service node port
