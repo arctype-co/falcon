@@ -1,5 +1,5 @@
-(defproject chowder/falcon "0.1.0-SNAPSHOT"
-  :description "Deployment utility"
+(defproject sundbry/falcon "0.1.0-SNAPSHOT"
+  :description "A Kubernetes configuration and deployment tool"
 
   :plugins
   [[lein-cljsbuild "1.0.6"]
