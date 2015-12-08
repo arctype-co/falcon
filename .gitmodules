@@ -1,3 +1,0 @@
-[submodule "genus/falco"]
-	path = genus/falco
-	url = git@github.com:sundbry/falco.git
