@@ -13,20 +13,20 @@
 
 (def ^:private fs (js/require "fs"))
 
-(def ^:private morphs-path "./morph")
+(def ^:private genera-path "./genus")
 
-(def ^:private morphs-cache (atom nil)) ; List of morphs available
+(def ^:private genera-cache (atom nil)) ; List of genera available
 
-(defn- all-morphs
+(defn- all-genera
   []
-  "Return a list of morphs available"
-  (swap! morphs-cache
-         (fn [morphs-val]
-           (if (some? morphs-val)
-             morphs-val
-             (let [morphs-val (vec (.readdirSync fs morphs-path))]
-               #_(println "Morphs loaded:" morphs-val)
-               morphs-val)))))
+  "Return a list of genera available"
+  (swap! genera-cache
+         (fn [genera-val]
+           (if (some? genera-val)
+             genera-val
+             (let [genera-val (vec (.readdirSync fs genera-path))]
+               #_(println "Morphs loaded:" genera-val)
+               genera-val)))))
 
 (defn new-tag
   []
@@ -65,7 +65,7 @@
     (catch js/Error e false)))
 
 (defn species-name
-  "Return the unqualified name of a morph/species if it is qualified."
+  "Return the unqualified name of a genus/species if it is qualified."
   [species]
   (if (<= 0 (.indexOf species "/"))
     ; qualified name
@@ -75,19 +75,19 @@
 
 (defn species-path
   [qualified-species & inner-path]
-  "Lookup a file within any morph"
-  (let [[morphs species] (if (<= 0 (.indexOf qualified-species "/"))
+  "Lookup a file within any genus"
+  (let [[genera species] (if (<= 0 (.indexOf qualified-species "/"))
                            ; qualified name
-                           (let [[morph species] (string/split qualified-species "/")]
-                             [[morph] species])
+                           (let [[genus species] (string/split qualified-species "/")]
+                             [[genus] species])
                            ; unqualified name
-                           [(all-morphs) qualified-species])]
-    (loop [morphs morphs]
-    (if-let [morph (first morphs)]
-      (let [species-path (string/join "/" (concat [morphs-path morph species]))]
+                           [(all-genera) qualified-species])]
+    (loop [genera genera]
+    (if-let [genus (first genera)]
+      (let [species-path (string/join "/" (concat [genera-path genus species]))]
         (if (exists? species-path)
           (string/join "/" (concat [species-path] inner-path))
-          (recur (rest morphs))))
+          (recur (rest genera))))
       (throw (js/Error. (str "Species not found: " qualified-species)))))))
 
 (defn do-all-profiles
