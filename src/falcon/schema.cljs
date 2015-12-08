@@ -19,14 +19,14 @@
   {(S/required-key :kube-server) S/Str}) ; ip:port
 
 (def VagrantClusterParams
-  {(S/required-key "NODES") S/Int
-   (S/required-key "CHANNEL") S/Str
-   (S/required-key "MASTER_MEM") S/Int
-   (S/required-key "MASTER_CPUS") S/Int
-   (S/required-key "NODE_MEM") S/Int
-   (S/required-key "NODE_CPUS") S/Int
-   (S/required-key "USE_DOCKERCFG") S/Bool
-   (S/required-key "USE_KUBE_UI") S/Bool})
+  {(S/required-key :NODES) S/Int
+   (S/required-key :CHANNEL) S/Str
+   (S/required-key :MASTER_MEM) S/Int
+   (S/required-key :MASTER_CPUS) S/Int
+   (S/required-key :NODE_MEM) S/Int
+   (S/required-key :NODE_CPUS) S/Int
+   (S/required-key :USE_DOCKERCFG) S/Bool
+   (S/required-key :USE_KUBE_UI) S/Bool})
 
 (def VagrantClusterConfig
   (merge BaseClusterConfig

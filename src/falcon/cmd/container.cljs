@@ -22,7 +22,7 @@
 
 (defn- full-container-tag
   [repository container tag]
-  (str repository "/" container ":" tag))
+  (str repository "/" (core/species-name container) ":" tag))
 
 (S/defn build
   "Build a docker image. Returns channel with tag."

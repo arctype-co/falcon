@@ -1,5 +1,5 @@
 options:
-  repository: creeatist
+  repository: creeatist # Docker repository
   cluster: local
   environment: development
 
@@ -38,7 +38,7 @@ clusters:
       KUBERNETES_PROVIDER: "ubuntu"
 
 containers:
-  base:
+  creeatist/base:
     m4-params: 
       LOGGLY_TOKEN: "5741714c-b518-43a8-8968-bf971771a7ae"
   riak-kv:
@@ -48,7 +48,6 @@ containers:
 environments:
   development:
     services:
-      base: 
       chowdr-api:
         secret-files:
           - chowdr-service.edn

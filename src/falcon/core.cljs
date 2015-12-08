@@ -64,16 +64,31 @@
     true
     (catch js/Error e false)))
 
+(defn species-name
+  "Return the unqualified name of a morph/species if it is qualified."
+  [species]
+  (if (<= 0 (.indexOf species "/"))
+    ; qualified name
+    (second (string/split species "/"))
+    ; unqualified name
+    species))
+
 (defn species-path
-  [species & inner-path]
+  [qualified-species & inner-path]
   "Lookup a file within any morph"
-  (loop [morphs (all-morphs)]
+  (let [[morphs species] (if (<= 0 (.indexOf qualified-species "/"))
+                           ; qualified name
+                           (let [[morph species] (string/split qualified-species "/")]
+                             [[morph] species])
+                           ; unqualified name
+                           [(all-morphs) qualified-species])]
+    (loop [morphs morphs]
     (if-let [morph (first morphs)]
       (let [species-path (string/join "/" (concat [morphs-path morph species]))]
         (if (exists? species-path)
           (string/join "/" (concat [species-path] inner-path))
           (recur (rest morphs))))
-      (throw (js/Error. (str "Morph species not found: " species))))))
+      (throw (js/Error. (str "Species not found: " qualified-species)))))))
 
 (defn do-all-profiles
   "When the :all option is enabled, run do-fn for each profile option.
