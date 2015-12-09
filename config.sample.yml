@@ -1,6 +1,6 @@
 options:
   repository: creeatist # Docker repository
-  cluster: local
+  cluster: dalek
   environment: development
 
 clusters:
@@ -86,6 +86,7 @@ environments:
           REPLICAS: 1
           RIAK_CLUSTER_SIZE: 3
       openvpn:
+        container-tag: 2015-12-08.184625
         m4-params:
           REPLICAS: 1
           VPN_VIRTUAL_NETWORK: "10.99.0.0" # New subnet for VPN clients
