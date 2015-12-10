@@ -93,6 +93,7 @@
         (do-all-profiles opts (profiles opts service)
           (fn [opts]
             (let [{:keys [container-tag]} (config-ns/service opts service)
+                  container-tag (or (:container-tag opts) container-tag)
                   params {:service service
                           :controller-tag controller-tag
                           :container-tag container-tag}]
@@ -140,6 +141,7 @@
   {:doc "Service configuration and deployment"
    :options
    [["-a" "--all" "Run command for all profiles"]
+    ["-c" "--container-tag <tag>" "Container tag"]
     ["-p" "--profile <profile>" "Service profile"]
     ["-y" "--yes" "Skip safety prompts" :default false]]
    :commands
