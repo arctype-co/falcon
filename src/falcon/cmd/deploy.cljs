@@ -23,9 +23,10 @@
       (let [params {:service service}]
         (core/print-summary "Create deployment:" opts params)
         (go
-          (let [container-tag (or container-tag (<! (container-ns/build opts [service])))]
-            (<! (container-ns/push (assoc opts :container-tag container-tag) [service]))
-            (<! (service-ns/create-rc opts [service container-tag]))))))))
+          (let [container-tag (or container-tag (<! (container-ns/build opts [service])))
+                opts (assoc opts :container-tag container-tag)]
+            (<! (container-ns/push opts [service]))
+            (<! (service-ns/create-rc opts [service]))))))))
 
 (S/defn roll
   "Build and push container, then rolling deploy it's replication controller."
