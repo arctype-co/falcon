@@ -15,10 +15,10 @@
     [cljs.core.async.macros :refer [go]]))
 
 (defn- m4-defs
-  [{:keys [config git-tag] :as opts} params]
+  [{:keys [config git-tag m4-params] :as opts} params]
   (merge (m4/defs opts)
          {"GIT_TAG" git-tag}
-         (map-keys name (:m4-params (config-ns/container opts (:container params))))))
+         (map-keys name m4-params)))
 
 (defn- full-container-tag
   [repository container tag]
@@ -30,7 +30,8 @@
   (require-arguments
     args
     (fn [container]
-      (let [container-tag (or container-tag (core/new-tag))
+      (let [opts (merge (config-ns/container opts container) opts)
+            container-tag (or container-tag (core/new-tag))
             container-id (full-container-tag repository container container-tag)
             params {:container container
                     :container-tag container-tag}
@@ -66,8 +67,7 @@
 
 (def cli 
   {:doc "Container management"
-   :options [["-t" "--git-tag <tag>" "Git tag"
-              :default "master"]
+   :options [["-t" "--git-tag <tag>" "Git tag"]
              ["-c" "--container-tag <tag>" "Container tag"]
              ["-n" "--no-cache" "Disable docker cache"
               :default false]]

@@ -48,7 +48,8 @@
                  #(= (:provider %) "native") NativeClusterConfig))
 
 (def ContainerConfig
-  {(S/optional-key :m4-params) {S/Keyword S/Any}})
+  {(S/optional-key :m4-params) {S/Keyword S/Any}
+   (S/optional-key :git-tag) S/Str})
 
 (def BaseServiceConfig
   {(S/optional-key :m4-params) {S/Keyword S/Any}
