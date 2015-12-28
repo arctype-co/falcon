@@ -8,4 +8,4 @@ target
 .lein-repl-history
 .nrepl-port
 node_modules
-genus/*
+cloud/*
