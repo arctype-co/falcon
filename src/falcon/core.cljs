@@ -13,20 +13,20 @@
 
 (def ^:private fs (js/require "fs"))
 
-(def ^:private genera-path "./genus")
+(def ^:private clouds-path "./cloud")
 
-(def ^:private genera-cache (atom nil)) ; List of genera available
+(def ^:private clouds-cache (atom nil)) ; List of clouds available
 
-(defn- all-genera
+(defn- all-clouds
   []
-  "Return a list of genera available"
-  (swap! genera-cache
-         (fn [genera-val]
-           (if (some? genera-val)
-             genera-val
-             (let [genera-val (vec (.readdirSync fs genera-path))]
-               #_(println "Morphs loaded:" genera-val)
-               genera-val)))))
+  "Return a list of clouds available"
+  (swap! clouds-cache
+         (fn [clouds-val]
+           (if (some? clouds-val)
+             clouds-val
+             (let [clouds-val (vec (.readdirSync fs clouds-path))]
+               #_(println "Morphs loaded:" clouds-val)
+               clouds-val)))))
 
 (defn new-tag
   []
@@ -65,7 +65,7 @@
     (catch js/Error e false)))
 
 (defn species-name
-  "Return the unqualified name of a genus/species if it is qualified."
+  "Return the unqualified name of a cloud/species if it is qualified."
   [species]
   (if (<= 0 (.indexOf species "/"))
     ; qualified name
@@ -75,19 +75,19 @@
 
 (defn species-path
   [qualified-species & inner-path]
-  "Lookup a file within any genus"
-  (let [[genera species] (if (<= 0 (.indexOf qualified-species "/"))
+  "Lookup a file within any cloud"
+  (let [[clouds species] (if (<= 0 (.indexOf qualified-species "/"))
                            ; qualified name
-                           (let [[genus species] (string/split qualified-species "/")]
-                             [[genus] species])
+                           (let [[cloud species] (string/split qualified-species "/")]
+                             [[cloud] species])
                            ; unqualified name
-                           [(all-genera) qualified-species])]
-    (loop [genera genera]
-    (if-let [genus (first genera)]
-      (let [species-path (string/join "/" (concat [genera-path genus species]))]
+                           [(all-clouds) qualified-species])]
+    (loop [clouds clouds]
+    (if-let [cloud (first clouds)]
+      (let [species-path (string/join "/" (concat [clouds-path cloud species]))]
         (if (exists? species-path)
           (string/join "/" (concat [species-path] inner-path))
-          (recur (rest genera))))
+          (recur (rest clouds))))
       (throw (js/Error. (str "Species not found: " qualified-species)))))))
 
 (defn do-all-profiles
