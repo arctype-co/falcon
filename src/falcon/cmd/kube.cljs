@@ -59,6 +59,15 @@
       (go 
         (<! (kubectl/run opts "exec" "-i" "--tty" pod "bash"))))))
 
+(S/defn delete-pod
+  "Delete a pod"
+  [opts args]
+  (require-arguments
+    args
+    (fn [pod]
+      (go 
+        (<! (kubectl/run opts "delete" "pod" pod))))))
+
 (def cli
   {:doc "Integrated kubectl commands"
    :options []
@@ -66,6 +75,7 @@
               "logs" logs
               "nodes" nodes
               "pods" pods
+              "delete-pod" delete-pod
               "rc" rc
               "sh" sh
               "services" services}})
