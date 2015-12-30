@@ -119,6 +119,12 @@
               (<! (make-yml "controller.yml" opts params))
               (<! (kubectl/run opts "delete" "-f" (species-path service "controller.yml"))))))))))
 
+(S/defn update-rc
+  "Replace a replication controller"
+  [opts args]
+  (go (<! (delete-rc opts args))
+      (<! (create-rc opts (take 1 args)))))
+
 (S/defn rolling-update
   "Rolling update a replication controller"
   [opts args]
@@ -149,6 +155,7 @@
     "delete" delete
     "create-rc" create-rc
     "delete-rc" delete-rc
+    "update-rc" update-rc
     "list" list-services
     "status" status
     "rolling-update" rolling-update}})
