@@ -1,4 +1,5 @@
 (ns falcon.cmd.kube
+  (:refer-clojure :exclude [do])
   (:require
     [clojure.string :as string]
     [cljs.core.async :as async :refer [<!]]
@@ -68,10 +69,16 @@
       (go 
         (<! (kubectl/run opts "delete" "pod" pod))))))
 
+(S/defn do
+  "Do a kubernetes command"
+  [opts args]
+  (go (<! (apply kubectl/run opts args))))
+
 (def cli
   {:doc "Integrated kubectl commands"
    :options []
-   :commands {"env" env
+   :commands {"do" do
+              "env" env
               "logs" logs
               "nodes" nodes
               "pods" pods
