@@ -44,7 +44,7 @@ containers:
   chowdr-api:
     git-tag: 2015-12-25-b
   chowdr-client:
-    git-tag: 2015-12-29-b
+    git-tag: 2015-12-29-c
   riak-kv:
     m4-params: 
       RIAK_VERSION: "2.1.1-1"
@@ -52,6 +52,9 @@ containers:
 environments:
   development:
     services:
+      docker:
+        secret-files:
+          - config.json
       chowdr-shared:
         secret-files:
           - chowdr-shared.edn
