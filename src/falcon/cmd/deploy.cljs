@@ -1,4 +1,5 @@
 (ns falcon.cmd.deploy
+  (:refer-clojure :exclude [update])
   (:require
     [clojure.string :as string]
     [cljs.core.async :as async :refer [<!]]
@@ -28,6 +29,21 @@
             (<! (container-ns/push opts [service]))
             (<! (service-ns/create-rc opts [service]))))))))
 
+(S/defn update
+  "Build and push container, remove current controller tag, and redeploy replication controller."
+  [{:keys [container-tag]:as opts} args]
+  (require-arguments
+    args
+    (fn [service old-controller-tag]
+      (let [params {:service service}]
+        (core/print-summary "Update deployment:" opts params)
+        (go
+          (let [container-tag (or container-tag (<! (container-ns/build opts [service])))
+                opts (assoc opts :container-tag container-tag)]
+            (<! (container-ns/push opts [service]))
+            (<! (service-ns/delete-rc opts [service old-controller-tag]))
+            (<! (service-ns/create-rc opts [service]))))))))
+
 (S/defn roll
   "Build and push container, then rolling deploy it's replication controller."
   [{:keys [container-tag] :as opts} args]
@@ -50,4 +66,5 @@
              ["-n" "--no-cache" "Disable docker cache"
               :default false]]
    :commands {"create" create
+              "update" update
               "roll" roll}})
