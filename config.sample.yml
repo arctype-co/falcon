@@ -43,6 +43,8 @@ containers:
       LOGGLY_TOKEN: "5741714c-b518-43a8-8968-bf971771a7ae"
   chowdr-api:
     git-tag: 2015-12-25-b
+  chowdr-client:
+    git-tag: 2015-12-29-b
   riak-kv:
     m4-params: 
       RIAK_VERSION: "2.1.1-1"
@@ -50,12 +52,18 @@ containers:
 environments:
   development:
     services:
+      chowdr-shared:
+        secret-files:
+          - chowdr-shared.edn
+          - log4j.properties
       chowdr-api:
         container-tag: 2015-12-10.014038
         secret-files:
-          - chowdr-shared.edn
           - chowdr-service.edn
-          - log4j.properties
+      chowdr-client:
+        container-tag: 2015-12-29.113943
+        secret-files:
+          - chowdr-service.edn
       hungry-py:
         container-tag: 2015-12-21.134511
         secret-files:
