@@ -71,6 +71,8 @@ environments:
         container-tag: 2015-12-21.134511
         secret-files:
           - dbconfig.json
+      jupyter:
+        container-tag: 2016-01-03.233614
       kafka: 
         container-tag: 2015-12-04.010312
         secret-files:
@@ -115,6 +117,14 @@ environments:
           VPN_SUBNET_A_MASK: "255.255.255.0"
           VPN_SUBNET_B_NETWORK: "10.15.0.0" # 2nd subnet to route to
           VPN_SUBNET_B_MASK: "255.255.0.0"
+      spark-master:
+        container-tag: 2016-01-04.011645
+      spark-slave:
+        container-tag: 2016-01-04.012412
+        m4-params:
+          REPLICAS: 2
+          SPARK_WORKER_CORES: 1
+          SPARK_WORKER_MEMORY: 2g
       zookeeper:
         profiles:
           node-1:
