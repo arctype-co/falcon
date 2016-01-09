@@ -42,7 +42,7 @@ containers:
     m4-params: 
       LOGGLY_TOKEN: "5741714c-b518-43a8-8968-bf971771a7ae"
   chowdr-api:
-    git-tag: 2016-01-04-c
+    git-tag: 2016-01-08-a
   chowdr-client:
     git-tag: 2016-01-04-c
   riak-kv:
