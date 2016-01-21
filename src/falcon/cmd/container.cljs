@@ -26,7 +26,7 @@
 
 (S/defn build
   "Build a docker image. Returns channel with tag."
-  [{:keys [no-cache git-tag container-tag repository] :as opts} args]
+  [{:keys [no-cache container-tag repository] :as opts} args]
   (require-arguments
     args
     (fn [container]
@@ -65,6 +65,18 @@
                     [(full-container-tag repository container container-tag)])
                   (shell/check-status))))))))
 
+(S/defn publish
+  "Build & push a docker image to the repository. Returns channel with status."
+  [{:keys [git-tag] :as opts} args]
+  (require-arguments
+    args
+    (fn [container]
+      (let [git-tag (or git-tag (throw (js/Error. "--git-tag required")))]
+        (go 
+          (let [container-tag (<! (build opts [container]))
+                opts (assoc opts :container-tag container-tag)]
+            (<! (push opts [container]))))))))
+
 (def cli 
   {:doc "Container management"
    :options [["-t" "--git-tag <tag>" "Git tag"]
@@ -72,4 +84,5 @@
              ["-n" "--no-cache" "Disable docker cache"
               :default false]]
    :commands {"build" build
-              "push" push}})
+              "push" push
+              "publish" publish}})
