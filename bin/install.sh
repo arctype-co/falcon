@@ -26,8 +26,11 @@ sudo chown root:root /usr/local/bin/lein
 sudo chmod 0755 /usr/local/bin/lein
 lein version
 
-# Install docker
-wget -qO- https://get.docker.com/ | sudo sh
+# Install docker, if not installed
+docker version
+if [ $? -eq 127 ]; then
+  wget -qO- https://get.docker.com/ | sudo sh
+fi
 sudo usermod -aG docker `whoami`
 
 # Clone falcon
