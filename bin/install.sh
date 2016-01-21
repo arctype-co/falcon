@@ -3,18 +3,13 @@
 
 SYSADMIN_PACKAGES="vim screen htop"
 KUBE_PACKAGES="golang"
-FALCON_PACKAGES="virtualbox-5.0 openjdk-7-jdk npm git m4"
+FALCON_PACKAGES="openjdk-7-jdk npm git m4"
 
 grep 14.04 /etc/issue > /dev/null 2>&1
 if [ $? -ne 0 ]; then
   echo "Ubuntu version 14.04 required"
   exit 1
 fi
-
-exit 2
-
-# https://help.ubuntu.com/community/VirtualBox/Installation
-sudo sh -c "echo 'deb http://download.virtualbox.org/virtualbox/debian '$(lsb_release -cs)' contrib non-free' > /etc/apt/sources.list.d/virtualbox.list" && wget -q http://download.virtualbox.org/virtualbox/debian/oracle_vbox.asc -O- | sudo apt-key add -
 
 # sudo apt-get update
 echo $SYSADMIN_PACKAGES | sudo xargs apt-get install -y 
@@ -24,10 +19,6 @@ echo $FALCON_PACKAGES | sudo xargs apt-get install -y
 # Alias node js
 sudo rm -f /usr/bin/node
 sudo ln -s /usr/bin/nodejs /usr/bin/node
-
-# Install vagrant
-sudo wget -nc -N https://releases.hashicorp.com/vagrant/1.7.4/vagrant_1.7.4_x86_64.deb -O /usr/local/src/
-sudo dpkg -i /usr/local/src/vagrant_1.7.4_x86_64.deb
 
 # Install leiningen
 sudo wget https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein -O /usr/local/bin/lein
