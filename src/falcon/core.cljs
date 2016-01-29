@@ -73,6 +73,10 @@
     ; unqualified name
     species))
 
+(defn cloud-path
+  [& inner-path]
+  (string/join "/" (concat [clouds-path] inner-path)))
+
 (defn species-path
   [qualified-species & inner-path]
   "Lookup a file within any cloud"

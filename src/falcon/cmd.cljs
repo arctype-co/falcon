@@ -6,6 +6,7 @@
     [falcon.config :as config]
     [falcon.schema :as schema]
     [falcon.cmd.cluster :as cluster]
+    [falcon.cmd.config :as config-cmd]
     [falcon.cmd.container :as container]
     [falcon.cmd.deploy :as deploy]
     [falcon.cmd.environment :as environment]
@@ -68,10 +69,10 @@
 
 (def commands
   {"cluster" (cli-exec cluster/cli)
+   "config" (cli-exec config-cmd/cli)
    "container" (cli-exec container/cli)
    "deploy" (cli-exec deploy/cli)
    "env" (cli-exec environment/cli)
    "secret" (cli-exec secret/cli)
    "service" (cli-exec service/cli)
-   "kube" (cli-exec kube/cli)
-   })
+   "kube" (cli-exec kube/cli)})
