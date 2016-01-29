@@ -52,25 +52,23 @@
   [options :- schema/Options args]
   (do-create (config/cluster options)))
 
-(def ^{:doc "Bring an existing cluster online"} up create)
+(defmulti do-halt :provider)
 
-(defmulti do-down :provider)
-
-(defmethod do-down :default
+(defmethod do-halt :default
   [ccfg]
   (throw (js/Error. "Operation not supported")))
 
-(defmethod do-down "vagrant"
+(defmethod do-halt "vagrant"
   [ccfg]
   (println "Bringing cluster offline:")
   (pprint ccfg)
   (go (<! (core/safe-wait))
       (<! (vagrant/run ccfg ["halt"]))))
 
-(S/defn down
+(S/defn halt
   "Bring a cluster offline"
   [options :- schema/Options args]
-  (do-down (config/cluster options)))
+  (do-halt (config/cluster options)))
 
 (defmulti do-destroy
   (fn [ccfg options] (:provider ccfg)))
@@ -139,7 +137,6 @@
   {:doc "Run a cluster command"
    :commands {"create" create
               "destroy" destroy
-              "up" up
-              "down" down
+              "halt" halt
               "status" status
               "ssh" ssh}})
