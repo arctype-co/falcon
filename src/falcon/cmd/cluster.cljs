@@ -15,31 +15,21 @@
 
 (defn- env-defs
   [ccfg]
-  (core/map-keys name (:params ccfg)))
+  (assoc (core/map-keys name (:params ccfg))
+          (:provider ccfg)))
 
 (defmulti do-create :provider)
 
 (defmethod do-create :default
-  [ccfg]
-  (throw (js/Error. (str "Operation not supported for provider: " (:provider ccfg)))))
-
-(defmethod do-create "ubuntu"
   [ccfg options]
   (core/print-summary "About to create cluster:" options ccfg)
   (let [install-env (env-defs ccfg)]
     (go (<! (core/safe-wait))
         (<! (-> (shell/passthru 
-                  ["./build.sh"]
-                  {:cwd (species-path "cluster" "kubernetes/cluster/ubuntu")
-                   :env install-env})))
-        (<! (-> (shell/passthru 
                   ["./kube-up.sh"]
                   {:cwd (species-path "cluster" "kubernetes/cluster")
-                   :env install-env})))
-        (<! (-> (shell/passthru 
-                  ["./deployAddons.sh"]
-                  {:cwd (species-path "cluster" "kubernetes/cluster/ubuntu")
-                   :env install-env}))))))
+                   :env install-env})
+                shell/check-status)))))
 
 (defmethod do-create "vagrant"
   [ccfg]
@@ -74,10 +64,6 @@
   (fn [ccfg options] (:provider ccfg)))
 
 (defmethod do-destroy :default
-  [ccfg options]
-  (throw (js/Error. "Operation not supported")))
-
-(defmethod do-destroy "ubuntu"
   [{:keys [install-env] :as ccfg} options]
   (core/print-summary "About to DESTROY cluster:" options ccfg)
   (let [install-env (core/map-keys name install-env)]
@@ -86,7 +72,7 @@
                   ["./kube-down.sh"]
                   {:cwd (species-path "cluster" "kubernetes/cluster")
                    :env install-env})
-                (shell/check-status))))))
+                shell/check-status)))))
 
 (defmethod do-destroy "vagrant"
   [ccfg options]
