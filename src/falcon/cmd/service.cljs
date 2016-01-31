@@ -147,6 +147,7 @@
    :options
    [["-a" "--all" "Run command for all profiles"]
     ["-c" "--container-tag <tag>" "Container tag"]
+    ["-e" "--environment <env>" "Environment"]
     ["-p" "--profile <profile>" "Service profile"]
     ["-y" "--yes" "Skip safety prompts" :default false]]
    :commands

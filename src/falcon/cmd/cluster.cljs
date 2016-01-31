@@ -15,8 +15,7 @@
 
 (defn- env-defs
   [ccfg]
-  (assoc (core/map-keys name (:params ccfg))
-          (:provider ccfg)))
+  (core/map-keys name (:params ccfg)))
 
 (defmulti do-create :provider)
 

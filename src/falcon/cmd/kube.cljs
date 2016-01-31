@@ -58,7 +58,7 @@
     args
     (fn [pod]
       (go 
-        (<! (kubectl/run opts "exec" "-i" "--tty" pod "bash"))))))
+        (<! (kubectl/run opts "exec" "-i" "--tty" pod "sh"))))))
 
 (S/defn delete-pod
   "Delete a pod"
@@ -76,7 +76,8 @@
 
 (def cli
   {:doc "Integrated kubectl commands"
-   :options []
+   :options 
+   [["-e" "--environment <env>" "Environment"]]
    :commands {"do" do
               "env" env
               "logs" logs
