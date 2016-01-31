@@ -31,7 +31,7 @@
 (defn new-tag
   []
   (let [now (js/Date.)]
-    (gstring/format "%04d-%02d-%02d.%02d%02d%02d"
+    (gstring/format "%04d-%02d-%02d-%02d%02d%02d"
                     (.getFullYear now) (+ 1 (.getMonth now)) (.getDate now)
                     (.getHours now) (.getMinutes now) (.getSeconds now))))
 
