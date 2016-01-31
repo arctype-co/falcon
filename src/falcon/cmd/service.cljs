@@ -142,6 +142,20 @@
           (<! (-> (kubectl/run opts "rolling-update" old-controller-tag "-f" (species-path service "controller.yml"))
                   (shell/check-status))))))))
 
+(S/defn scale
+  "Scale a replication controller"
+  [opts args]
+  (require-arguments 
+    args
+    (fn [service controller-tag replicas]
+      (let [params {:service service
+                    :controller-tag controller-tag
+                    :replicas replicas}]
+        (core/print-summary "Scaling replication controller:" opts params)
+        (go
+          (<! (make-yml "controller.yml" opts params))
+          (<! (kubectl/run opts "scale" (str "--replicas=" replicas) "-f" (species-path service "controller.yml"))))))))
+
 (def cli
   {:doc "Service configuration and deployment"
    :options
@@ -157,5 +171,6 @@
     "delete-rc" delete-rc
     "update-rc" update-rc
     "list" list-services
+    "scale" scale
     "status" status
     "rolling-update" rolling-update}})
