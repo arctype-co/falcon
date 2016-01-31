@@ -132,7 +132,6 @@
     args
     (fn [service old-controller-tag container-tag]
       (let [controller-tag (core/new-tag)
-            full-old-controller-tag (str service "." old-controller-tag)
             params {:service service
                     :controller-tag controller-tag
                     :container-tag container-tag
@@ -140,7 +139,7 @@
         (core/print-summary "Rolling update replication controller:" opts params)
         (go
           (<! (make-yml "controller.yml" opts params))
-          (<! (-> (kubectl/run opts "rolling-update" full-old-controller-tag "-f" (species-path service "controller.yml"))
+          (<! (-> (kubectl/run opts "rolling-update" old-controller-tag "-f" (species-path service "controller.yml"))
                   (shell/check-status))))))))
 
 (def cli
