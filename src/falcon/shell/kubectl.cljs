@@ -7,15 +7,24 @@
 (def Options
   {(S/optional-key :environment) S/Str
    (S/optional-key :kube-server) S/Str
+   (S/optional-key :certificate-authority) S/Str
+   (S/optional-key :client-certificate) S/Str
+   (S/optional-key :client-key) S/Str
    S/Keyword S/Any})
 
 (defn- build-flags
   [opts]
   (let [ccfg (config/cluster opts)
-        {:keys [environment kube-server]} (merge ccfg opts)] 
+        {:keys [environment kube-server certificate-authority client-certificate client-key]} (merge ccfg opts)] 
     (cond-> []
       (some? kube-server)
       (conj (str "--server=" kube-server))
+      (some? certificate-authority)
+      (conj (str "--certificate-authority=" certificate-authority))
+      (some? client-certificate)
+      (conj (str "--client-certificate=" client-certificate))
+      (some? client-key)
+      (conj (str "--client-key=" client-key))
       (some? environment)
       (conj (str "--namespace=" environment)))))
 
