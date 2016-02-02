@@ -21,11 +21,15 @@
 
 (S/defn logs
   "Get logs"
-  [opts args]
+  [{:keys [follow] :as opts} args]
   (require-arguments
     args
-    (fn [node] (go
-                 (<! (kubectl/run opts "logs" node))))))
+    (fn [node] 
+      (go
+        (let [kube-args (if follow
+                          ["-f" node]
+                          [node])]
+          (<! (apply kubectl/run opts "logs" kube-args)))))))
 
 (S/defn nodes
   "Get nodes status"
@@ -77,7 +81,8 @@
 (def cli
   {:doc "Integrated kubectl commands"
    :options 
-   [["-e" "--environment <env>" "Environment"]]
+   [["-e" "--environment <env>" "Environment"]
+    ["-f" "--follow" "Follow log tail"]]
    :commands {"do" do
               "env" env
               "logs" logs
