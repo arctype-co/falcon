@@ -10,6 +10,7 @@
     [falcon.schema :as schema]
     [falcon.shell :as shell]
     [falcon.shell.m4 :as m4]
+    [falcon.shell.make :as make]
     [falcon.shell.kubectl :as kubectl])
   (:require-macros
     [falcon.core :refer [require-arguments]]
@@ -38,7 +39,8 @@
   (let [secret-files (map name (:secret-files (config-ns/service opts secret)))
         secrets-base64 (encode-secret-files secret secret-files)]
     (merge (m4/defs opts)
-         {"SECRET" secret}
+         {"SECRET" secret
+          "SERVICE" secret}
          secrets-base64)))
 
 (defn- make-yml
@@ -62,9 +64,12 @@
   (require-arguments
     args
     (fn [secret]
-      (let [params {:secret secret}]
+      (let [params {:secret secret}
+            defs (m4-defs opts params)]
         (core/print-summary "Create secret" opts params)
         (go
+          ; Run a Makefile if there is one
+          (<! (make/run defs ["-C" (species-path secret) "secret"]))
           (<! (make-yml "secret.yml" opts params))
           (<! (kubectl/run opts "create" "-f" (species-path secret "secret.yml"))))))))
 
@@ -75,9 +80,12 @@
   (require-arguments
     args
     (fn [secret]
-      (let [params {:secret secret}]
+      (let [params {:secret secret}
+            defs (m4-defs opts params)]
         (core/print-summary "Update secret" opts params)
         (go
+          ; Run a Makefile if there is one
+          (<! (make/run defs ["-C" (species-path secret) "secret"]))
           (<! (make-yml "secret.yml" opts params))
           (<! (kubectl/run opts "update" "-f" (species-path secret "secret.yml"))))))))
 

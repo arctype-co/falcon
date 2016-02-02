@@ -15,9 +15,10 @@
     [cljs.core.async.macros :refer [go]]))
 
 (defn- m4-defs
-  [{:keys [config git-tag m4-params] :as opts} params]
+  [{:keys [config git-tag m4-params] :as opts} {:keys [container]}]
   (merge (m4/defs opts)
-         {"GIT_TAG" git-tag}
+         {"GIT_TAG" git-tag
+          "CONTAINER" container}
          (map-keys name m4-params)))
 
 (defn- full-container-tag
@@ -39,7 +40,7 @@
         (core/print-summary "Building container" opts params)
         (go
           ; Run a Makefile if there is one
-          (<! (-> (make/run defs ["-C" (species-path container)])))
+          (<! (-> (make/run defs ["-C" (species-path container) "container"])))
           (<! (-> (m4/write defs
                             [(species-path container "Dockerfile.m4")]
                             (species-path container "Dockerfile"))
