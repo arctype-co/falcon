@@ -35,18 +35,21 @@
              secret-file-names)))
 
 (defn- m4-defs
-  [{:keys [config] :as opts} {:keys [secret]}]
-  (let [secret-files (map name (:secret-files (config-ns/service opts secret)))
-        secrets-base64 (encode-secret-files secret secret-files)]
-    (merge (m4/defs opts)
+  [opts {:keys [secret]}]
+  (merge (m4/defs opts)
          {"SECRET" secret
-          "SERVICE" secret}
-         secrets-base64)))
+          "SERVICE" secret}))
+
+(defn- secret-m4-defs
+  [{:keys [config] :as opts} {:keys [secret] :as params}]
+  (let [secret-files (map name (:secret-files (config-ns/service opts secret)))]
+    (merge (m4-defs opts params)
+           (encode-secret-files secret secret-files))))
 
 (defn- make-yml
   [yml-name opts {:keys [secret] :as params}]
   (let []
-    (-> (m4/write (m4-defs opts params)
+    (-> (m4/write (secret-m4-defs opts params)
                   [(species-path secret (str yml-name ".m4"))]
                   (species-path secret yml-name))
         (shell/check-status))))
