@@ -76,11 +76,10 @@
   (require-arguments
     args
     (fn [container]
-      (let [git-tag (or git-tag (throw (js/Error. "--git-tag required")))]
-        (go 
-          (let [container-tag (<! (build opts [container]))
-                opts (assoc opts :container-tag container-tag)]
-            (<! (push opts [container]))))))))
+      (go 
+        (let [container-tag (<! (build opts [container]))
+              opts (assoc opts :container-tag container-tag)]
+          (<! (push opts [container])))))))
 
 (def cli 
   {:doc "Container management"
