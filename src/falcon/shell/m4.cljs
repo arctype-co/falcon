@@ -2,6 +2,7 @@
   (:require
     [schema.core :as S]
     [falcon.schema :as schema]
+    [falcon.core :as core]
     [falcon.shell :as shell]))
 
 (def Defs
@@ -17,5 +18,6 @@
   [local-defs :- Defs
    m4-args :- [S/Str]
    to-path :- S/Str]
-  (let [def-params (map (fn [[k v]] (str "-D" k "=" (or v "undefined"))) local-defs)]
-    (shell/write (concat ["m4"] def-params m4-args) {} to-path)))
+  (let [top-include-dir (core/cloud-path)
+        def-params (map (fn [[k v]] (str "-D" k "=" (or v "undefined"))) local-defs)]
+    (shell/write (concat ["m4" "-I" top-include-dir] def-params m4-args) {} to-path)))
