@@ -65,13 +65,19 @@
      :stderr err
      :return ret}))
 
+(defn- print-cmd
+  [cmd {:keys [cwd]}]
+  (if (some? cwd)
+    (println cwd "$" (string/join " " cmd)) 
+    (println "$" (string/join " " cmd))))
+
 (S/defn passthru :- schema/Chan
   "Launch a process. Pass stdio through parent process. Return channel with return code."
   ([cmd :- [S/Str]] (passthru cmd {}))
   ([cmd :- [S/Str]
     {:keys [cwd env] :as params} :- SpawnParams]
    (let [cmd (vec cmd)
-         _ (println cwd "$" (string/join " " cmd))
+         _ (print-cmd cmd params)
          ret (async/chan 1)
          penv (merge-env env)
          options (doto (new js/Object.)

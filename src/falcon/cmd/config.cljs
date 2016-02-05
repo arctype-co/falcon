@@ -19,8 +19,13 @@
   (require-arguments
     args
     (fn [git-url name]
-      (shell/passthru (concat ["git" "clone" git-url name])
-                      {:cwd (core/cloud-path)}))))
+      (go 
+        (<! (-> (shell/passthru (concat ["git" "clone" git-url name])
+                                {:cwd (core/cloud-path)})
+                shell/check-status))
+        (<! (-> (shell/passthru (concat ["git" "submodule" "update" "--init"])
+                                {:cwd (core/cloud-path name)})
+                shell/check-status))))))
 
 (S/defn remove
   "Remove a config repository"
@@ -32,7 +37,8 @@
         (go 
           (println "Warning: this will remove" dir)
           (<! (core/safe-wait))
-          (<! (shell/passthru (concat ["rm" "-rf" dir]))))))))
+          (<! (-> (shell/passthru (concat ["rm" "-rf" dir])) 
+                  shell/check-status)))))))
 
 (S/defn pull
   "Pull latest configurations"
@@ -40,8 +46,13 @@
   (require-arguments
     args
     (fn [repository]
-      (shell/passthru (concat ["git" "pull" "origin" git-branch])
-                      {:cwd (core/cloud-path repository)}))))
+      (go
+        (<! (-> (shell/passthru (concat ["git" "pull" "origin" git-branch])
+                                {:cwd (core/cloud-path repository)})
+                shell/check-status))
+        (<! (-> (shell/passthru (concat ["git" "submodule" "update"])
+                                {:cwd (core/cloud-path repository)})
+                shell/check-status))))))
 
 (S/defn push
   "Push configurations"
