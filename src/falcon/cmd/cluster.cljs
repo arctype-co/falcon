@@ -26,7 +26,7 @@
     (go (<! (core/safe-wait))
         (<! (-> (shell/passthru 
                   ["./kube-up.sh"]
-                  {:cwd (species-path "cluster" "kubernetes/cluster")
+                  {:cwd (species-path "falco/cluster" "kubernetes/cluster")
                    :env install-env})
                 shell/check-status)))))
 
@@ -69,7 +69,7 @@
     (go (<! (core/safe-wait))
         (<! (-> (shell/passthru 
                   ["./kube-down.sh"]
-                  {:cwd (species-path "cluster" "kubernetes/cluster")
+                  {:cwd (species-path "falco/cluster" "kubernetes/cluster")
                    :env install-env})
                 shell/check-status)))))
 
