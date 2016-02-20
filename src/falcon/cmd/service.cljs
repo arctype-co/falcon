@@ -37,12 +37,23 @@
                   (species-path service yml-name))
         (shell/check-status))))
 
+(S/defn controllers
+  "Get replication controllers status"
+  [opts args]
+  (go
+    (<! (kubectl/run opts "get" "rc"))))
+
+(S/defn pods
+  "Get pods status"
+  [opts args]
+  (go
+    (<! (kubectl/run opts "get" "pods"))))
+
 (S/defn list-services
   "List running services"
   [opts args]
   (go
-    (<! (kube/services opts args))
-    (<! (kube/rc opts args))))
+    (<! (kube/services opts args))))
 
 (S/defn status
   "Show all applications' status"
@@ -173,6 +184,8 @@
     "delete-rc" delete-rc
     "update-rc" update-rc
     "list" list-services
+    "controllers" controllers
+    "pods" pods
     "scale" scale
     "status" status
     "rolling-update" rolling-update}})
