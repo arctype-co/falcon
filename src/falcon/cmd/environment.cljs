@@ -36,6 +36,6 @@
 
 (def cli
   {:doc "Environment setup"
-   :options []
+   :options [["-e" "--environment <env>" "Environment"]]
    :commands {"create" create
               "delete" delete}})
