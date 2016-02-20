@@ -148,7 +148,9 @@
   (require-arguments 
     args
     (fn [service controller-tag replicas]
-      (let [params {:service service
+      (let [{:keys [container-tag]} (config-ns/service opts service)
+            params {:service service
+                    :container-tag (or (:container-tag opts) container-tag)
                     :controller-tag controller-tag
                     :replicas replicas}]
         (core/print-summary "Scaling replication controller:" opts params)

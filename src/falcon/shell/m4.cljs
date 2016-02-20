@@ -19,5 +19,5 @@
    m4-args :- [S/Str]
    to-path :- S/Str]
   (let [top-include-dir (core/cloud-path)
-        def-params (map (fn [[k v]] (str "-D" k "=" (or v "undefined"))) local-defs)]
+        def-params (map (fn [[k v]] (str "-D" k "=" v)) local-defs)]
     (shell/write (concat ["m4" "-I" top-include-dir] def-params m4-args) {} to-path)))
