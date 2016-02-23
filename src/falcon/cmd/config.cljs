@@ -63,6 +63,15 @@
       (shell/passthru (concat ["git" "push" "origin" git-branch])
                       {:cwd (core/cloud-path repository)}))))
 
+(S/defn select
+  "Select configuration file"
+  [opts args]
+  (require-arguments
+    args
+    (fn [config-file]
+      (shell/passthru ["rm" "config.yml"] {})
+      (shell/passthru ["ln" "-s" config-file "config.yml"]))))
+
 (S/defn status
   "Status of configuration"
   [opts args]
@@ -80,4 +89,5 @@
               "remove" remove
               "pull" pull
               "push" push
+              "select" select
               "status" status}})
