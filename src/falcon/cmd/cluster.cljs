@@ -84,6 +84,11 @@
   [options :- schema/Options args]
   (do-destroy (config/cluster options) options))
 
+(S/defn nodes
+  "List Kubernetes nodes"
+  [opts args]
+  (go (<! (kubectl/run opts "get" "nodes"))))
+
 (defmulti do-status (fn [ccfg options] (:provider ccfg)))
 
 (defmethod do-status :default
@@ -123,5 +128,6 @@
    :commands {"create" create
               "destroy" destroy
               "halt" halt
+              "nodes" nodes
               "status" status
               "ssh" ssh}})
