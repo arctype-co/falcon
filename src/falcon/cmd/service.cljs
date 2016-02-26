@@ -122,8 +122,11 @@
     (fn [service controller-tag]
       (do-all-profiles opts (profiles opts service)
         (fn [opts]
-          (let [params {:service service
-                        :controller-tag controller-tag}]
+          (let [{:keys [container-tag]} (config-ns/service opts service)
+                container-tag (or (:container-tag opts) container-tag)
+                params {:service service
+                        :controller-tag controller-tag
+                        :container-tag container-tag}]
             (core/print-summary "Delete replication controller:" opts params)
             (go
               (when-not (:yes opts) (<! (core/safe-wait)))
@@ -133,8 +136,10 @@
 (S/defn update-rc
   "Replace a replication controller"
   [opts args]
-  (go (<! (delete-rc opts args))
-      (<! (create-rc opts (take 1 args)))))
+  (go (<! (-> (delete-rc opts args)
+              (shell/check-status)))
+      (<! (-> (create-rc opts (take 1 args))
+              (shell/check-status)))))
 
 (S/defn rolling-update
   "Rolling update a replication controller"
