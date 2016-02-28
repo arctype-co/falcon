@@ -47,7 +47,7 @@
   "Get pods status"
   [opts args]
   (go
-    (<! (kubectl/run opts "get" "pods"))))
+    (<! (kubectl/run opts "get" "-o" "wide" "pods"))))
 
 (S/defn list-services
   "List running services"
