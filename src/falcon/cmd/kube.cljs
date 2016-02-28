@@ -78,6 +78,11 @@
   [opts args]
   (go (<! (apply kubectl/run opts args))))
 
+(S/defn version
+  "Get kubernetes version"
+  [options :- schema/Options args]
+  (go (<! (kubectl/run options "version"))))
+
 (def cli
   {:doc "Integrated kubectl commands"
    :options 
@@ -91,4 +96,5 @@
               "delete-pod" delete-pod
               "rc" rc
               "sh" sh
-              "services" services}})
+              "services" services
+              "version" version}})
