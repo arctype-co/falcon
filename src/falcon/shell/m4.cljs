@@ -2,17 +2,30 @@
   (:require
     [schema.core :as S]
     [falcon.schema :as schema]
-    [falcon.core :as core]
+    [falcon.core :as core :refer [map-keys]]
+    [falcon.config :as config-ns]
     [falcon.shell :as shell]))
 
 (def Defs
   {S/Str (S/maybe S/Any)})
 
-(S/defn defs :- Defs
-  [{:keys [environment repository profile service] :as opts} :- schema/Options]
-  {"REPOSITORY" repository 
-   "ENVIRONMENT" environment
-   "PROFILE" profile})
+(S/defn ^:private m4-defs :- Defs
+  [{:keys [environment repository profile] :as opts} :- schema/Options
+   {:keys [container-tag controller-tag service] :as params}]
+  (merge
+    {"REPOSITORY" repository 
+     "ENVIRONMENT" environment
+     "PROFILE" profile
+     "SECRET" service ; for backwards compatibility
+     "SERVICE" service
+     "CONTAINER_TAG" container-tag
+     "CONTROLLER_TAG" controller-tag}
+    (when (some? service)
+      (map-keys name (:m4-params (config-ns/service opts service))))))
+
+(defn defs
+  ([opts] (m4-defs opts nil))
+  ([opts params] (m4-defs opts params)))
 
 (S/defn write :- schema/Chan
   [local-defs :- Defs

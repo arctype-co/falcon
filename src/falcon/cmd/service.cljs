@@ -21,18 +21,10 @@
   [opts svc]
   (keys (:profiles (config-ns/service opts svc))))
 
-(defn- m4-defs
-  [opts {:keys [container-tag controller-tag service] :as params}]
-  (merge (m4/defs opts)
-         {"SERVICE" service
-          "CONTAINER_TAG" container-tag
-          "CONTROLLER_TAG" controller-tag}
-         (map-keys name (:m4-params (config-ns/service opts service)))))
-
 (defn- make-yml
   [yml-name opts {:keys [service] :as defs}]
   (let []
-    (-> (m4/write (m4-defs opts defs)
+    (-> (m4/write (m4/defs opts defs)
                   [(species-path service (str yml-name ".m4"))]
                   (species-path service yml-name))
         (shell/check-status))))

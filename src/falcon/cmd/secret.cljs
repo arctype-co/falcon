@@ -34,24 +34,18 @@
                 (core/base64 (core/read-file (species-path secret secret-file-name)))])
              secret-file-names)))
 
-(defn- m4-defs
-  [opts {:keys [secret]}]
-  (merge (m4/defs opts)
-         {"SECRET" secret
-          "SERVICE" secret}))
-
 (defn- secret-m4-defs
-  [{:keys [config] :as opts} {:keys [secret] :as params}]
-  (let [secret-files (map name (:secret-files (config-ns/service opts secret)))]
-    (merge (m4-defs opts params)
-           (encode-secret-files secret secret-files))))
+  [{:keys [config] :as opts} {:keys [service] :as params}]
+  (let [secret-files (map name (:secret-files (config-ns/service opts service)))]
+    (merge (m4/defs opts params)
+           (encode-secret-files service secret-files))))
 
 (defn- make-yml
-  [yml-name opts {:keys [secret] :as params}]
+  [yml-name opts {:keys [service] :as params}]
   (let []
     (-> (m4/write (secret-m4-defs opts params)
-                  [(species-path secret (str yml-name ".m4"))]
-                  (species-path secret yml-name))
+                  [(species-path service (str yml-name ".m4"))]
+                  (species-path service yml-name))
         (shell/check-status))))
 
 (S/defn list-secrets
@@ -67,8 +61,8 @@
   (require-arguments
     args
     (fn [secret]
-      (let [params {:secret secret}
-            defs (m4-defs opts params)]
+      (let [params {:service secret}
+            defs (m4/defs opts params)]
         (core/print-summary "Create secret" opts params)
         (go
           ; Run a Makefile if there is one
@@ -83,8 +77,8 @@
   (require-arguments
     args
     (fn [secret]
-      (let [params {:secret secret}
-            defs (m4-defs opts params)]
+      (let [params {:service secret}
+            defs (m4/defs opts params)]
         (core/print-summary "Update secret" opts params)
         (go
           ; Run a Makefile if there is one
@@ -99,7 +93,7 @@
   (require-arguments
     args
     (fn [secret]
-      (let [params {:secret secret}]
+      (let [params {:service secret}]
         (core/print-summary "Delete secret" opts params)
         (go
           (<! (core/safe-wait))
