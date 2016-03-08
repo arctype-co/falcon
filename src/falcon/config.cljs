@@ -12,10 +12,16 @@
 
 (def default-file "config.yml")
 
+(defn- parse-yml
+  [buf]
+  (try (.parse yamljs (str buf))
+       (catch js/Error e
+         (throw (js/Error. (str "Failed to parse config.yml: " (.-message e)))))))
+
 (S/defn read-yml :- schema/Config
   [config-path]
   (let [buf (.readFileSync fs config-path)
-        cfg (js->clj (.parse yamljs (str buf)) :keywordize-keys true)]
+        cfg (js->clj (parse-yml buf) :keywordize-keys true)]
     cfg))
 
 (S/defn cluster :- schema/ClusterConfig
