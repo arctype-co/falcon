@@ -19,6 +19,8 @@
 
 (defn -main [& args]
   (S/set-fn-validation! true)
-  (cmd/exec! commands cli-options {} args))
+  (try (cmd/exec! commands cli-options {} args)
+       (catch js/Error e
+         (println (.-message e)))))
 
 (set! *main-cli-fn* -main)
