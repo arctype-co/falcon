@@ -69,8 +69,13 @@
   (require-arguments
     args
     (fn [config-file]
-      (shell/passthru ["rm" "config.yml"] {})
-      (shell/passthru ["ln" "-s" config-file "config.yml"]))))
+      (if (core/exists? config-file)
+        (go
+          (<! (-> (shell/passthru ["rm" "config.yml"] {})
+                  shell/check-status))
+          (<! (-> (shell/passthru ["ln" "-s" config-file "config.yml"])
+                  shell/check-status)))
+        (throw (core/error (str "File does not exist: " config-file)))))))
 
 (S/defn status
   "Status of configuration"

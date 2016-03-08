@@ -17,6 +17,10 @@
 
 (def ^:private clouds-cache (atom nil)) ; List of clouds available
 
+(defn error
+  [message]
+  (js/Error. message))
+
 (defn- all-clouds
   []
   "Return a list of clouds available"
