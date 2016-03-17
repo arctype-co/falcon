@@ -77,6 +77,11 @@
                   shell/check-status)))
         (throw (core/error (str "File does not exist: " config-file)))))))
 
+(S/defn show
+  "Show current configuration"
+  [opts args]
+  (shell/passthru (concat ["ls" "-l" "config.yml"])))
+
 (S/defn status
   "Status of configuration"
   [opts args]
@@ -95,4 +100,5 @@
               "pull" pull
               "push" push
               "select" select
+              "show" show
               "status" status}})
