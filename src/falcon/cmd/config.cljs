@@ -20,10 +20,10 @@
     args
     (fn [git-url name]
       (go 
-        (<! (-> (shell/passthru (concat ["git" "clone" git-url name])
+        (<! (-> (shell/passthru ["git" "clone" git-url name]
                                 {:cwd (core/cloud-path)})
                 shell/check-status))
-        (<! (-> (shell/passthru (concat ["git" "submodule" "update" "--init"])
+        (<! (-> (shell/passthru ["git" "submodule" "update" "--init"]
                                 {:cwd (core/cloud-path name)})
                 shell/check-status))))))
 
@@ -37,7 +37,7 @@
         (go 
           (println "Warning: this will remove" dir)
           (<! (core/safe-wait))
-          (<! (-> (shell/passthru (concat ["rm" "-rf" dir])) 
+          (<! (-> (shell/passthru ["rm" "-rf" dir]) 
                   shell/check-status)))))))
 
 (S/defn pull
@@ -47,10 +47,10 @@
     args
     (fn [repository]
       (go
-        (<! (-> (shell/passthru (concat ["git" "pull" "origin" git-branch])
+        (<! (-> (shell/passthru ["git" "pull" "origin" git-branch]
                                 {:cwd (core/cloud-path repository)})
                 shell/check-status))
-        (<! (-> (shell/passthru (concat ["git" "submodule" "update"])
+        (<! (-> (shell/passthru ["git" "submodule" "update"]
                                 {:cwd (core/cloud-path repository)})
                 shell/check-status))))))
 
@@ -60,7 +60,7 @@
   (require-arguments
     args
     (fn [repository]
-      (shell/passthru (concat ["git" "push" "origin" git-branch])
+      (shell/passthru ["git" "push" "origin" git-branch]
                       {:cwd (core/cloud-path repository)}))))
 
 (S/defn select
@@ -80,7 +80,7 @@
 (S/defn show
   "Show current configuration"
   [opts args]
-  (shell/passthru (concat ["ls" "-l" "config.yml"])))
+  (shell/passthru ["ls" "-l" "config.yml"]))
 
 (S/defn status
   "Status of configuration"
