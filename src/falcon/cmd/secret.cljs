@@ -21,8 +21,8 @@
   [file-name]
   (->
     (-> file-name 
-        (.replace #"\." "_")
-        (.replace #"\-" "_"))
+        (.replace (js/RegExp. "\\." "g") "_")
+        (.replace (js/RegExp. "\\-" "g") "_"))
     (str "_base64")
     (.toUpperCase)))
 
