@@ -19,7 +19,8 @@
      "SECRET" service ; for backwards compatibility
      "SERVICE" service
      "CONTAINER_TAG" container-tag
-     "CONTROLLER_TAG" controller-tag}
+     "CONTROLLER_TAG" controller-tag
+     "TIMESTAMP" (str (.getTime (js/Date.)))}
     (when (some? service)
       (map-keys name (:m4-params (config-ns/service opts service))))))
 
