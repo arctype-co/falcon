@@ -108,3 +108,7 @@
                          (assoc :profile (name profile-key))
                          (dissoc :all))))))
     (do-fn opts)))
+
+(defn profiles
+  [opts svc]
+  (keys (:profiles (config-ns/service opts svc))))

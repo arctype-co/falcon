@@ -6,28 +6,17 @@
     [cljs.pprint :refer [pprint]]
     [cljs.tools.cli :as cli]
     [schema.core :as S]
-    [falcon.core :as core :refer [species-path map-keys do-all-profiles]]
+    [falcon.core :as core :refer [profiles species-path map-keys do-all-profiles]]
     [falcon.config :as config-ns]
     [falcon.schema :as schema]
     [falcon.shell :as shell]
     [falcon.shell.m4 :as m4]
     [falcon.shell.make :as make]
-    [falcon.shell.kubectl :as kubectl])
+    [falcon.shell.kubectl :as kubectl]
+    [falcon.template :refer [make-yml]])
   (:require-macros
     [falcon.core :refer [require-arguments]]
     [cljs.core.async.macros :refer [go]]))
-
-(defn- profiles
-  [opts svc]
-  (keys (:profiles (config-ns/service opts svc))))
-
-(defn- make-yml
-  [yml-name opts {:keys [service] :as defs}]
-  (let []
-    (-> (m4/write (m4/defs opts defs)
-                  [(species-path service (str yml-name ".m4"))]
-                  (species-path service yml-name))
-        (shell/check-status))))
 
 (S/defn list
   "List replication controllers' status"

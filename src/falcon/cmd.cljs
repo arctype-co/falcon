@@ -10,6 +10,7 @@
     [falcon.cmd.container :as container]
     [falcon.cmd.deploy :as deploy]
     [falcon.cmd.environment :as environment]
+    [falcon.cmd.job :as job]
     [falcon.cmd.kube :as kube]
     [falcon.cmd.node :as node]
     [falcon.cmd.pod :as pod]
@@ -76,6 +77,7 @@
    "container" (cli-exec container/cli)
    "deploy" (cli-exec deploy/cli)
    "env" (cli-exec environment/cli)
+   "job" (cli-exec job/cli)
    "node" (cli-exec node/cli)
    "pod" (cli-exec pod/cli)
    "rc" (cli-exec rc/cli)
