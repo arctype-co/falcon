@@ -29,18 +29,6 @@
                   (species-path service yml-name))
         (shell/check-status))))
 
-(S/defn controllers
-  "Get replication controllers status"
-  [opts args]
-  (go
-    (<! (kubectl/run opts "get" "rc"))))
-
-(S/defn pods
-  "Get pods status"
-  [opts args]
-  (go
-    (<! (kubectl/run opts "get" "-o" "wide" "pods"))))
-
 (S/defn list
   "List running services"
   [opts args]
@@ -86,103 +74,15 @@
               (<! (make-yml "service.yml" opts params))
               (<! (kubectl/run opts "delete" "-f" (species-path service "service.yml"))))))))))
 
-(S/defn create-rc
-  "Launch a replication controller"
-  [opts args]
-  (require-arguments 
-    args
-    (fn [service]
-      (let [controller-tag (core/new-tag)]
-        (do-all-profiles opts (profiles opts service)
-          (fn [opts]
-            (let [{:keys [container-tag]} (config-ns/service opts service)
-                  container-tag (or (:container-tag opts) container-tag)
-                  params {:service service
-                          :controller-tag controller-tag
-                          :container-tag container-tag}]
-              (core/print-summary "Create replication controler:" opts params)
-              (go
-                (<! (make-yml "controller.yml" opts params))
-                (<! (-> (kubectl/run opts "create" "-f" (species-path service "controller.yml"))
-                        (shell/check-status)))))))))))
-
-(S/defn delete-rc
-  "Remove a replication controller"
-  [opts args]
-  (require-arguments 
-    args
-    (fn [service controller-tag]
-      (do-all-profiles opts (profiles opts service)
-        (fn [opts]
-          (let [{:keys [container-tag]} (config-ns/service opts service)
-                container-tag (or (:container-tag opts) container-tag)
-                params {:service service
-                        :controller-tag controller-tag
-                        :container-tag container-tag}]
-            (core/print-summary "Delete replication controller:" opts params)
-            (go
-              (when-not (:yes opts) (<! (core/safe-wait)))
-              (<! (make-yml "controller.yml" opts params))
-              (<! (kubectl/run opts "delete" "-f" (species-path service "controller.yml"))))))))))
-
-(S/defn update-rc
-  "Replace a replication controller"
-  [opts args]
-  (go (<! (-> (delete-rc opts args)
-              (shell/check-status)))
-      (<! (-> (create-rc opts (take 1 args))
-              (shell/check-status)))))
-
-(S/defn rolling-update
-  "Rolling update a replication controller"
-  [opts args]
-  (require-arguments 
-    args
-    (fn [service old-controller-tag container-tag]
-      (let [controller-tag (core/new-tag)
-            params {:service service
-                    :controller-tag controller-tag
-                    :container-tag container-tag
-                    :old-controller-tag old-controller-tag}]
-        (core/print-summary "Rolling update replication controller:" opts params)
-        (go
-          (<! (make-yml "controller.yml" opts params))
-          (<! (-> (kubectl/run opts "rolling-update" old-controller-tag "-f" (species-path service "controller.yml"))
-                  (shell/check-status))))))))
-
-(S/defn scale
-  "Scale a replication controller"
-  [opts args]
-  (require-arguments 
-    args
-    (fn [service controller-tag replicas]
-      (let [{:keys [container-tag]} (config-ns/service opts service)
-            params {:service service
-                    :container-tag (or (:container-tag opts) container-tag)
-                    :controller-tag controller-tag
-                    :replicas replicas}]
-        (core/print-summary "Scaling replication controller:" opts params)
-        (go
-          (<! (make-yml "controller.yml" opts params))
-          (<! (kubectl/run opts "scale" (str "--replicas=" replicas) "-f" (species-path service "controller.yml"))))))))
-
 (def cli
   {:doc "Service configuration and deployment"
    :options
    [["-a" "--all" "Run command for all profiles"]
-    ["-c" "--container-tag <tag>" "Container tag"]
     ["-e" "--environment <env>" "Environment"]
     ["-p" "--profile <profile>" "Service profile"]
     ["-y" "--yes" "Skip safety prompts" :default false]]
    :commands
    {"create" create
     "delete" delete
-    "create-rc" create-rc
-    "delete-rc" delete-rc
-    "update-rc" update-rc
     "list" list
-    "controllers" controllers
-    "pods" pods
-    "scale" scale
-    "status" status
-    "rolling-update" rolling-update}})
+    "status" status}})

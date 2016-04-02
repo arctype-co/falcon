@@ -13,6 +13,7 @@
     [falcon.cmd.kube :as kube]
     [falcon.cmd.node :as node]
     [falcon.cmd.pod :as pod]
+    [falcon.cmd.rc :as rc]
     [falcon.cmd.secret :as secret]
     [falcon.cmd.service :as service]))
 
@@ -77,6 +78,7 @@
    "env" (cli-exec environment/cli)
    "node" (cli-exec node/cli)
    "pod" (cli-exec pod/cli)
+   "rc" (cli-exec rc/cli)
    "secret" (cli-exec secret/cli)
    "service" (cli-exec service/cli)
    "kube" kube/do})
