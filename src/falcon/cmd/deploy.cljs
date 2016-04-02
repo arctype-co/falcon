@@ -10,7 +10,7 @@
     [falcon.core :as core]
     [falcon.schema :as schema]
     [falcon.cmd.container :as container-ns]
-    [falcon.cmd.service :as service-ns])
+    [falcon.cmd.rc :as rc])
   (:require-macros
     [falcon.core :refer [require-arguments]]
     [cljs.core.async.macros :refer [go]]))
@@ -27,7 +27,7 @@
           (let [container-tag (or container-tag (<! (container-ns/build opts [service])))
                 opts (assoc opts :container-tag container-tag)]
             (<! (container-ns/push opts [service]))
-            (<! (service-ns/create-rc opts [service]))))))))
+            (<! (rc/create opts [service]))))))))
 
 (S/defn update
   "Build and push container, remove current controller tag, and redeploy replication controller."
@@ -41,8 +41,8 @@
           (let [container-tag (or container-tag (<! (container-ns/build opts [service])))
                 opts (assoc opts :container-tag container-tag)]
             (<! (container-ns/push opts [service]))
-            (<! (service-ns/delete-rc opts [service old-controller-tag]))
-            (<! (service-ns/create-rc opts [service]))))))))
+            (<! (rc/delete opts [service old-controller-tag]))
+            (<! (rc/create opts [service]))))))))
 
 (S/defn roll
   "Build and push container, then rolling deploy it's replication controller."
@@ -57,7 +57,7 @@
           (let [container-tag (or container-tag (<! (container-ns/build opts [service])))
                 opts (assoc opts :container-tag container-tag)]
             (<! (container-ns/push opts [service]))
-            (<! (service-ns/rolling-update opts [service old-controller-tag container-tag]))))))))
+            (<! (rc/rolling-update opts [service old-controller-tag container-tag]))))))))
 
 (def cli
   {:doc "High-level deployment commands"
