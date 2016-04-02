@@ -26,7 +26,7 @@
   "List nodes"
   [opts args]
   (go 
-    (<! (kubectl/run opts "get" "pods"))))
+    (<! (kubectl/run opts "get" "pods" "-o" "wide"))))
 
 (S/defn logs
   "Get pod logs"
