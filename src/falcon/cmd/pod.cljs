@@ -28,9 +28,31 @@
   (go 
     (<! (kubectl/run opts "get" "pods"))))
 
+(S/defn logs
+  "Get pod logs"
+  [{:keys [follow] :as opts} args]
+  (require-arguments
+    args
+    (fn [pod] 
+      (go
+        (let [kube-args (if follow ["-f" pod] [pod])]
+          (<! (apply kubectl/run opts "logs" kube-args)))))))
+
+(S/defn sh
+  "Launch a shell in a pod"
+  [opts args]
+  (require-arguments
+    args
+    (fn [pod]
+      (go 
+        (<! (kubectl/run opts "exec" "-i" "--tty" pod "sh"))))))
+
 (def cli
   {:doc "Pod commands"
    :options 
    [["-e" "--environment <env>" "Environment"]]
    :commands {"delete" delete
-              "list" list}})
+              "list" list
+              "logs" logs
+              "sh" sh
+              }})

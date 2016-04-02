@@ -13,27 +13,6 @@
     [falcon.core :refer [require-arguments]]
     [cljs.core.async.macros :refer [go]]))
 
-(S/defn logs
-  "Get logs"
-  [{:keys [follow] :as opts} args]
-  (require-arguments
-    args
-    (fn [node] 
-      (go
-        (let [kube-args (if follow
-                          ["-f" node]
-                          [node])]
-          (<! (apply kubectl/run opts "logs" kube-args)))))))
-
-(S/defn sh
-  "Launch a shell in a pod"
-  [opts args]
-  (require-arguments
-    args
-    (fn [pod]
-      (go 
-        (<! (kubectl/run opts "exec" "-i" "--tty" pod "sh"))))))
-
 (S/defn do
   "Do a kubernetes command"
   [opts args]
@@ -50,12 +29,4 @@
    [["-e" "--environment <env>" "Environment"]
     ["-f" "--follow" "Follow log tail"]]
    :commands {"do" do
-              "env" env
-              "logs" logs
-              "nodes" nodes
-              "pods" pods
-              "delete-pod" delete-pod
-              "rc" rc
-              "sh" sh
-              "services" services
               "version" version}})

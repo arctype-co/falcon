@@ -1,4 +1,5 @@
 (ns falcon.cmd.service
+  (:refer-clojure :exclude [list])
   (:require
     [clojure.string :as string]
     [cljs.core.async :as async :refer [<!]]
@@ -11,8 +12,7 @@
     [falcon.shell :as shell]
     [falcon.shell.m4 :as m4]
     [falcon.shell.make :as make]
-    [falcon.shell.kubectl :as kubectl]
-    [falcon.cmd.kube :as kube])
+    [falcon.shell.kubectl :as kubectl])
   (:require-macros
     [falcon.core :refer [require-arguments]]
     [cljs.core.async.macros :refer [go]]))
@@ -41,21 +41,21 @@
   (go
     (<! (kubectl/run opts "get" "-o" "wide" "pods"))))
 
-(S/defn list-services
+(S/defn list
   "List running services"
   [opts args]
   (go
-    (<! (kube/services opts args))))
+    (<! (kubectl/run opts "get" "services"))))
 
 (S/defn status
   "Show all applications' status"
   [opts args]
   (go
-    (<! (kube/services opts args))
+    (<! (kubectl/run opts "get" "services"))
     (println)
-    (<! (kube/rc opts args))
+    (<! (kubectl/run opts "get" "rc"))
     (println)
-    (<! (kube/pods opts args))))
+    (<! (kubectl/run opts "get" "pods"))))
 
 (S/defn create
   "Load a service config"
@@ -180,7 +180,7 @@
     "create-rc" create-rc
     "delete-rc" delete-rc
     "update-rc" update-rc
-    "list" list-services
+    "list" list
     "controllers" controllers
     "pods" pods
     "scale" scale
