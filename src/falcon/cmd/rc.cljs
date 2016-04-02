@@ -71,21 +71,23 @@
       (<! (-> (create opts (take 1 args))
               (shell/check-status)))))
 
-(S/defn rolling-update
+(S/defn roll
   "Rolling update a replication controller"
   [opts args]
   (require-arguments 
     args
-    (fn [service old-controller-tag container-tag]
-      (let [controller-tag (core/new-tag)
+    (fn [service old-controller-name]
+      (let [{:keys [container-tag]} (config-ns/service opts service)
+            container-tag (or (:container-tag opts) container-tag)
+            controller-tag (core/new-tag)
             params {:service service
                     :controller-tag controller-tag
                     :container-tag container-tag
-                    :old-controller-tag old-controller-tag}]
+                    :old-controller-name old-controller-name}]
         (core/print-summary "Rolling update replication controller:" opts params)
         (go
           (<! (make-yml "controller.yml" opts params))
-          (<! (-> (kubectl/run opts "rolling-update" old-controller-tag "-f" (species-path service "controller.yml"))
+          (<! (-> (kubectl/run opts "rolling-update" old-controller-name "-f" (species-path service "controller.yml"))
                   (shell/check-status))))))))
 
 (S/defn scale
@@ -118,4 +120,4 @@
     "update" update
     "list" list
     "scale" scale
-    "rolling-update" rolling-update}})
+    "roll" roll}})
