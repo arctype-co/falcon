@@ -79,4 +79,4 @@
    "pod" (cli-exec pod/cli)
    "secret" (cli-exec secret/cli)
    "service" (cli-exec service/cli)
-   "kube" (cli-exec kube/cli)})
+   "kube" kube/do})

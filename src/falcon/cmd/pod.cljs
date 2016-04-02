@@ -50,7 +50,8 @@
 (def cli
   {:doc "Pod commands"
    :options 
-   [["-e" "--environment <env>" "Environment"]]
+   [["-e" "--environment <env>" "Environment"]
+    ["-f" "--follow" "Follow log tail"]]
    :commands {"delete" delete
               "list" list
               "logs" logs

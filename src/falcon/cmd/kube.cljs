@@ -17,16 +17,3 @@
   "Do a kubernetes command"
   [opts args]
   (go (<! (apply kubectl/run opts args))))
-
-(S/defn version
-  "Get kubernetes version"
-  [options :- schema/Options args]
-  (go (<! (kubectl/run options "version"))))
-
-(def cli
-  {:doc "Integrated kubectl commands"
-   :options 
-   [["-e" "--environment <env>" "Environment"]
-    ["-f" "--follow" "Follow log tail"]]
-   :commands {"do" do
-              "version" version}})
