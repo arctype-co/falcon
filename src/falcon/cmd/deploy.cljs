@@ -57,7 +57,7 @@
           (let [container-tag (or container-tag (<! (container-ns/build opts [service])))
                 opts (assoc opts :container-tag container-tag)]
             (<! (container-ns/push opts [service]))
-            (<! (rc/rolling-update opts [service old-controller-tag container-tag]))))))))
+            (<! (rc/roll opts [service old-controller-tag container-tag]))))))))
 
 (def cli
   {:doc "High-level deployment commands"

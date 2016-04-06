@@ -9,6 +9,7 @@
     [falcon.cmd.config :as config-cmd]
     [falcon.cmd.container :as container]
     [falcon.cmd.deploy :as deploy]
+    [falcon.cmd.ds :as ds]
     [falcon.cmd.environment :as environment]
     [falcon.cmd.job :as job]
     [falcon.cmd.kube :as kube]
@@ -76,6 +77,7 @@
    "config" (cli-exec config-cmd/cli)
    "container" (cli-exec container/cli)
    "deploy" (cli-exec deploy/cli)
+   "ds" (cli-exec ds/cli)
    "env" (cli-exec environment/cli)
    "job" (cli-exec job/cli)
    "node" (cli-exec node/cli)
