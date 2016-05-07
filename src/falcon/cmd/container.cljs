@@ -68,7 +68,7 @@
     (let [dockerfile-path (species-path container "Dockerfile")
           params {:container container
                   :container-tag container-tag}
-          defs (m4-defs opts params)]
+          defs (m4/defs opts params)]
       (<! (-> (m4/write defs
                         [(species-path container "Dockerfile.m4")]
                         dockerfile-path)

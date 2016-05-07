@@ -23,6 +23,8 @@
      "CONTAINER_TAG" container-tag
      "CONTROLLER_TAG" controller-tag
      "TIMESTAMP" (str (.getTime (js/Date.)))}
+    (when (some? container)
+      (map-keys name (:m4-params (config-ns/container opts container))))
     (when (some? service)
       (map-keys name (:m4-params (config-ns/service opts service))))))
 

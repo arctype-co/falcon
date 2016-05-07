@@ -34,14 +34,19 @@
 
 (S/defn container :- schema/ContainerConfig
   "Returns a container-specific config"
-  [options :- schema/ConfigOptions ctnr]
-  (or (get-in options [:config :containers (keyword ctnr)]) {}))
+  [{:keys [repository] :as options} :- schema/ConfigOptions
+   ctnr :- S/Str]
+  (merge {}
+         (get-in options [:config :containers (keyword ctnr)])
+         (get-in options [:config :containers (keyword (str repository "/" ctnr))])))
 
 (S/defn service :- schema/ServiceConfig
   "Returns a service-specific config in it's environment"
-  [{:keys [environment profile] :as options} :- schema/ConfigOptions
+  [{:keys [environment profile repository] :as options} :- schema/ConfigOptions
    svc :- S/Str]
-  (let [svc-cfg (or (get-in options [:config :environments (keyword environment) :services (keyword svc)]) {})]
+  (let [svc-cfg (merge {}
+                       (get-in options [:config :environments (keyword environment) :services (keyword svc)])
+                       (get-in options [:config :environments (keyword environment) :services (keyword (str repository "/" svc))]))]
     (if (some? profile)
       (rmerge svc-cfg (get-in svc-cfg [:profiles (keyword profile)]))
       svc-cfg)))
