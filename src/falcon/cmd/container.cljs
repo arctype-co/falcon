@@ -18,9 +18,20 @@
   [repository container tag]
   (str repository "/" (core/species-name container) ":" tag))
 
+(defn- push-container
+  [{:keys [repository]} container container-tag]
+  (go 
+    (let [container-id (full-container-tag repository container container-tag)]
+      (<! (-> (docker/push
+                {}
+                [container-id])
+              (shell/check-status)))
+      (println "Pushed container:" container-id)
+      container-tag)))
+
 (defn- build-container
   "Shallowly build a container"
-  [{:keys [no-cache container-tag repository] :as opts} container]
+  [{:keys [no-cache container-tag repository] :as opts} container push?]
   (let [opts (merge (config-ns/container opts container) opts)
             container-tag (or container-tag (core/new-tag))
             container-id (full-container-tag repository container container-tag)
@@ -45,6 +56,9 @@
                     [container-id
                      (full-container-tag repository container "latest")])))
           (println "Built container:" container-id)
+          (when push?
+            (<! (push-container opts container container-tag))
+            (<! (push-container opts container "latest")))
           container-tag)))
 
 (def ^:private docker-image-rexp (js/RegExp. "^FROM\\s([^/]+)/(.*)"))
@@ -62,7 +76,7 @@
             (recur (rest lines))))))))
 
 (defn- build-deep-container
-  [{:keys [container-tag repository] :as opts} container]
+  [{:keys [container-tag repository] :as opts} container push?]
   (go
     ; write the dockerfile
     (let [dockerfile-path (species-path container "Dockerfile")
@@ -78,8 +92,8 @@
           ; if we can build the parent, recursively build-deep
           ; else we are as far as we can go, build the container
           (when (contains?(set (core/all-clouds)) parent-repository)
-            (<! (build-deep-container (dissoc opts :container-tag) parent-image)))
-          (<! (build-container opts container)))
+            (<! (build-deep-container (dissoc opts :container-tag) parent-image push?)))
+          (<! (build-container opts container push?)))
         (throw (ex-info (str "Failed to parse Dockerfile FROM declaration in " dockerfile-path)
                         {:container container
                          :path dockerfile-path}))))))
@@ -91,8 +105,8 @@
     args
     (fn [container]
       (if deep
-        (build-deep-container opts container)
-        (build-container opts container)))))
+        (build-deep-container opts container false)
+        (build-container opts container false)))))
 
 (S/defn push
   "Push a docker image to the repository. Returns channel with status."
@@ -101,11 +115,7 @@
     args
     (fn [container]
       (let [container-tag (or container-tag (throw (js/Error. "--container-tag required")))]
-        (go 
-          (<! (-> (docker/push
-                    {}
-                    [(full-container-tag repository container container-tag)])
-                  (shell/check-status))))))))
+        (push-container opts container container-tag)))))
 
 (S/defn publish
   "Build & push a docker image to the repository. Returns channel with status."
@@ -113,10 +123,9 @@
   (require-arguments
     args
     (fn [container]
-      (go 
-        (let [container-tag (<! (build opts [container]))
-              opts (assoc opts :container-tag container-tag)]
-          (<! (push opts [container])))))))
+      (if deep
+        (build-deep-container opts container true)
+        (build-container opts container true)))))
 
 (def cli 
   {:doc "Container management"
