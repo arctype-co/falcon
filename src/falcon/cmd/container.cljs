@@ -28,7 +28,6 @@
 (defn- build-container
   "Shallowly build a container"
   [{:keys [no-cache container-tag repository] :as opts} container]
-  (go container-tag)
   (let [opts (merge (config-ns/container opts container) opts)
             container-tag (or container-tag (core/new-tag))
             container-id (full-container-tag repository container container-tag)
@@ -66,7 +65,7 @@
         (if-let [matches (re-matches docker-image-with-tag-rexp line)]
           (rest matches)
           (if-let [matches (re-matches docker-image-rexp line)]
-            (conj (rest matches) nil)
+            (rest matches)
             (recur (rest lines))))))))
 
 (defn- build-deep-container
@@ -85,7 +84,7 @@
         (do
           ; if we can build the parent, recursively build-deep
           ; else we are as far as we can go, build the container
-          (when (= repository parent-repository) ; Assume we can build images in our repository
+          (when (contains?(set (core/all-clouds)) parent-repository)
             (<! (build-deep-container (dissoc opts :container-tag) parent-image)))
           (<! (build-container opts container)))
         (throw (ex-info (str "Failed to parse Dockerfile FROM declaration in " dockerfile-path)
