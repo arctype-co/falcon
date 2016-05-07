@@ -25,13 +25,11 @@
   [repository container tag]
   (str repository "/" (core/species-name container) ":" tag))
 
-(S/defn build
-  "Build a docker image. Returns channel with tag."
-  [{:keys [no-cache container-tag repository] :as opts} args]
-  (require-arguments
-    args
-    (fn [container]
-      (let [opts (merge (config-ns/container opts container) opts)
+(defn- build-container
+  "Shallowly build a container"
+  [{:keys [no-cache container-tag repository] :as opts} container]
+  (go container-tag)
+  (let [opts (merge (config-ns/container opts container) opts)
             container-tag (or container-tag (core/new-tag))
             container-id (full-container-tag repository container container-tag)
             params {:container container
@@ -55,7 +53,54 @@
                     [container-id
                      (full-container-tag repository container "latest")])))
           (println "Built container:" container-id)
-          container-tag)))))
+          container-tag)))
+
+(def ^:private docker-image-rexp (js/RegExp. "^FROM\\s([^/]+)/(.*)"))
+(def ^:private docker-image-with-tag-rexp (js/RegExp. "^FROM\\s([^/]+)/([^:]+):(.*)"))
+
+(defn- parse-dockerfile-from
+  [dockerfile-path]
+  (go
+    (loop [lines (.split (core/read-file dockerfile-path) "\n")]
+      (when-let [line (first lines)]
+        (if-let [matches (re-matches docker-image-with-tag-rexp line)]
+          (rest matches)
+          (if-let [matches (re-matches docker-image-rexp line)]
+            (conj (rest matches) nil)
+            (recur (rest lines))))))))
+
+(defn- build-deep-container
+  [{:keys [container-tag repository] :as opts} container]
+  (go
+    ; write the dockerfile
+    (let [dockerfile-path (species-path container "Dockerfile")
+          params {:container container
+                  :container-tag container-tag}
+          defs (m4-defs opts params)]
+      (<! (-> (m4/write defs
+                        [(species-path container "Dockerfile.m4")]
+                        dockerfile-path)
+              (shell/check-status)))
+      (if-let [[parent-repository parent-image parent-tag] (<! (parse-dockerfile-from dockerfile-path))]
+        (do
+          ; if we can build the parent, recursively build-deep
+          ; else we are as far as we can go, build the container
+          (when (= repository parent-repository) ; Assume we can build images in our repository
+            (<! (build-deep-container (dissoc opts :container-tag) parent-image)))
+          (<! (build-container opts container)))
+        (throw (ex-info (str "Failed to parse Dockerfile FROM declaration in " dockerfile-path)
+                        {:container container
+                         :path dockerfile-path}))))))
+
+(S/defn build
+  "Build a docker image. Returns channel with tag."
+  [{:keys [deep no-cache container-tag repository] :as opts} args]
+  (require-arguments
+    args
+    (fn [container]
+      (if deep
+        (build-deep-container opts container)
+        (build-container opts container)))))
 
 (S/defn push
   "Push a docker image to the repository. Returns channel with status."
@@ -85,8 +130,8 @@
   {:doc "Container management"
    :options [["-t" "--git-tag <tag>" "Git tag"]
              ["-c" "--container-tag <tag>" "Container tag"]
-             ["-n" "--no-cache" "Disable docker cache"
-              :default false]]
+             ["-n" "--no-cache" "Disable docker cache" :default false]
+             ["-D" "--deep" "Build image dependencies recursively" :default false]]
    :commands {"build" build
               "push" push
               "publish" publish}})
