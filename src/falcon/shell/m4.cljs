@@ -10,13 +10,15 @@
   {S/Str (S/maybe S/Any)})
 
 (S/defn ^:private m4-defs :- Defs
-  [{:keys [environment repository profile] :as opts} :- schema/Options
-   {:keys [container-tag controller-tag service] :as params}]
+  [{:keys [environment repository profile git-tag] :as opts} :- schema/Options
+   {:keys [container container-tag controller-tag service] :as params}]
   (merge
     {"REPOSITORY" repository 
      "ENVIRONMENT" environment
+     "GIT_TAG" git-tag
      "PROFILE" profile
      "SECRET" service ; for backwards compatibility
+     "CONTAINER" container
      "SERVICE" service
      "CONTAINER_TAG" container-tag
      "CONTROLLER_TAG" controller-tag
