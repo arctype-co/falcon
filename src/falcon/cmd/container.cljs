@@ -110,7 +110,7 @@
 
 (S/defn push
   "Push a docker image to the repository. Returns channel with status."
-  [{:keys [container-tag repository]} args]
+  [{:keys [container-tag] :as opts} args]
   (require-arguments
     args
     (fn [container]
@@ -119,7 +119,7 @@
 
 (S/defn publish
   "Build & push a docker image to the repository. Returns channel with status."
-  [{:keys [git-tag] :as opts} args]
+  [{:keys [deep] :as opts} args]
   (require-arguments
     args
     (fn [container]
