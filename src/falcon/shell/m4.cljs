@@ -11,9 +11,10 @@
 
 (S/defn ^:private m4-defs :- Defs
   [{:keys [environment repository profile git-tag] :as opts} :- schema/Options
-   {:keys [container container-tag controller-tag service] :as params}]
+   {:keys [arguments container container-tag controller-tag service] :as params}]
   (merge
-    {"REPOSITORY" repository 
+    {"ARGUMENTS" arguments
+     "REPOSITORY" repository 
      "ENVIRONMENT" environment
      "GIT_TAG" git-tag
      "PROFILE" profile

@@ -1,7 +1,6 @@
 (ns falcon.cmd.job
   (:refer-clojure :exclude [list])
   (:require
-    [clojure.string :as string]
     [cljs.core.async :as async :refer [<!]]
     [cljs.pprint :refer [pprint]]
     [cljs.tools.cli :as cli]
@@ -19,22 +18,26 @@
 (S/defn create
   "Create a job"
   [opts args]
-  (require-arguments
-    args
-    (fn [service]
-      (let [controller-tag (core/new-tag)]
-        (core/do-all-profiles opts (core/profiles opts service)
-          (fn [opts]
-            (let [{:keys [container-tag]} (config-ns/service opts service)
-                  container-tag (or (:container-tag opts) container-tag)
-                  params {:service service
-                          :controller-tag controller-tag
-                          :container-tag container-tag}]
-              (core/print-summary "Create job:" opts params)
-              (go
-                (<! (template/make-yml "job.yml" opts params))
-                (<! (-> (kubectl/run opts "create" "-f" (core/species-path service "job.yml"))
-                        (shell/check-status)))))))))))
+  (let [service (first args)
+        job-args (rest args)
+        controller-tag (core/new-tag)]
+    (when (nil? service)
+      (throw (js/Error. "Expected arguments: [service & job-args]")))
+    (core/do-all-profiles
+      opts
+      (core/profiles opts service)
+      (fn [opts]
+        (let [{:keys [container-tag]} (config-ns/service opts service)
+              container-tag (or (:container-tag opts) container-tag)
+              params {:arguments (template/print-args job-args)
+                      :service service
+                      :controller-tag controller-tag
+                      :container-tag container-tag}]
+          (core/print-summary "Create job:" opts params)
+          (go
+            (<! (template/make-yml "job.yml" opts params))
+            (<! (-> (kubectl/run opts "create" "-f" (core/species-path service "job.yml"))
+                    (shell/check-status)))))))))
 
 (S/defn delete
   "Cancel a job. Buggy - goes into infinite loop when job is failed."
