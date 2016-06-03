@@ -22,6 +22,25 @@
       (go 
         (<! (kubectl/run opts "delete" "pod" pod-name))))))
 
+(S/defn describe
+  "Describe a pod"
+  [opts args]
+  (require-arguments
+    args
+    (fn [pod-name]
+      (go 
+        (<! (kubectl/run opts "describe" "pod" pod-name))))))
+
+(S/defn ip
+  "Show IP address of a pod"
+  [opts args]
+  (require-arguments
+    args
+    (fn [pod-name]
+      (go 
+        (<! (kubectl/run opts "get" "-o" "jsonpath={.status.podIP}" "pod" pod-name))
+        (println)))))
+
 (S/defn list
   "List nodes"
   [opts args]
@@ -53,6 +72,8 @@
    [["-e" "--environment <env>" "Environment"]
     ["-f" "--follow" "Follow log tail"]]
    :commands {"delete" delete
+              "describe" describe
+              "ip" ip
               "list" list
               "logs" logs
               "sh" sh
