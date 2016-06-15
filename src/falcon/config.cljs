@@ -50,3 +50,12 @@
     (if (some? profile)
       (rmerge svc-cfg (get-in svc-cfg [:profiles (keyword profile)]))
       svc-cfg)))
+
+(S/defn controller-name :- S/Str
+  "Returns a controller name, in the form <service>{-<profile}-<tag>, where profile is optional."
+  [service :- S/Str
+   profile :- (S/maybe S/Str)
+   tag :- S/Str]
+  (str service
+       (when (some? profile) (str "-" profile))
+       "-" tag))

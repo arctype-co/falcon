@@ -76,14 +76,16 @@
   [opts args]
   (require-arguments 
     args
-    (fn [service old-controller-name]
-      (let [{:keys [container-tag]} (config-ns/service opts service)
+    (fn [service old-controller-tag]
+      (let [{:keys [container-tag profile]} (config-ns/service opts service)
             container-tag (or (:container-tag opts) container-tag)
             controller-tag (core/new-tag)
             params {:service service
+                    :profile profile
                     :controller-tag controller-tag
                     :container-tag container-tag
-                    :old-controller-name old-controller-name}]
+                    :old-controller-tag old-controller-tag}
+            old-controller-name (config-ns/controller-name service profile old-controller-tag)]
         (core/print-summary "Rolling update replication controller:" opts params)
         (go
           (<! (make-yml "controller.yml" opts params))
