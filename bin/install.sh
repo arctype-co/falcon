@@ -1,20 +1,13 @@
 #!/bin/sh
 # Install falcon and it's dependencies on a Ubuntu machine
 
-SYSADMIN_PACKAGES="vim screen htop"
-KUBE_PACKAGES="golang"
-FALCON_PACKAGES="openjdk-7-jdk npm git m4"
-
 grep 14.04 /etc/issue > /dev/null 2>&1
 if [ $? -ne 0 ]; then
   echo "Ubuntu version 14.04 required"
   exit 1
 fi
 
-# sudo apt-get update
-echo $SYSADMIN_PACKAGES | sudo xargs apt-get install -y 
-echo $KUBE_PACKAGES | sudo xargs apt-get install -y 
-echo $FALCON_PACKAGES | sudo xargs apt-get install -y 
+sudo apt-get install -q -y golang openjdk-7-jdk npm git m4
 
 # Alias node js
 sudo rm -f /usr/bin/node
