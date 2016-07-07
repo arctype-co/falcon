@@ -52,7 +52,7 @@
                      (species-path container)])
                   (shell/check-status)))
           (<! (-> (docker/tag
-                    {:force true}
+                    {}
                     [container-id
                      (full-container-tag repository container "latest")])))
           (println "Built container:" container-id)
