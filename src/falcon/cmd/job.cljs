@@ -67,7 +67,8 @@
 (def cli
   {:doc "Job commands"
    :options 
-   [["-e" "--environment <env>" "Environment"]]
+   [["-e" "--environment <env>" "Environment"]
+    ["-p" "--profile <profile>" "Service profile"]]
    :commands {"create" create
               "delete" delete
               "list" list}})
