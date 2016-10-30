@@ -73,11 +73,11 @@
 
 (S/defn roll
   "Rolling update a replication controller"
-  [opts args]
+  [{:keys [profile] :as opts} args]
   (require-arguments 
     args
     (fn [service old-controller-tag]
-      (let [{:keys [container-tag profile]} (config-ns/service opts service)
+      (let [{:keys [container-tag]} (config-ns/service opts service)
             container-tag (or (:container-tag opts) container-tag)
             controller-tag (core/new-tag)
             params {:service service
