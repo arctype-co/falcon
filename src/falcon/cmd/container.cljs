@@ -14,14 +14,21 @@
   (:require-macros
     [cljs.core.async.macros :refer [go]]))
 
+(defn- find-registry-id
+  [options container]
+  (:registry-id (config-ns/container options container)))
+
 (defn- full-container-tag
-  [repository container tag]
-  (str repository "/" (core/species-name container) ":" tag))
+  [{:keys [repository] :as opts} container tag]
+  (let [registry-id (find-registry-id opts container)]
+    (if (some? registry-id)
+      (str registry-id ":" tag)
+      (str repository "/" (core/species-name container) ":" tag))))
 
 (defn- push-container
-  [{:keys [repository]} container container-tag]
+  [opts container container-tag]
   (go 
-    (let [container-id (full-container-tag repository container container-tag)]
+    (let [container-id (full-container-tag opts container container-tag)]
       (<! (-> (docker/push
                 {}
                 [container-id])
@@ -31,10 +38,10 @@
 
 (defn- build-container
   "Shallowly build a container"
-  [{:keys [no-cache container-tag repository] :as opts} container push?]
+  [{:keys [no-cache container-tag] :as opts} container push?]
   (let [opts (merge (config-ns/container opts container) opts)
             container-tag (or container-tag (core/new-tag))
-            container-id (full-container-tag repository container container-tag)
+            container-id (full-container-tag opts container container-tag)
             params {:container container
                     :container-tag container-tag}
             defs (m4/defs opts params)]
@@ -54,7 +61,7 @@
           (<! (-> (docker/tag
                     {}
                     [container-id
-                     (full-container-tag repository container "latest")])))
+                     (full-container-tag opts container "latest")])))
           (println "Built container:" container-id)
           (when push?
             (<! (push-container opts container container-tag))
@@ -76,7 +83,7 @@
             (recur (rest lines))))))))
 
 (defn- build-deep-container
-  [{:keys [container-tag repository] :as opts} container push?]
+  [{:keys [container-tag] :as opts} container push?]
   (go
     ; write the dockerfile
     (let [dockerfile-path (species-path container "Dockerfile")
@@ -100,7 +107,7 @@
 
 (S/defn build
   "Build a docker image. Returns channel with tag."
-  [{:keys [deep no-cache container-tag repository] :as opts} args]
+  [{:keys [deep no-cache container-tag] :as opts} args]
   (require-arguments
     args
     (fn [container]
