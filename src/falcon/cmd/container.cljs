@@ -5,7 +5,7 @@
     [cljs.tools.cli :as cli]
     [schema.core :as S]
     [falcon.core :as core :refer [map-keys species-path] :refer-macros [require-arguments]]
-    [falcon.config :as config-ns]
+    [falcon.config :as config-ns :refer [full-container-tag]]
     [falcon.schema :as schema]
     [falcon.shell :as shell]
     [falcon.shell.docker :as docker]
@@ -13,17 +13,6 @@
     [falcon.shell.make :as make])
   (:require-macros
     [cljs.core.async.macros :refer [go]]))
-
-(defn- find-registry-id
-  [options container]
-  (:registry-id (config-ns/container options container)))
-
-(defn- full-container-tag
-  [{:keys [repository] :as opts} container tag]
-  (let [registry-id (find-registry-id opts container)]
-    (if (some? registry-id)
-      (str registry-id ":" tag)
-      (str repository "/" (core/species-name container) ":" tag))))
 
 (defn- push-container
   [opts container container-tag]

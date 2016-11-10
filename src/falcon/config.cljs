@@ -40,6 +40,17 @@
          (get-in options [:config :containers (keyword ctnr)])
          (get-in options [:config :containers (keyword (str repository "/" ctnr))])))
 
+(defn- find-registry-id
+  [options container-name]
+  (:registry-id (container options container-name)))
+
+(defn full-container-tag
+  [{:keys [repository] :as opts} container-name tag]
+  (let [registry-id (find-registry-id opts container-name)]
+    (if (some? registry-id)
+      (str registry-id ":" tag)
+      (str repository "/" (core/species-name container-name) ":" tag))))
+
 (S/defn service :- schema/ServiceConfig
   "Returns a service-specific config in it's environment"
   [{:keys [environment profile repository] :as options} :- schema/ConfigOptions

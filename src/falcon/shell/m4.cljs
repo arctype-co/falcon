@@ -12,22 +12,25 @@
 (S/defn ^:private m4-defs :- Defs
   [{:keys [environment repository profile git-tag] :as opts} :- schema/Options
    {:keys [arguments container container-tag controller-tag service] :as params}]
-  (merge
-    {"ARGUMENTS" arguments
-     "REPOSITORY" repository 
-     "ENVIRONMENT" environment
-     "GIT_TAG" git-tag
-     "PROFILE" profile
-     "SECRET" service ; for backwards compatibility
-     "CONTAINER" container
-     "SERVICE" service
-     "CONTAINER_TAG" container-tag
-     "CONTROLLER_TAG" controller-tag
-     "TIMESTAMP" (str (.getTime (js/Date.)))}
-    (when (some? container)
-      (map-keys name (:m4-params (config-ns/container opts container))))
-    (when (some? service)
-      (map-keys name (:m4-params (config-ns/service opts service))))))
+  (let [svc-ctnr (or container service)]
+    (merge
+      {"ARGUMENTS" arguments
+       "REPOSITORY" repository 
+       "ENVIRONMENT" environment
+       "GIT_TAG" git-tag
+       "PROFILE" profile
+       "SECRET" service ; for backwards compatibility
+       "CONTAINER" container
+       "SERVICE" service
+       "CONTAINER_TAG" container-tag
+       "CONTROLLER_TAG" controller-tag
+       "TIMESTAMP" (str (.getTime (js/Date.)))}
+      (when (some? container)
+        (merge (map-keys name (:m4-params (config-ns/container opts container)))))
+      (when (some? service)
+        (map-keys name (:m4-params (config-ns/service opts service))))
+      (when (some? svc-ctnr)
+        {"FULL_CONTAINER_TAG" (config-ns/full-container-tag opts svc-ctnr container-tag)}))))
 
 (defn defs
   ([opts] (m4-defs opts nil))
