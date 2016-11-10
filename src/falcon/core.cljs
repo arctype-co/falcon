@@ -61,6 +61,10 @@
   [file-path]
   (.readFileSync fs file-path #js {:encoding "utf8" :flag "r"}))
 
+(defn write-file
+  [file-path buf]
+  (.writeFileSync fs file-path buf {:encoding "utf8" :flag "w"}))
+
 (defn exists?
   [path]
   (try 

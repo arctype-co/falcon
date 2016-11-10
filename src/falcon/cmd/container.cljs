@@ -31,7 +31,7 @@
 
 (defn- build-container
   "Shallowly build a container"
-  [{:keys [no-cache container-tag repository] :as opts} container push?]
+  [{:keys [no-cache container-tag repository output] :as opts} container push?]
   (let [opts (merge (config-ns/container opts container) opts)
             container-tag (or container-tag (core/new-tag))
             container-id (full-container-tag repository container container-tag)
@@ -56,6 +56,8 @@
                     [container-id
                      (full-container-tag repository container "latest")])))
           (println "Built container:" container-id)
+          (when (some? output)
+            (core/write-file output container-id))
           (when push?
             (<! (push-container opts container container-tag))
             (<! (push-container opts container "latest")))
@@ -132,6 +134,7 @@
    :options [["-t" "--git-tag <tag>" "Git tag"]
              ["-c" "--container-tag <tag>" "Container tag"]
              ["-n" "--no-cache" "Disable docker cache" :default false]
+             ["-o" "--output" "Output data file. Contains full name of built image."]
              ["-D" "--deep" "Build image dependencies recursively" :default false]]
    :commands {"build" build
               "push" push
