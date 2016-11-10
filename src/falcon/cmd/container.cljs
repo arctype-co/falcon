@@ -141,7 +141,7 @@
    :options [["-t" "--git-tag <tag>" "Git tag"]
              ["-c" "--container-tag <tag>" "Container tag"]
              ["-n" "--no-cache" "Disable docker cache" :default false]
-             ["-o" "--output" "Output data file. Contains full name of built image."]
+             ["-o" "--output <file>" "Output data file. Contains full name of built image."]
              ["-D" "--deep" "Build image dependencies recursively" :default false]]
    :commands {"build" build
               "push" push
