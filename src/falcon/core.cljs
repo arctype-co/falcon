@@ -72,14 +72,7 @@
     true
     (catch js/Error e false)))
 
-(defn species-name
-  "Return the unqualified name of a cloud/species if it is qualified."
-  [species]
-  (if (<= 0 (.indexOf species "/"))
-    ; qualified name
-    (second (string/split species "/"))
-    ; unqualified name
-    species))
+(def species-name config-ns/species-name)
 
 (defn cloud-path
   [& inner-path]

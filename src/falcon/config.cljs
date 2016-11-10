@@ -1,5 +1,6 @@
 (ns falcon.config
   (:require
+    [clojure.string :as string]
     [cljs.core.async :as async]
     [schema.core :as S]
     [falcon.util :refer [rmerge]]
@@ -23,6 +24,15 @@
   (let [buf (.readFileSync fs config-path)
         cfg (js->clj (parse-yml buf) :keywordize-keys true)]
     cfg))
+
+(defn species-name
+  "Return the unqualified name of a cloud/species if it is qualified."
+  [species]
+  (if (<= 0 (.indexOf species "/"))
+    ; qualified name
+    (second (string/split species "/"))
+    ; unqualified name
+    species))
 
 (S/defn cluster :- schema/ClusterConfig
   "Return a cluster-specific config"
@@ -49,7 +59,7 @@
   (let [registry-id (find-registry-id opts container-name)]
     (if (some? registry-id)
       (str registry-id ":" tag)
-      (str repository "/" (core/species-name container-name) ":" tag))))
+      (str repository "/" (species-name container-name) ":" tag))))
 
 (S/defn service :- schema/ServiceConfig
   "Returns a service-specific config in it's environment"
