@@ -12,7 +12,7 @@
 (S/defn ^:private m4-defs :- Defs
   [{:keys [environment repository profile git-tag] :as opts} :- schema/Options
    {:keys [arguments container container-tag controller-tag service] :as params}]
-  (let [svc-ctnr (or container service)]
+  (let [image (or container service)]
     (merge
       {"ARGUMENTS" arguments
        "REPOSITORY" repository 
@@ -29,8 +29,8 @@
         (merge (map-keys name (:m4-params (config-ns/container opts container)))))
       (when (some? service)
         (map-keys name (:m4-params (config-ns/service opts service))))
-      (when (some? svc-ctnr)
-        {"FULL_CONTAINER_TAG" (config-ns/full-container-tag opts svc-ctnr container-tag)}))))
+      (when (some? image)
+        {"IMAGE" (config-ns/full-container-tag opts image container-tag)}))))
 
 (defn defs
   ([opts] (m4-defs opts nil))
