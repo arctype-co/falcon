@@ -50,12 +50,16 @@
 (S/defn logs
   "Get pod logs"
   [{:keys [follow] :as opts} args]
-  (require-arguments
-    args
-    (fn [pod] 
-      (go
-        (let [kube-args (if follow ["-f" pod] [pod])]
-          (<! (apply kubectl/run opts "logs" kube-args)))))))
+  (go
+    (let [pod (first args)
+          pod-container (second args)
+          kube-args (if follow 
+                      ["-f" pod]
+                      [pod])
+          kube-args (if (some? pod-container)
+                      (conj kube-args pod-container)
+                      kube-args)]
+      (<! (apply kubectl/run opts "logs" kube-args)))))
 
 (S/defn sh
   "Launch a shell in a pod"
