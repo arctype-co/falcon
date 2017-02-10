@@ -18,6 +18,18 @@
     [falcon.core :refer [require-arguments]]
     [cljs.core.async.macros :refer [go]]))
 
+(defn- running-controller-name
+  "Return name of the current controller running for service"
+  [{:keys [profile] :as opts} service]
+  (go
+    (let [selector (str "role=" service (when (some? profile) (str ",profile=" profile)))
+          run (kubectl/run (assoc opts :shell-mode :spawn) "--selector" selector "-o" "json" "get" "rc")]
+      (<! (shell/check-status (:return run)))
+      (let [json (<! (:stdout run))
+            dict (.parse js/JSON json)
+            controller-name (-> dict (aget "items") (aget 0) (aget "metadata") (aget "name"))]
+        controller-name))))
+
 (S/defn list
   "List replication controllers' status"
   [opts args]
@@ -46,22 +58,23 @@
 
 (S/defn delete
   "Remove a replication controller"
-  [opts args]
-  (require-arguments 
-    args
-    (fn [service controller-tag]
-      (do-all-profiles opts (profiles opts service)
-        (fn [opts]
-          (let [{:keys [container-tag]} (config-ns/service opts service)
-                container-tag (or (:container-tag opts) container-tag)
-                params {:service service
-                        :controller-tag controller-tag
-                        :container-tag container-tag}]
-            (core/print-summary "Delete replication controller:" opts params)
-            (go
-              (when-not (:yes opts) (<! (core/safe-wait)))
-              (<! (make-yml "controller.yml" opts params))
-              (<! (kubectl/run opts "delete" "-f" (species-path service "controller.yml"))))))))))
+  [opts [service controller-tag]]
+  (do-all-profiles
+    opts
+    (profiles opts service)
+    (fn [{:keys [profile] :as opts}]
+      (go
+        (let [controller-name (if (some? controller-tag)
+                                (config-ns/controller-name service profile controller-tag)
+                                (<! (running-controller-name opts service)))
+              params {:service service
+                      :controller-name controller-name}]
+          (when (nil? controller-name)
+            (throw (js/Error. "Failed to find running controller")))
+          (core/print-summary "Delete replication controller:" opts params)
+          (when-not (:yes opts) (<! (core/safe-wait)))
+          (<! (make-yml "controller.yml" opts params))
+          (<! (kubectl/run opts "delete" "rc" controller-name)))))))
 
 (S/defn update
   "Replace a replication controller"
@@ -73,40 +86,42 @@
 
 (S/defn roll
   "Rolling update a replication controller"
-  [{:keys [profile] :as opts} args]
-  (require-arguments 
-    args
-    (fn [service old-controller-tag]
-      (let [{:keys [container-tag]} (config-ns/service opts service)
-            container-tag (or (:container-tag opts) container-tag)
-            controller-tag (core/new-tag)
-            params {:service service
-                    :profile profile
-                    :controller-tag controller-tag
-                    :container-tag container-tag
-                    :old-controller-tag old-controller-tag}
-            old-controller-name (config-ns/controller-name service profile old-controller-tag)]
-        (core/print-summary "Rolling update replication controller:" opts params)
-        (go
-          (<! (make-yml "controller.yml" opts params))
-          (<! (-> (kubectl/run opts "rolling-update" old-controller-name "-f" (species-path service "controller.yml"))
-                  (shell/check-status))))))))
+  [{:keys [profile] :as opts} [service old-controller-tag]]
+  (go
+    (let [{:keys [container-tag]} (config-ns/service opts service)
+          container-tag (or (:container-tag opts) container-tag)
+          controller-tag (core/new-tag)
+          old-controller-name (if (some? old-controller-tag)
+                                (config-ns/controller-name service profile old-controller-tag)
+                                (<! (running-controller-name opts service)))
+          params {:service service
+                  :profile profile
+                  :controller-tag controller-tag
+                  :container-tag container-tag
+                  :old-controller-name old-controller-name}]
+      (when (nil? old-controller-name)
+        (throw (js/Error. "Failed to find running controller")))
+      (core/print-summary "Rolling update replication controller:" opts params)
+      (<! (make-yml "controller.yml" opts params))
+      (<! (-> (kubectl/run opts "rolling-update" old-controller-name "-f" (species-path service "controller.yml"))
+              (shell/check-status))))))
 
 (S/defn scale
   "Scale a replication controller"
-  [opts args]
-  (require-arguments 
-    args
-    (fn [service controller-tag replicas]
-      (let [{:keys [container-tag]} (config-ns/service opts service)
-            params {:service service
-                    :container-tag (or (:container-tag opts) container-tag)
-                    :controller-tag controller-tag
-                    :replicas replicas}]
-        (core/print-summary "Scaling replication controller:" opts params)
-        (go
-          (<! (make-yml "controller.yml" opts params))
-          (<! (kubectl/run opts "scale" (str "--replicas=" replicas) "-f" (species-path service "controller.yml"))))))))
+  [{:keys [profile] :as opts} [service replicas controller-tag]]
+  (go
+    (when (nil? replicas)
+      (throw (js/Error. "Arguments: [service replicas [controller-tag]]")))
+    (let [{:keys [controller-tag]} (config-ns/service opts service)
+          controller-name (if (some? controller-tag)
+                            (config-ns/controller-name service profile controller-tag)
+                            (<! (running-controller-name opts service)))
+          params {:service service
+                  :controller-name controller-name
+                  :replicas replicas}]
+      (core/print-summary "Scaling replication controller:" opts params)
+      (<! (make-yml "controller.yml" opts params))
+      (<! (kubectl/run opts "scale" "rc" (str "--replicas=" replicas) controller-name)))))
 
 (def cli
   {:doc "Service configuration and deployment"

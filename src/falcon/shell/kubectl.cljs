@@ -10,6 +10,7 @@
    (S/optional-key :certificate-authority) S/Str
    (S/optional-key :client-certificate) S/Str
    (S/optional-key :client-key) S/Str
+   (S/optional-key :shell-mode) (S/enum :passthru :spawn)
    S/Keyword S/Any})
 
 (defn- build-flags
@@ -32,4 +33,7 @@
   [options :- Options
    & args]
   (let [flags (build-flags options)]
-    (core/passthru (concat ["kubectl"] flags args))))
+    (case (:shell-mode options)
+      :spawn (core/spawn (concat ["kubectl"] flags args) {})
+      ;:passthru
+      (core/passthru (concat ["kubectl"] flags args)))))
