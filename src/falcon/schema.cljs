@@ -16,7 +16,8 @@
   (S/pred (fn [addr] (= 4 (count (string/split addr #"\."))))))
 
 (def BaseClusterConfig
-  {(S/required-key :kube-server) S/Str ; ip:port
+  {(S/optional-key :kubeconfig) S/Str ; path to kubectl config
+   (S/optional-key :kube-server) S/Str ; ip:port
    (S/optional-key :certificate-authority) S/Str
    (S/optional-key :client-certificate) S/Str
    (S/optional-key :client-key) S/Str})
