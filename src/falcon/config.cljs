@@ -13,6 +13,11 @@
 
 (def default-file "config.yml")
 
+(defn short-name
+  [identifier]
+  (let [parts (string/split identifier #"/")]
+    (last parts)))
+
 (defn- parse-yml
   [buf]
   (try (.parse yamljs (str buf))
@@ -65,7 +70,8 @@
   "Returns a service-specific config in it's environment"
   [{:keys [environment profile repository] :as options} :- schema/ConfigOptions
    svc :- S/Str]
-  (let [svc-cfg (merge {}
+  (let [svc (short-name svc)
+        svc-cfg (merge {}
                        (get-in options [:config :environments (keyword environment) :services (keyword svc)])
                        (get-in options [:config :environments (keyword environment) :services (keyword (str repository "/" svc))]))]
     (if (some? profile)

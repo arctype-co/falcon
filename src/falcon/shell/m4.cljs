@@ -12,16 +12,17 @@
 (S/defn ^:private m4-defs :- Defs
   [{:keys [environment repository profile git-tag] :as opts} :- schema/Options
    {:keys [arguments container container-tag controller-tag service] :as params}]
-  (let [image (or container service)]
+  (let [image (or container service)
+        service-name (config-ns/short-name service)]
     (merge
       {"ARGUMENTS" arguments
        "REPOSITORY" repository 
        "ENVIRONMENT" environment
        "GIT_TAG" git-tag
        "PROFILE" profile
-       "SECRET" service ; for backwards compatibility
+       "SECRET" service-name ; for backwards compatibility
        "CONTAINER" container
-       "SERVICE" service
+       "SERVICE" service-name
        "CONTAINER_TAG" container-tag
        "CONTROLLER_TAG" controller-tag
        "TIMESTAMP" (str (.getTime (js/Date.)))}
