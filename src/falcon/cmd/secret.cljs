@@ -38,8 +38,6 @@
   [{:keys [config] :as opts} {:keys [service] :as params}]
   (let [svc-config (config-ns/service opts service)
         secret-files (map name (:secret-files svc-config))]
-    (println (str "Secret files for " service ": " (clj->js secret-files)))
-    (println  "svc config: " (pr-str (clj->js svc-config)))
     (merge (m4/defs opts params)
            (encode-secret-files service secret-files))))
 
