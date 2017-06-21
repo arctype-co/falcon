@@ -50,8 +50,8 @@
   (pprint (merge (select-keys opts [:environment :cluster :profile]) details)))
 
 (defn base64
-  [str-val]
-  (-> (js/Buffer. (str str-val)) (.toString "base64")))
+  [buf]
+  (.toString buf "base64"))
 
 (defn map-keys
   [key-fn dict]
@@ -60,6 +60,10 @@
 (defn read-file
   [file-path]
   (.readFileSync fs file-path #js {:encoding "utf8" :flag "r"}))
+
+(defn read-file-buffer
+  [file-path]
+  (.readFileSync fs file-path #js {:flag "r"}))
 
 (defn write-file
   [file-path buf]

@@ -31,7 +31,7 @@
   (into {} (map
              (fn [secret-file-name]
                [(env-file-name secret-file-name)
-                (core/base64 (core/read-file (species-path secret secret-file-name)))])
+                (core/base64 (core/read-file-buffer (species-path secret secret-file-name)))])
              secret-file-names)))
 
 (defn- secret-m4-defs
