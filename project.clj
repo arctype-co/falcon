@@ -2,8 +2,8 @@
   :description "A Kubernetes configuration and deployment tool"
 
   :plugins
-  [[lein-cljsbuild "1.1.3"]
-   [arohner/lein-npm "0.4.1"]]
+  [[lein-cljsbuild "1.1.7"]
+  [lein-npm "0.6.2"]]
 
   :dependencies
   [[org.clojure/clojure "1.8.0"]
