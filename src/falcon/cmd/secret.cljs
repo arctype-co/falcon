@@ -85,7 +85,7 @@
           ; Run a Makefile if there is one
           (<! (make/run defs ["-C" (species-path secret) "secret"]))
           (<! (make-yml "secret.yml" opts params))
-          (<! (kubectl/run opts "update" "-f" (species-path secret "secret.yml"))))))))
+          (<! (kubectl/run opts "replace" "-f" (species-path secret "secret.yml"))))))))
 
 (S/defn delete 
   "Unload a secret config"
