@@ -54,6 +54,7 @@
 (def ContainerConfig
   {(S/optional-key :m4-params) {S/Keyword S/Any}
    (S/optional-key :git-tag) S/Str
+   (S/optional-key :repository) S/Str
    (S/optional-key :registry-id) S/Str})
 
 (def BaseServiceConfig
