@@ -2,8 +2,7 @@
   :description "A Kubernetes configuration and deployment tool"
 
   :plugins
-  [[lein-cljsbuild "1.1.7"]
-  [lein-npm "0.6.2"]]
+  [[lein-cljsbuild "1.1.7"]]
 
   :dependencies
   [[org.clojure/clojure "1.8.0"]
@@ -13,16 +12,14 @@
    [org.clojure/tools.cli "0.3.3"]
    [prismatic/schema "1.0.1"]]
 
-  :node-dependencies [yamljs "0.2.4"]
-
-  :clean-targets [:target-path "bin/falcon.js"]
+  :clean-targets [:target-path "index.js"]
 
   :cljsbuild
   {:builds
    {:client
     {:source-paths ["src"]
      :compiler
-     {:output-to "bin/falcon.js"
+     {:output-to "index.js"
       :target :nodejs
       :optimizations :simple
       :pretty-print true

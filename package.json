@@ -1,0 +1,36 @@
+{
+  "name": "falcon",
+  "version": "0.1.0",
+  "description": "Falcon is a Kubernetes package manager developed in ClojureScript.",
+  "main": "index.js",
+  "bin": {
+    "falcon": "index.js"
+  },
+  "directories": {
+    "doc": "doc"
+  },
+  "dependencies": {
+    "yamljs": "0.2.10"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sundbry/falcon.git"
+  },
+  "keywords": [
+    "kubernetes",
+    "package",
+    "manager",
+    "helm",
+    "clojurescript"
+  ],
+  "author": "Ryan Sundberg <ryan@arctype.co>",
+  "license": "Zlib",
+  "bugs": {
+    "url": "https://github.com/sundbry/falcon/issues"
+  },
+  "homepage": "https://github.com/sundbry/falcon#readme"
+}

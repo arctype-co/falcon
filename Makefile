@@ -1,15 +1,15 @@
 .PHONY: all auto clean deps node_modules
 
-all: node_modules bin/falcon.js
+all: index.js
 
 deps:
 	lein deps
 	git submodule update --init
 
-node_modules: deps project.clj
-	lein npm update
+node_modules:
+	npm install
 
-bin/falcon.js:
+index.js: node_modules
 	lein cljsbuild once
 
 clean: 
@@ -24,4 +24,3 @@ update:
 	git pull
 	git submodule update --init
 	lein do clean, cljsbuild once
-	

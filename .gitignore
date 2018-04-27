@@ -9,3 +9,4 @@ target
 .nrepl-port
 node_modules
 cloud/*
+index.js
