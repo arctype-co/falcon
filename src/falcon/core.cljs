@@ -13,7 +13,7 @@
 
 (def ^:private fs (js/require "fs"))
 
-(def ^:private clouds-path "./cloud")
+(def ^:private clouds-path "./.")
 
 (def ^:private clouds-cache (atom nil)) ; List of clouds available
 
