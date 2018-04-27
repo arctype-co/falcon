@@ -71,8 +71,9 @@
     (fn [config-file]
       (if (core/exists? config-file)
         (go
-          (<! (-> (shell/passthru ["rm" "config.yml"] {})
-                  shell/check-status))
+          (let [fs (js/require "fs")]
+            (when (.existsSync fs "config.yml")
+              (.unlinkSync fs "config.yml")))
           (<! (-> (shell/passthru ["ln" "-s" config-file "config.yml"])
                   shell/check-status)))
         (throw (core/error (str "File does not exist: " config-file)))))))

@@ -13,6 +13,8 @@
 
 (def default-file "config.yml")
 
+(def default-config {:clusters {}})
+
 (defn short-name
   [identifier]
   (let [parts (string/split identifier #"/")]
@@ -26,9 +28,13 @@
 
 (S/defn read-yml :- schema/Config
   [config-path]
-  (let [buf (.readFileSync fs config-path)
-        cfg (js->clj (parse-yml buf) :keywordize-keys true)]
-    cfg))
+  (if (.existsSync fs config-path)
+    (let [buf (.readFileSync fs config-path)
+          cfg (js->clj (parse-yml buf) :keywordize-keys true)]
+      cfg)
+    (do
+      (println "config.yml not found")
+      default-config)))
 
 (defn species-name
   "Return the unqualified name of a cloud/species if it is qualified."
