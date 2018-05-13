@@ -103,7 +103,8 @@
 
 (def cli
   {:doc "Secret configuration and deployment"
-   :options [["-e" "--environment <env>" "Environment"]]
+   :options [["-e" "--environment <env>" "Environment"]
+             ["-p" "--profile <profile>" "Profile"]]
    :commands
    {"create" create
     "delete" delete
