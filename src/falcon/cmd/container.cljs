@@ -27,7 +27,7 @@
 
 (defn- build-container
   "Shallowly build a container"
-  [{:keys [no-cache container-tag output] :as opts} container push?]
+  [{:keys [pull no-cache container-tag output] :as opts} container push?]
   (let [opts (merge (config-ns/container opts container) opts)
             container-tag (or container-tag (core/new-tag))
             container-id (full-container-tag opts container container-tag)
@@ -43,7 +43,8 @@
                             (species-path container "Dockerfile"))
                   (shell/check-status)))
           (<! (-> (docker/build
-                    {:no-cache no-cache}
+                    {:no-cache no-cache
+                     :pull pull}
                     [(str "-t=" container-id)
                      (species-path container)])
                   (shell/check-status)))
