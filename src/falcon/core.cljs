@@ -28,9 +28,12 @@
          (fn [clouds-val]
            (if (some? clouds-val)
              clouds-val
-             (let [clouds-val (vec (.readdirSync fs clouds-path))]
-               #_(println "Morphs loaded:" clouds-val)
-               clouds-val)))))
+             (let [contents (vec (.readdirSync fs clouds-path))]
+               (->> contents
+                    (filter 
+                      (fn [dirent]
+                        (let [stat (.statSync fs (str clouds-path "/" dirent))]
+                          (.isDirectory stat))))))))))
 
 (defn new-tag
   []

@@ -63,6 +63,17 @@
       (shell/passthru ["git" "push" "origin" git-branch]
                       {:cwd (core/cloud-path repository)}))))
 
+(S/defn config-sync
+  "Pull and push all configurations"
+  [this args]
+  (doseq [cloud (core/all-clouds)]
+    (try
+      (pull this [cloud])
+      (push this [cloud])
+      (catch js/Error e
+        (.error js/console e)
+        (println (str "Failed to sync: " cloud))))))
+
 (S/defn select
   "Select configuration file"
   [opts args]
@@ -102,4 +113,5 @@
               "push" push
               "select" select
               "show" show
-              "status" status}})
+              "status" status
+              "sync" config-sync}})
