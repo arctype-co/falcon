@@ -8,7 +8,8 @@
     [schema.core :as S]
     [falcon.schema :as schema]
     [falcon.core :as core]
-    [falcon.shell :as shell])
+    [falcon.shell :as shell]
+    [falcon.util :refer [throw-error]])
   (:require-macros
     [falcon.core :refer [require-arguments]]
     [cljs.core.async.macros :refer [go]]))
@@ -67,12 +68,13 @@
   "Pull and push all configurations"
   [this args]
   (doseq [cloud (core/all-clouds)]
-    (try
-      (pull this [cloud])
-      (push this [cloud])
-      (catch js/Error e
-        (.error js/console e)
-        (println (str "Failed to sync: " cloud))))))
+    (go
+      (try
+        (throw-error (<! (pull this [cloud])))
+        (throw-error (<! (push this [cloud])))
+        (catch js/Error e
+          (.error js/console e)
+          (println (str "Failed to sync: " cloud)))))))
 
 (S/defn select
   "Select configuration file"
