@@ -9,7 +9,7 @@
    [org.clojure/clojurescript "1.8.51"]
    [org.clojure/core.async "0.2.374"]
    [org.clojure/core.match "0.3.0-alpha4"]
-   [org.clojure/tools.cli "0.3.3"]
+   [org.clojure/tools.cli "0.3.7"]
    [prismatic/schema "1.0.1"]]
 
   :clean-targets [:target-path "index.js"]
