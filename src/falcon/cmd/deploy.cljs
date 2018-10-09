@@ -1,5 +1,4 @@
 (ns falcon.cmd.deploy
-  (:refer-clojure :exclude [update])
   (:require
     [clojure.string :as string]
     [cljs.core.async :as async :refer [<!]]
@@ -7,64 +6,109 @@
     [cljs.tools.cli :as cli]
     [schema.core :as S]
     [falcon.config :as config]
-    [falcon.core :as core]
+    [falcon.core :as core :refer [profiles species-path map-keys do-all-profiles]]
     [falcon.schema :as schema]
     [falcon.cmd.container :as container-ns]
-    [falcon.cmd.rc :as rc])
+    [falcon.cmd.rc :as rc]
+    [falcon.shell :as shell]
+    [falcon.shell.m4 :as m4]
+    [falcon.shell.make :as make]
+    [falcon.shell.kubectl :as kubectl]
+    [falcon.template :refer [make-yml]])
   (:require-macros
     [falcon.core :refer [require-arguments]]
     [cljs.core.async.macros :refer [go]]))
 
+(def ^:private yml-file "deployment.yml")
+
+(defn- deployment-name
+  [{:keys [profile]} service]
+  (str "deployment/" service
+       (when (some? profile) (str "-" profile))))
+  
+
 (S/defn create
-  "Build and push container, then deploy replication controller."
-  [{:keys [container-tag]:as opts} args]
+  "Create a Kubernetes deployment."
+  [opts args]
   (require-arguments
     args
     (fn [service]
-      (let [params {:service service}]
-        (core/print-summary "Create deployment:" opts params)
-        (go
-          (let [container-tag (or container-tag (<! (container-ns/build opts [service])))
-                opts (assoc opts :container-tag container-tag)]
-            (<! (container-ns/push opts [service]))
-            (<! (rc/create opts [service]))))))))
+      (do-all-profiles opts (profiles opts service)
+                       (fn [opts]
+                         (let [{:keys [container-tag]} (config/service opts service)
+                               params {:service service
+                                       :container-tag container-tag}]
+                           (core/print-summary "Create deployment:" opts params)
+                           (go
+                             (<! (make-yml yml-file opts params))
+                             (<! (-> (kubectl/run opts "create" "-f" (species-path service yml-file))
+                                     (shell/check-status))))))))))
 
-(S/defn update
-  "Build and push container, remove current controller tag, and redeploy replication controller."
-  [{:keys [container-tag]:as opts} args]
+(S/defn delete
+  "Delete a Kubernetes deployment."
+  [opts args]
   (require-arguments
     args
-    (fn [service old-controller-tag]
-      (let [params {:service service}]
-        (core/print-summary "Update deployment:" opts params)
-        (go
-          (let [container-tag (or container-tag (<! (container-ns/build opts [service])))
-                opts (assoc opts :container-tag container-tag)]
-            (<! (container-ns/push opts [service]))
-            (<! (rc/delete opts [service old-controller-tag]))
-            (<! (rc/create opts [service]))))))))
+    (fn [service]
+        (do-all-profiles opts (profiles opts service)
+          (fn [opts]
+            (let [{:keys [container-tag]} (config/service opts service)
+                  params {:service service
+                          :container-tag container-tag}]
+              (core/print-summary "Delete deployment:" opts params)
+              (go
+                (<! (-> (kubectl/run opts "delete" (deployment-name opts service))
+                        (shell/check-status))))))))))
 
-(S/defn roll
-  "Build and push container, then rolling deploy it's replication controller."
-  [{:keys [container-tag] :as opts} args]
+(S/defn update-deployment
+  "Apply a deployment"
+  [opts args]
   (require-arguments
     args
-    (fn [service old-controller-tag]
-      (let [params {:service service
-                    :old-controller-tag old-controller-tag}]
-        (core/print-summary "Rolling deployment:" opts params)
-        (go
-          (let [container-tag (or container-tag (<! (container-ns/build opts [service])))
-                opts (assoc opts :container-tag container-tag)]
-            (<! (container-ns/push opts [service]))
-            (<! (rc/roll opts [service old-controller-tag container-tag]))))))))
+    (fn [service]
+      (do-all-profiles opts (profiles opts service)
+                       (fn [opts]
+                         (let [{:keys [container-tag]} (config/service opts service)
+                               params {:service service
+                                       :container-tag container-tag}]
+                           (core/print-summary "Apply deployment:" opts params)
+                           (go
+                             (<! (make-yml yml-file opts params))
+                             (<! (-> (kubectl/run opts "apply" "-f" (species-path service yml-file))
+                                     (shell/check-status))))))))))
+
+(S/defn list-deployments
+  "List deployments"
+  [opts args]
+  (go
+    (<! (kubectl/run opts "get" "deployment"))))
+
+(S/defn status
+  "Get deployment status"
+  [{:keys [profile] :as opts} args]
+  (require-arguments
+   args
+   (fn [service]
+     (go
+       (<! (kubectl/run opts "rollout" "status" (deployment-name opts service)))))))
+
+(S/defn history
+  "Get deployment history"
+  [{:keys [profile] :as opts} args]
+  (require-arguments
+    args
+    (fn [service]
+      (go
+        (<! (kubectl/run opts "rollout" "history" (deployment-name opts service)))))))
 
 (def cli
   {:doc "High-level deployment commands"
-   :options [["-t" "--git-tag <tag>" "Git tag"]
-             ["-c" "--container-tag <tag>" "Container tag"]
-             ["-n" "--no-cache" "Disable docker cache"
-              :default false]]
+   :options (core/cli-options
+              [["-c" "--container-tag <tag>" "Container tag"]
+               ["-p" "--profile <profile>" "Service profile"]])
    :commands {"create" create
-              "update" update
-              "roll" roll}})
+              "delete" delete
+              "update" update-deployment
+              "list" list-deployments
+              "status" status
+              "history" history}})
