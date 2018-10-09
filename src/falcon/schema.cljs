@@ -73,6 +73,7 @@
   {(S/required-key :cluster) S/Str
    (S/required-key :repository) S/Str
    (S/required-key :environment) S/Str
+   (S/optional-key :load-state) S/Str
    S/Keyword S/Any})
 
 (def Config

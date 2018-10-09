@@ -1,5 +1,7 @@
 (ns falcon.config
   (:require
+    [fs]
+    [yamljs]
     [clojure.string :as string]
     [cljs.core.async :as async]
     [schema.core :as S]
@@ -7,9 +9,6 @@
     [falcon.schema :as schema])
   (:require-macros
     [cljs.core.async.macros :refer [go]]))
-
-(def ^:private fs (js/require "fs"))
-(def ^:private yamljs (js/require "yamljs"))
 
 (def default-file "config.yml")
 
@@ -24,7 +23,7 @@
   [buf]
   (try (.parse yamljs (str buf))
        (catch js/Error e
-         (throw (js/Error. (str "Failed to parse config.yml: " (.-message e)))))))
+         (throw (js/Error. (str "Failed to parse yml: " (.-message e)))))))
 
 (S/defn read-yml :- schema/Config
   [config-path]
@@ -35,6 +34,14 @@
     (do
       (println "config.yml not found")
       default-config)))
+
+(defn- maybe-load-state-file
+  [path]
+  (if (.existsSync fs path)
+    (let [buf (.readFileSync fs path)
+          cfg (js->clj (parse-yml buf) :keywordize-keys true)]
+      cfg)
+    {}))
 
 (defn species-name
   "Return the unqualified name of a cloud/species if it is qualified."
@@ -71,12 +78,14 @@
 
 (S/defn service :- schema/ServiceConfig
   "Returns a service-specific config in it's environment"
-  [{:keys [environment profile repository] :as options} :- schema/ConfigOptions
+  [{:keys [environment profile repository load-state] :as options} :- schema/ConfigOptions
    svc :- S/Str]
   (let [svc (short-name svc)
         svc-cfg (merge {}
                        (get-in options [:config :environments (keyword environment) :services (keyword svc)])
-                       (get-in options [:config :environments (keyword environment) :services (keyword (str repository "/" svc))]))]
+                       (get-in options [:config :environments (keyword environment) :services (keyword (str repository "/" svc))])
+                       (select-keys (maybe-load-state-file load-state) [:container-tag])
+                       (select-keys options [:container-tag]))]
     (if (some? profile)
       (rmerge svc-cfg (get-in svc-cfg [:profiles (keyword profile)]))
       svc-cfg)))

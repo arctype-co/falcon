@@ -1,6 +1,8 @@
 (ns falcon.core
   (:refer-clojure :exclude [exists?])
   (:require
+    [fs]
+    [yamljs]
     [cljs.core.async :refer [<!]]
     [clojure.string :as string]
     [cljs.core.async :as async]
@@ -11,8 +13,6 @@
   (:require-macros
     [cljs.core.async.macros :refer [go]]))
 
-(def ^:private fs (js/require "fs"))
-
 (def ^:private clouds-path "./.")
 
 (def ^:private clouds-cache (atom nil)) ; List of clouds available
@@ -21,7 +21,7 @@
   [message]
   (js/Error. message))
 
-(defn- all-clouds
+(defn all-clouds
   []
   "Return a list of clouds available"
   (swap! clouds-cache
@@ -46,11 +46,6 @@
   []
   (println "Waiting 10 seconds...")
   (async/timeout 10000))
-
-(defn print-summary
-  [message opts details]
-  (println message)
-  (pprint (merge (select-keys opts [:environment :cluster :profile]) details)))
 
 (defn base64
   [buf]
@@ -78,6 +73,15 @@
     (.statSync fs path)
     true
     (catch js/Error e false)))
+
+(defn print-summary
+  [message opts details]
+  (println message)
+  (let [data (merge (select-keys opts [:environment :cluster :profile]) details)]
+    (pprint data)
+    (when-let [state-file (:state-file opts)]
+      (let [state-buf (.from js/Buffer (.stringify yamljs (clj->js data)))]
+        (write-file state-file state-buf)))))
 
 (def species-name config-ns/species-name)
 
@@ -116,3 +120,9 @@
 (defn profiles
   [opts svc]
   (keys (:profiles (config-ns/service opts svc))))
+
+(defn cli-options
+  [specific-options]
+  (vec (concat [["-s" "--state-file <file>" "Output generated state to a file for use in CD pipelines"]
+                ["-l" "--load-state <file>" "Load parameters from a state file"]]
+               specific-options)))
