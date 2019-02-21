@@ -20,26 +20,14 @@
 
 (def ^:private yml-file "statefulset.yml")
 
-(defn- running-controller-name
-  "Return name of the current controller running for service"
-  [{:keys [profile] :as opts} service]
-  (go
-    (let [selector (str "role=" service (when (some? profile) (str ",profile=" profile)))
-          run (kubectl/run (assoc opts :shell-mode :spawn) "--selector" selector "-o" "json" "get" "statefulset")]
-      (<! (shell/check-status (:return run)))
-      (let [json (<! (:stdout run))
-            dict (.parse js/JSON json)
-            controller-name (-> dict (aget "items") (aget 0) (aget "metadata") (aget "name"))]
-        controller-name))))
-
 (S/defn list
-  "List replication controllers' status"
+  "List stateful sets"
   [opts args]
   (go
     (<! (kubectl/run opts "get" "statefulset"))))
 
 (S/defn create
-  "Launch a replication controller"
+  "Launch a stateful set"
   [opts args]
   (require-arguments 
     args
@@ -52,63 +40,54 @@
                   params {:service service
                           :controller-tag controller-tag
                           :container-tag container-tag}]
-              (core/print-summary "Create replication controler:" opts params)
+              (core/print-summary "Create stateful set:" opts params)
               (go
                 (<! (make-yml yml-file opts params))
                 (<! (-> (kubectl/run opts "create" "-f" (species-path service yml-file))
                         (shell/check-status)))))))))))
 
 (S/defn delete
-  "Remove a replication controller"
-  [opts [service controller-tag]]
-  (do-all-profiles
-    opts
-    (profiles opts service)
-    (fn [{:keys [profile] :as opts}]
-      (go
-        (let [controller-name (if (some? controller-tag)
-                                (config-ns/controller-name service profile controller-tag)
-                                (<! (running-controller-name opts service)))
-              params {:service service
-                      :controller-name controller-name}]
-          (when (nil? controller-name)
-            (throw (js/Error. "Failed to find running controller")))
-          (core/print-summary "Delete replication controller:" opts params)
-          (when-not (:yes opts) (<! (core/safe-wait)))
-          (<! (make-yml yml-file opts params))
-          (<! (kubectl/run opts "delete" "statefulset" controller-name)))))))
-
-(S/defn update
-  "Replace a replication controller"
+  "Remove a stateful set"
   [opts [service]]
   (do-all-profiles
     opts
     (profiles opts service)
     (fn [{:keys [profile] :as opts}]
       (go
-        (let [{:keys [container-tag]} (config-ns/service opts service)
-              container-tag (or (:container-tag opts) container-tag)
+        (let [controller-name (config-ns/controller-name service profile nil)
               params {:service service
-                      :container-tag container-tag}]
-          (core/print-summary "Delete replication controller:" opts params)
+                      :controller-name controller-name}]
+          (core/print-summary "Delete stateful set:" opts params)
+          (when-not (:yes opts) (<! (core/safe-wait)))
+          (<! (make-yml yml-file opts params))
+          (<! (kubectl/run opts "delete" "statefulset" controller-name)))))))
+
+(S/defn update
+  "Replace a stateful set"
+  [opts [service]]
+  (do-all-profiles
+    opts
+    (profiles opts service)
+    (fn [{:keys [profile] :as opts}]
+      (go
+        (let [params {:service service
+                      :profile profile}]
+          (core/print-summary "Delete stateful set" opts params)
           (when-not (:yes opts) (<! (core/safe-wait)))
           (<! (make-yml yml-file opts params))
           (<! (kubectl/run opts "replace" "statefulset" "-f" (species-path service yml-file))))))))
 
 (S/defn scale
-  "Scale a replication controller"
-  [{:keys [profile] :as opts} [service replicas controller-tag]]
+  "Scale a stateful set"
+  [{:keys [profile] :as opts} [service replicas]]
   (go
     (when (nil? replicas)
-      (throw (js/Error. "Arguments: [service replicas [controller-tag]]")))
-    (let [{:keys [controller-tag]} (config-ns/service opts service)
-          controller-name (if (some? controller-tag)
-                            (config-ns/controller-name service profile controller-tag)
-                            (<! (running-controller-name opts service)))
+      (throw (js/Error. "Arguments: [service replicas]")))
+    (let [controller-name (config-ns/controller-name service profile nil)
           params {:service service
                   :controller-name controller-name
                   :replicas replicas}]
-      (core/print-summary "Scaling replication controller:" opts params)
+      (core/print-summary "Scaling stateful set" opts params)
       (<! (make-yml yml-file opts params))
       (<! (kubectl/run opts "scale" "statefulset" (str "--replicas=" replicas) controller-name)))))
 

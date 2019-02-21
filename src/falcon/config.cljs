@@ -94,7 +94,7 @@
   "Returns a controller name, in the form <service>{-<profile}-<tag>, where profile is optional."
   [service :- S/Str
    profile :- (S/maybe S/Str)
-   tag :- S/Str]
+   tag :- (S/maybe S/Str)]
   (str service
        (when (some? profile) (str "-" profile))
-       "-" tag))
+       (when (some? tag) (str "-" tag))))
