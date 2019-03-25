@@ -38,7 +38,6 @@
             (let [{:keys [container-tag]} (config-ns/service opts service)
                   container-tag (or (:container-tag opts) container-tag)
                   params {:service service
-                          :controller-tag controller-tag
                           :container-tag container-tag}]
               (core/print-summary "Create stateful set:" opts params)
               (go
@@ -68,11 +67,13 @@
   (do-all-profiles
     opts
     (profiles opts service)
-    (fn [{:keys [profile] :as opts}]
+    (fn [opts]
       (go
-        (let [params {:service service
-                      :profile profile}]
-          (core/print-summary "Delete stateful set" opts params)
+        (let [{:keys [container-tag]} (config-ns/service opts service)
+              container-tag (or (:container-tag opts) container-tag)
+              params {:service service
+                      :container-tag container-tag}]
+          (core/print-summary "Update stateful set" opts params)
           (when-not (:yes opts) (<! (core/safe-wait)))
           (<! (make-yml yml-file opts params))
           (<! (kubectl/run opts "replace" "statefulset" "-f" (species-path service yml-file))))))))
