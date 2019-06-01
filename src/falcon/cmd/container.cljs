@@ -36,8 +36,6 @@
             defs (m4/defs opts params)]
         (core/print-summary "Building container" opts params)
         (go
-          ; Run a Makefile if there is one
-          (<! (-> (make/run defs ["-C" (species-path container) "container"])))
           (when-not dockerpath 
             (<! (-> (m4/write defs
                               [(species-path container "Dockerfile.m4")]
