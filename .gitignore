@@ -10,3 +10,4 @@ target
 node_modules
 cloud/*
 index.js
+.shadow-cljs

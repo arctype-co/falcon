@@ -12,8 +12,12 @@
   "dependencies": {
     "yamljs": "0.2.10"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "shadow-cljs": "2.8.67"
+  },
   "scripts": {
+    "build": "shadow-cljs release app",
+    "watch": "shadow-cljs watch app",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

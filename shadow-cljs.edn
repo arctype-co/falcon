@@ -1,0 +1,10 @@
+{:source-paths ["src"]
+ :dependencies [[org.clojure/core.async "0.4.474"]
+                [org.clojure/core.match "0.3.0-alpha5"]
+                [org.clojure/tools.cli "0.3.7"]
+                [prismatic/schema "1.1.9"]]
+ :builds {:app {:target :node-script
+                :output-to "index.js"
+                :optimizations :simple
+                :pretty-print true
+                :main falcon.main/-main}}}
