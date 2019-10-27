@@ -5,6 +5,7 @@
                 [prismatic/schema "1.1.9"]]
  :builds {:app {:target :node-script
                 :output-to "index.js"
-                :optimizations :simple
-                :pretty-print true
-                :main falcon.main/-main}}}
+                :main falcon.main/-main
+                :compiler-options
+                {:optimizations :simple
+                 :pretty-print true}}}}

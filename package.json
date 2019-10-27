@@ -1,6 +1,6 @@
 {
   "name": "falcon-kube",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "Falcon is a Kubernetes package manager developed in ClojureScript.",
   "main": "index.js",
   "bin": {
