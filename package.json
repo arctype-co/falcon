@@ -1,6 +1,6 @@
 {
   "name": "falcon-kube",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "description": "Falcon is a Kubernetes package manager developed in ClojureScript.",
   "main": "index.js",
   "bin": {
@@ -18,7 +18,8 @@
   "scripts": {
     "build": "shadow-cljs release app",
     "watch": "shadow-cljs watch app",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "shadow-cljs release app"
   },
   "repository": {
     "type": "git",
