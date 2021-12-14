@@ -5,7 +5,8 @@
     [falcon.shell :as core]))
 
 (def Options
-  {(S/optional-key :environment) S/Str
+  {(S/optional-key :context) S/Str
+   (S/optional-key :environment) S/Str
    (S/optional-key :kubeconfig) S/Str
    (S/optional-key :kube-server) S/Str
    (S/optional-key :certificate-authority) S/Str
@@ -17,8 +18,10 @@
 (defn- build-flags
   [opts]
   (let [ccfg (config/cluster opts)
-        {:keys [environment kubeconfig kube-server certificate-authority client-certificate client-key]} (merge ccfg opts)] 
+        {:keys [context environment kubeconfig kube-server certificate-authority client-certificate client-key]} (merge ccfg opts)] 
     (cond-> []
+      (some? context)
+      (conj (str "--context=" context))
       (some? kubeconfig)
       (conj (str "--kubeconfig=" kubeconfig))
       (some? kube-server)
